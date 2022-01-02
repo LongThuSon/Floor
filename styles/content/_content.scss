@@ -1,0 +1,101 @@
+@import "./info";
+@import "./floor";
+
+#content-main {
+    display: block;
+    width: 960px;
+    height: 546px;
+    position: relative;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    overflow: hidden;
+
+    //Table list
+    #table-status-list {
+        width: 46px;
+        height: 46px;
+        position: absolute;
+        top: 12px;
+        left: 327px;
+        z-index: 3;
+        background: rgba(225, 230, 249, 0.6);
+        border-radius: 4px;
+        text-align: center;
+        line-height: 46px;
+        cursor: pointer;
+    }
+
+    #container-list {
+        display: flex;
+        flex-direction: column;
+        width: 153px;
+        height: 461px;
+        position: absolute;
+        top: 52px;
+        background-color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        color: $primary_text;
+        text-align: left;
+        line-height: 32px;
+        padding-top: 10px;
+
+        .table-color {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            position: relative;
+            left: 5px;
+            margin: 0 10px;
+            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14), 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-time {
+            display: inline-block;
+            width: 46px;
+            height: 17px;
+            position: relative;
+            left: 5px;
+            padding-top: 0;
+            margin: 0 10px;
+            font-size: 10px;
+            text-align: center;
+            line-height: 17px;
+            border-radius: 4px;
+            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14), 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    // Zoom out
+    #zoom-out {
+        display: flex;
+        width: 46px;
+        height: 134px;
+        position: absolute;
+        top: 12px;
+        left: 902px;
+        z-index: 3;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        background-color: rgba(225, 230, 249, 0.6);
+    }
+
+    // Button add
+    #button-add {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        top: 476px;
+        left: 890px;
+        z-index: 3;
+        font-size: 40px;
+        text-align: center;
+        line-height: 40px;
+        color: #fff;
+        border-radius: 50%;
+        background-color: $primary_bg;
+        cursor: pointer;
+    }
+}

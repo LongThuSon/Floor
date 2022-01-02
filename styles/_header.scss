@@ -1,0 +1,83 @@
+.header-main {
+    display: block;
+    width: 960px;
+    height: 54px;
+    background: #F1F4F8;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    margin: 0 auto;
+    color: #1B2A4E;
+
+    #menu {
+        position: absolute;
+        left: 14px;
+        top: 15px;
+    }
+
+    #container-time {
+        position: absolute;
+        top: 7px;
+        left: 281px;
+
+        #custom-input {
+            display: flex;
+            width: 244px;
+            height: 40px;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 15px;
+            background-color: #fff;
+            border: 1px solid rgba(0, 40, 100, 0.12);
+        }
+    }
+
+    #nav {
+        display: inline-block;
+        width: 155px;
+        height: 40px;
+        position: absolute;
+        top: 7px;
+        left: 545px;
+        background-color: #fff;
+
+        // Hide arrow select
+        .css-1hb7zxy-IndicatorsContainer {
+            display: none;
+        }
+
+        #header-service-drop-down {
+            position: absolute;
+            top: 12px;
+            left: 120px;
+        }
+    }
+
+    #docu {
+        position: absolute;
+        top: 15px;
+        left: 720px;
+    }
+
+    #container-profile {
+        display: flex;
+        width: 192px;
+        height: 40px;
+        justify-content: space-between;
+        position: absolute;
+        top: 7px;
+        right: 10px;
+        font-size: 18px;
+        line-height: 40px;
+        
+        #container-avatar {
+            display: inline-block;
+            width: 62px;
+            height: 40px;
+            border: 1px solid $primary_text;
+            border-radius: 45px;
+        }
+    }
+}

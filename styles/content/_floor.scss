@@ -1,0 +1,218 @@
+#container-floor {
+    display: inline-block;
+    width: 645px;
+    height: inherit;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-color: #F6F6F6;
+    background-size: 40px 40px;
+    background-image:
+        linear-gradient(to right, #F1F1F1 1px, transparent 1px),
+        linear-gradient(to bottom, #F1F1F1 1px, transparent 1px);
+
+    transform: scale(1.0);
+    transform-origin: 0% 0% 0px;
+
+    // Zoom in
+    #zoom-in {
+        display: flex;
+        width: 46px;
+        height: 184px;
+        position: absolute;
+        top: 12px;
+        left: 587px;
+        z-index: 3;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        background-color: rgba(225, 230, 249, 0.6);
+    }
+
+    // All tables
+    #container-tables {
+        width: inherit;
+        height: inherit;
+        position: absolute;
+        z-index: 5;
+        .chair {
+            width: 18px;
+            height: 18px;
+            background: #007296;
+            border-radius: 50%;
+            
+        }
+        
+        // Table row
+        .container-table-1v1 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .table-1v1 {
+                width: 38px;
+                height: 38px;
+                background-image: linear-gradient(to top,#A260DD 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 38px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-table-2v2-row {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .table-2v2-row {
+                width: 66px;
+                height: 38px;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 38px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-table-6v6 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .table-6v6 {
+                width: 178px;
+                height: 38px;
+                background-image: linear-gradient(to top,#A260DD 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 38px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        // Table column
+        .container-table-2v2-column {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .table-2v2-column {
+                width: 38px;
+                height: 66px;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 66px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-table-3v3 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .table-3v3 {
+                width: 38px;
+                height: 94px;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 94px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-table-7v7 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .table-7v7 {
+                width: 38px;
+                height: 206px;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 206px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-circle-6 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .circle-6 {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 48px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-circle-8 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .circle-8 {
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 48px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    
+        .container-circle-14 {
+            display: inline-block;
+            position: relative;
+            align-items: center;
+    
+            .circle-14 {
+                width: 78px;
+                height: 78px;
+                border-radius: 50%;
+                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                position: absolute;
+                font-size: 14px;
+                line-height: 74px;
+                text-align: center;
+                color: #869AB8;
+            }
+        }
+    }
+
+    .transform-component-module_wrapper__1_Fgj {
+        width: 645px;
+        height: 546px;
+        overflow: visible;
+
+        .transform-component-module_content__2jYgh {
+            transform: translate3d(0px, 0px, 0px) scale(1.346);
+            width: 645px;
+            height: 546px;
+            overflow: visible;
+        
+        } 
+    }
+}
