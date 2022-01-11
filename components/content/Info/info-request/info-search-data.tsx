@@ -21,7 +21,7 @@ const SearchData = () => {
             >
                 <span>
                     <PeopleIcon
-                        label="book"
+                        label="people"
                     />
                 </span>
                 15 Covers

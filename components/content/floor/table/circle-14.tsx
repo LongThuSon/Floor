@@ -1,3 +1,4 @@
+import Draggable from 'react-draggable'
 import Chair from "./chair"
 import { Table } from "./index"
 
@@ -7,7 +8,7 @@ const positionTables = [
         top: -9,
         left: 30,
     },
-    {   
+    {
         // Chair 2
         top: -6,
         left: 47,
@@ -76,23 +77,28 @@ const positionTables = [
 
 const Circle14 = (props: Table) => {
     return (
-        <div
-            className="container-circle-14"
-            style={{
-                top: `${props.top}`,
-                left: `${props.left}`
-            }}
+        <Draggable
+            disabled={props.move}
         >
-            {positionTables.map((positionTable, index) => (
-                <Chair
-                    key={index}
-                    top={`${positionTable.top}px`}
-                    left={`${positionTable.left}px`}
-                />
-            ))}
+            <div
+                className="container-circle-14"
+                style={{
+                    top: `${props.top}`,
+                    left: `${props.left}`,
+                    cursor: `${props.move ? 'default' : 'move'}`
+                }}
+            >
+                {positionTables.map((positionTable, index) => (
+                    <Chair
+                        key={index}
+                        top={`${positionTable.top}px`}
+                        left={`${positionTable.left}px`}
+                    />
+                ))}
 
-            <div className="circle-14">{props.number}</div>
-        </div>
+                <div className="circle-14">{props.number}</div>
+            </div>
+        </Draggable>
     )
 }
 export default Circle14

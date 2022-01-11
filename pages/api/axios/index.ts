@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 enum METHOD {
     GET = 'get',
     POST = 'post',

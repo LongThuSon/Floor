@@ -23,7 +23,6 @@ const HeaderTime = () => {
                         let today = new Date(startDate)
                         let prevDay = today.setDate(today.getDate() - 1)
                         setStartDate(prevDay)
-                        console.log(startDate, today)
                     }}
                 >
                     <ChevronLeftLargeIcon
@@ -48,7 +47,6 @@ const HeaderTime = () => {
                         let today = new Date(startDate)
                         let prevDay = today.setDate(today.getDate() + 1)
                         setStartDate(prevDay)
-                        console.log(startDate, today)
                     }}
                 >
                     <ChevronRightLargeIcon

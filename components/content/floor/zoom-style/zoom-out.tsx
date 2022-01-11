@@ -1,9 +1,9 @@
 import MediaServicesZoomInIcon from '@atlaskit/icon/glyph/media-services/zoom-in'
 import MediaServicesZoomOutIcon from '@atlaskit/icon/glyph/media-services/zoom-out'
 import EditorExpandIcon from '@atlaskit/icon/glyph/editor/expand'
-import { ShowZoom } from "../../index"
+import { ZoomStyle } from "../../index"
 
-const ZoomOut = ({ callbackShow }: ShowZoom) => {
+const ZoomOut = ({ callbackShow, callbackMove }: ZoomStyle) => {
     return (
         <div id="zoom-out">
             <span
@@ -24,7 +24,9 @@ const ZoomOut = ({ callbackShow }: ShowZoom) => {
                     primaryColor='#7C69EF'
                 />
             </span>
-            <span>
+            <span
+                onClick={callbackMove}
+            >
                 <EditorExpandIcon
                     label='distance'
                     size='large'
