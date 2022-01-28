@@ -1,4 +1,5 @@
-import {  useMoveContext  } from '../../MoveContext'
+import { useState, useEffect } from 'react'
+import { useMoveContext } from '../../MoveContext'
 import Circle12 from "./circle-14"
 import Circle6 from "./circle-6"
 import Circle8 from "./circle-8"
@@ -10,136 +11,199 @@ import Table6v6 from "./table-6v6"
 import Table7v7 from "./table-7v7"
 
 export interface Chair {
-    top: string;
-    left: string;
+    top: string,
+    left: string,
+    numberChair: number,
+    indexTable: number
 }
 
 export interface Table {
-    top: string;
-    left: string;
-    number: number;
-    move: boolean
+    top: string,
+    left: string,
+    index: number,
+    move: boolean,
+    primary1?: string,
+    primary2?: string,
+    percent?: number,
 }
 
 
 const AllTables = () => {
     const { move } = useMoveContext()
+    const [render, setRender] = useState<number>(0)
+
+    // useEffect(() => {
+    //     setInterval((index) => {
+    //         setPercent((oldArray: any) => [oldArray + 16])
+    //         console.log(percent)
+    //     }, 1000)
+    // }, [])
+
+    // const handlePercent = () => {
+    //     setInterval(() => {
+
+    //     }, 1000)
+    // }
+
+
+    const handleColorTable = (id: number) => {
+        // let tasks = new Promise((resolve, reject) => {
+        //     setTimeout(resolve, 3000)
+        // })
+        // tasks.then(() => {
+        //     console.log(16)
+        //     return 16
+        // })
+        // .then(() => {
+        //     return new Promise((resolve, reject) => {
+        //         setTimeout(resolve, 3000)
+        //     })
+        // })
+        // .then(() => {
+        //     console.log(32)
+        //     return 32
+        // })
+
+        if (id === 0) {
+            setTimeout(() => {
+                render > 5 ? setRender(0) : setRender(prev => prev + 1)
+                console.log(render)
+            }, 10000);
+
+        }
+
+        switch (id) {
+            case 0:
+                return {
+                    primary1: '#A9EAFF',
+                    primary2: '#FFFFFF',
+                    percent: [16, 33, 50, 66, 83, 100],
+                }
+            default:
+                throw new Error('Error!')
+        }
+    }
+
     return (
         <div id="container-tables">
+            {/* {console.log(handleColorTable(0).percent2)} */}
             <Table1v1
                 top='50px'
                 left='380px'
-                number={116}
+                index={11}
                 move={move}
+                primary1={`${handleColorTable(0).primary1}`}
+                primary2={`${handleColorTable(0).primary2}`}
+                percent={handleColorTable(0).percent[render]}
             />
             <Table1v1
                 top='50px'
                 left='436px'
-                number={117}
+                index={12}
                 move={move}
             />
             <Table1v1
                 top='50px'
                 left='492px'
-                number={118}
+                index={13}
                 move={move}
             />
             <Table1v1
                 top='162px'
                 left='408px'
-                number={120}
+                index={14}
                 move={move}
             />
 
             <Table2v2Row
                 top="162px"
                 left="464px"
-                number={121}
+                index={15}
                 move={move}
             />
 
             <Table6v6
                 top="330px"
                 left="408px"
-                number={122}
+                index={16}
                 move={move}
             />
             <Table6v6
                 top="420px"
                 left="408px"
-                number={123}
+                index={17}
                 move={move}
             />
 
             <Table2v2Column
                 top="50px"
                 left="128px"
-                number={106}
+                index={1}
                 move={move}
             />
 
             <Table3v3
                 top="50px"
                 left="16px"
-                number={105}
+                index={0}
                 move={move}
             />
             <Table3v3
                 top="162px"
                 left="324px"
-                number={115}
+                index={10}
                 move={move}
             />
             <Table3v3
                 top="330px"
                 left="324px"
-                number={114}
+                index={9}
                 move={move}
             />
 
             <Table7v7
                 top="162px"
                 left="212px"
-                number={108}
+                index={3}
                 move={move}
             />
 
             <Circle6
                 top="441px"
                 left="16px"
-                number={111}
+                index={6}
                 move={move}
             />
             <Circle6
                 top="442px"
                 left="128px"
-                number={112}
+                index={7}
                 move={move}
             />
 
             <Circle8
                 top="330px"
                 left="16px"
-                number={109}
+                index={4}
                 move={move}
             />
             <Circle8
                 top="330px"
                 left="128px"
-                number={110}
+                index={5}
                 move={move}
             />
             <Circle8
                 top="442px"
                 left="212px"
-                number={113}
+                index={8}
                 move={move}
             />
 
             <Circle12
                 top="162px"
                 left="100px"
-                number={107}
+                index={2}
                 move={move}
             />
         </div>

@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react"
 
 export type MoveContentType = {
-    move: boolean
+    move: boolean,
 }
 
 export const MoveContext = createContext<MoveContentType>({

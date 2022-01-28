@@ -13,6 +13,7 @@ export interface ShowZoom {
 
 interface MoveTableFunc {
     callbackMove(): void
+    callbackMoveFalse(): void
 }
 
 export type ZoomStyle = ShowZoom & MoveTableFunc
@@ -39,6 +40,7 @@ const Content = () => {
                     <ZoomOut
                         callbackShow={() => setShowZoom(!showZoom)}
                         callbackMove={() => setMove(!move)}
+                        callbackMoveFalse={() => setMove(true)}
                     />
                 </>
             }

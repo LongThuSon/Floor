@@ -1,3 +1,5 @@
+import {  memo  } from 'react'
+import { useApiTablesContext } from '../../../../pages/ApiContext'
 import Draggable from 'react-draggable'
 import Chair from "./chair"
 import { Table } from "./index"
@@ -76,6 +78,8 @@ const positionTables = [
 ]
 
 const Circle14 = (props: Table) => {
+    const tables = useApiTablesContext()
+
     return (
         <Draggable
             disabled={props.move}
@@ -93,12 +97,14 @@ const Circle14 = (props: Table) => {
                         key={index}
                         top={`${positionTable.top}px`}
                         left={`${positionTable.left}px`}
+                        numberChair={index + 1}
+                        indexTable={props.index}
                     />
                 ))}
 
-                <div className="circle-14">{props.number}</div>
+                <div className="circle-14">{tables[props.index]?.numberTable}</div>
             </div>
         </Draggable>
     )
 }
-export default Circle14
+export default memo(Circle14)

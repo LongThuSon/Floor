@@ -1,5 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
+import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
+
+import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
 import { useInfoContext } from '../../Info/InfoContext'
+import axios from 'axios'
+
 import PeopleIcon from '@atlaskit/icon/glyph/people'
 import Chair from '@atlaskit/icon/glyph/editor/media-wide'
 import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done'
@@ -12,54 +18,11 @@ import NoShow from '@atlaskit/icon/glyph/media-services/preselected'
 import Cancelled from '@atlaskit/icon/glyph/cross-circle'
 import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
 import Hold from '@atlaskit/icon/glyph/notification-all'
-import axios from 'axios'
 
-interface Profile {
-    id: number,
-    username: string,
-    firstname: string,
-    lastname: string,
-    quantity: number,
-    numberTable: number,
-    phone: number,
-    eventTag: string,
-    deposit: string,
-    status: number,
-    timeOrder: number
-}
-
-type TProfileList = Profile[]
-
-interface ProfileListProps {
-    items: TProfileList
-}
-
-const baseURL = "https://61d2e828b4c10c001712b67f.mockapi.io/api/users";
-
-const Customer = () => {
-    const [profiles, setProfiles] = useState<TProfileList>([])
-
-    useEffect(() => {
-        axios.get<TProfileList>(baseURL).then((response) => {
-            console.log(response.data)
-            setProfiles(response.data)
-        })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-    }, [])
-
-    if (!profiles) return null;
-
-    return (
-        <>
-            <CustomerList items={profiles} />
-        </>
-    )
-}
-
-const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
+const CustomerList = () => {
     const { showDetails } = useInfoContext()
+    const profiles = useApiUsersContext()
+    const { reset, setReset } = useResetApiContext()
     const [listShow, setListShow] = useState<any>([])
 
     useEffect(() => {
@@ -87,7 +50,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
 
     const customerStatus = (status: number) => {
         switch (status) {
-            case 0:
+            case 1:
                 return (
                     <div
                         className='customer-status'
@@ -107,7 +70,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                         </span>
                     </div>
                 )
-            case 1:
+            case 2:
                 return (
                     <div
                         className='customer-status'
@@ -127,7 +90,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                         </span>
                     </div>
                 )
-            case 2:
+            case 3:
                 return (
                     <div
                         className='customer-status'
@@ -147,7 +110,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                         </span>
                     </div>
                 )
-            case 3:
+            case 4:
                 return (
                     <div
                         className='customer-status'
@@ -167,7 +130,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                         </span>
                     </div>
                 )
-            case 4:
+            case 5:
                 return (
                     <div
                         className='customer-status'
@@ -187,7 +150,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                         </span>
                     </div>
                 )
-            case 5:
+            case 6:
                 return (
                     <div
                         className='customer-status'
@@ -238,12 +201,23 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
         }
     }
 
-    const updateComfirm = (id: number) => {
+    const updateComfirm = (id: number, numberTable: number, quantity: number) => {
         const newStatus = {
-            status: 0,
+            status: 1,
         }
-        axios.put(`${baseURL}/${id}`, newStatus)
+        const newSeat = {
+            seat: quantity % 5 + 1,
+        }
+        axios.put(`${baseURL_users}/${id}`, newStatus)
             .then(res => console.log(res.data))
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newSeat)
+            .then(res => {                
+                setReset(!reset)
+                console.log(res.data)
+            })
             .catch(error => {
                 console.log('ERROR:', error)
             })
@@ -251,9 +225,9 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
 
     const updateSeat = (id: number) => {
         const newStatus = {
-            status: 2,
+            status: 3,
         }
-        axios.put(`${baseURL}/${id}`, newStatus)
+        axios.put(`${baseURL_users}/${id}`, newStatus)
             .then(res => console.log(res.data))
             .catch(error => {
                 console.log('ERROR:', error)
@@ -268,7 +242,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                     padding: 0
                 }}
             >
-                {items.map((profile, index) => (
+                {profiles.map((profile, index) => (
                     <li
                         key={profile.id}
                         style={{ padding: 0 }}
@@ -307,7 +281,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                                     </span>
                                 </div>
 
-                                {customerStatus(profile.status % 20)}
+                                {customerStatus(profile.status % 100)}
 
                             </div>
 
@@ -376,8 +350,8 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                             >
                                 <div
                                     className='item-action'
-                                    style={{ display: `${profile.status % 20 > 5 ? '' : 'none'}` }}
-                                    onClick={() => updateComfirm(profile.id)}
+                                    style={{ display: `${(profile.status % 100 === 0 || profile.status % 100 > 6) ? '' : 'none'}` }}
+                                    onClick={() => updateComfirm(profile.id, profile.numberTable, profile.quantity)}
                                 >
                                     <span>
                                         <EditorDoneIcon
@@ -390,7 +364,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                                 </div>
                                 <div
                                     className='item-action'
-                                    style={{ display: `${(profile.status % 20 === 2 || profile.status % 20 === 3 || profile.status % 20 === 5) ? 'none' : ''}` }}
+                                    style={{ display: `${(profile.status % 100 === 3 || profile.status % 100 === 4 || profile.status % 100 === 6) ? 'none' : ''}` }}
                                     onClick={() => updateSeat(profile.id)}
                                 >
                                     <span>
@@ -414,7 +388,7 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
                                 </div>
                                 <div
                                     className='item-action'
-                                    style={{ display: `${profile.status % 20 === 1 ? '' : 'none'}` }}
+                                    style={{ display: `${profile.status % 100 === 2 ? '' : 'none'}` }}
                                 >
                                     <span>
                                         <Hold
@@ -434,4 +408,4 @@ const CustomerList: React.FC<ProfileListProps> = ({ items }) => {
     )
 }
 
-export default Customer
+export default memo(CustomerList)

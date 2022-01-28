@@ -1,10 +1,50 @@
+import {  memo  } from 'react'
+import { useApiTablesContext } from '../../../../pages/ApiContext'
 import Draggable from "react-draggable"
 import Chair from "./chair"
 import { Table } from "./index"
 
-const positionTables = [10, 38, 66, 94, 122, 150, 178]
+const positionTables = [
+    {
+        top: 10,
+        numberLeft: 14,
+        numberRight: 1
+    },
+    {
+        top: 38,
+        numberLeft: 13,
+        numberRight: 2
+    },
+    {
+        top: 66,
+        numberLeft: 12,
+        numberRight: 3
+    },
+    {
+        top: 94,
+        numberLeft: 11,
+        numberRight: 4
+    },
+    {
+        top: 122,
+        numberLeft: 10,
+        numberRight: 5
+    },
+    {
+        top: 150,
+        numberLeft: 9,
+        numberRight: 6
+    },
+    {
+        top: 178,
+        numberLeft: 8,
+        numberRight: 7
+    }
+]
 
 const Table7v7 = (props: Table) => {
+    const tables = useApiTablesContext()
+
     return (
         <Draggable
             disabled={props.move}
@@ -20,19 +60,23 @@ const Table7v7 = (props: Table) => {
                 {positionTables.map((positionTable, index) => (
                     <div key={index}>
                         <Chair
-                            top={`${positionTable}px`}
+                            top={`${positionTable.top}px`}
                             left='-9px'
+                            numberChair={positionTable.numberLeft}
+                            indexTable={props.index}
                         />
                         <Chair
-                            top={`${positionTable}px`}
+                            top={`${positionTable.top}px`}
                             left='29px'
+                            numberChair={positionTable.numberRight}
+                            indexTable={props.index}
                         />
                     </div>
                 ))}
 
-                <div className="table-7v7">{props.number}</div>
+                <div className="table-7v7">{tables[props.index]?.numberTable}</div>
             </div>
         </Draggable>
     )
 }
-export default Table7v7
+export default memo(Table7v7)
