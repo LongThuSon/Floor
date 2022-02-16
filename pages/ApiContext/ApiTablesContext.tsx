@@ -7,14 +7,21 @@ import { useResetApiContext } from './resetApiContext'
 interface ITable {
     id: number,
     numberTable: number,
-    seat: number
+    seat: number,
+    status: number,
+    percent: number,
+    timeOrder: number,
 }
 
 const ApiTablesContextDefault = [
     {
         id: 1,
         numberTable: 106,
-        seat: 2
+        seat: 2,
+        status: 0,
+        percent: 0,
+        timeOrder: 0,
+
     },
 ]
 
@@ -25,6 +32,19 @@ const ApiTablesContextProvider = ({ children }: IApiContextProps) => {
     const { reset } = useResetApiContext()
 
     useEffect(() => {
+        // const getTablesApi = async () => {
+        //     try {
+        //         const response = await axios.get<ITable[]>(baseURL_tables)
+        //             .then((response) => {
+        //                 console.log(response.data)
+        //                 setTables(response.data)
+        //             })
+        //     } catch (error) {
+        //         console.log(error)
+        //     }
+        // }
+        // getTablesApi()
+
         axios.get<ITable[]>(baseURL_tables).then((response) => {
             console.log(response.data)
             setTables(response.data)

@@ -98,4 +98,286 @@
         background-color: $primary_bg;
         cursor: pointer;
     }
+
+    // Edit
+    .container-edit {
+        display: block;
+        width: 315px;
+        height: 100%;
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        background-color: #fff;
+        overflow: scroll;
+        overflow-x: hidden;
+
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            margin: 16px 10px 0;
+        }
+
+        .edit-name {
+            text-align: center;
+            margin-top: 26px;
+            font-size: 25px;
+            color: $primary_text;
+        }
+
+        .reserv-id {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 400;
+            color: #506690;
+        }
+
+        .phone-viewprofile {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 50px 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: #506690;
+        }
+
+        .edit-stt {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 260px;
+            height: 39px;
+            margin: 20px;
+
+            .stt-text {
+                font-size: 15px;
+                font-weight: 600;
+                margin: 0 10px;
+            }
+        }
+
+        .edit-select {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 20px 20px;
+
+            .datePickerEdit {
+                position: relative;
+        
+                .custom-input-edit {
+                    display: flex;
+                    width: 141px;
+                    height: 37px;
+                    justify-content: space-around;
+                    align-items: center;
+                    font-size: 15px;
+                    background-color: #fff;
+                    border: 1px solid rgba(0, 40, 100, 0.12);
+                }
+            }
+
+            .select-element {
+                width: 141px;
+                height: 37px;
+                padding: 0 10px;
+                border: solid 1px #ccc;
+            }
+
+            .container-occasion {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                .container-element-occasion {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+
+                    .Occasion-element {
+                        display: inline-block;
+                        width: 124px;
+                        height: 38px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        color: $primary_bg;
+                        padding-left: 12px;
+                        border: solid 1px #ccc;
+                        border-radius: 4px;
+                    }
+                }
+            }
+            
+            .edit-input {
+                width: 260px;
+                min-height: 37px;
+                border: solid 1px #ccc;
+                border-radius: 4px;
+                margin-top: 10px;
+            }
+
+            .edit-note {
+                font-size: 12px;
+                font-weight: 400;
+                color: $primary_text;
+            }
+        }
+
+        .edit-notify {
+            margin: 0 20px 20px;
+
+            .notify-name {
+                font-size: 16px;
+                font-weight: 700;
+                color: $primary_text;
+                margin-bottom: 20px;
+            }
+
+            .container-radio {
+                display: block;
+                position: relative;
+                padding-left: 25px;
+                margin-bottom: 12px;
+                cursor: pointer;
+                font-size: 15px;
+                font-weight: 600;
+                color: #2F3C5E;
+                margin-bottom: 20px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+
+                /* Hide the browser's default radio button */
+                input {
+                    position: absolute;
+                    opacity: 0;
+                    cursor: pointer;
+
+                    /* When the radio button is checked, add a blue background */
+                    &:checked ~ .checkmark {
+                        background-color: $primary_bg;
+                    }
+
+                    /* Show the indicator (dot/circle) when checked */
+                    &:checked ~ .checkmark:after {
+                        display: block;
+                    }
+                }
+
+                /* Create a custom radio button */
+                .checkmark {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    height: 15px;
+                    width: 15px;
+                    background-color: #eee;
+                    border-radius: 50%;
+            
+                    /* Create the indicator (the dot/circle - hidden when not checked) */
+                    &:after {
+                        content: "";
+                        position: absolute;
+                        display: none;
+                    }
+
+                /* Style the indicator (dot/circle) */
+                    &:after {
+                        top: 4px;
+                        left: 4px;
+                        width: 7px;
+                        height: 7px;
+                        border-radius: 50%;
+                        background: white;
+                    }
+                }
+
+                /* On mouse-over, add a grey background color */
+                &:hover input ~ .checkmark {
+                    background-color: #ccc;
+                }
+            }
+
+            .container-checkbox {
+                display: block;
+                position: relative;
+                font-size: 15px;
+                font-weight: 600;
+                color: #2F3C5E;
+                padding-left: 25px;
+                margin-bottom: 25px;
+                cursor: pointer;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+
+                /* On mouse-over, add a grey background color */
+                &:hover input ~ .checkmark {
+                    background-color: #ccc;
+                }
+
+                /* Hide the browser's default checkbox */
+                input {
+                    position: absolute;
+                    opacity: 0;
+                    cursor: pointer;
+                    height: 0;
+                    width: 0;
+
+                    /* When the checkbox is checked, add a blue background */
+                    &:checked ~ .checkmark {
+                        background-color: $primary_bg;
+                    }
+
+                    /* Show the checkmark when checked */
+                    &:checked ~ .checkmark:after {
+                        display: block;
+                    }
+                }
+
+                /* Create a custom checkbox */
+                .checkmark {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    height: 15px;
+                    width: 15px;
+                    background-color: #eee;
+                
+                    /* Create the checkmark/indicator (hidden when not checked) */
+                    &:after {
+                        content: "";
+                        position: absolute;
+                        display: none;
+                    }
+
+                    /* Style the checkmark/indicator */
+                    &:after {
+                        left: 5px;
+                        top: 2px;
+                        width: 2px;
+                        height: 5px;
+                        border: solid white;
+                        border-width: 0 3px 3px 0;
+                        -webkit-transform: rotate(45deg);
+                        -ms-transform: rotate(45deg);
+                        transform: rotate(45deg);
+                    }
+                }
+            }  
+        }
+
+        .cancel-reserv-btn {
+            width: 260px;
+            height: 38px;
+            color: #fff;
+            background-color: #DF4759;
+            border-style: none;
+            border-radius: 4px;
+            margin: 10px 20px 30px;
+        }
+    }
 }

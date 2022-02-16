@@ -1,4 +1,4 @@
-import Select from "react-select";
+import Select from "react-select"
 import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
 
 const options = [

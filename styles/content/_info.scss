@@ -19,6 +19,7 @@
         padding-bottom: 4px;
         background-color: $primary_bg;
         justify-content: space-around;
+
         .search-data-item {
             display: inline-flex;
             justify-content: space-around;
@@ -47,12 +48,19 @@
             width: inherit;
             height: 48px;
             background-color: $primary_bg;
-            width: 280px;
             position: sticky;
             top: 40px;
             left: 10px;
             top: 10px;
-            padding-bottom: 10px;     
+            padding-bottom: 10px;
+            
+            #search-input{
+                width: 280px;
+                height: 40px;
+                border-style: none;
+                border-radius: 4px;
+                margin: 0 10px;
+            }
         }
     }
 
@@ -216,6 +224,5 @@
             }
         }
     }
-
 }
 

@@ -1,10 +1,11 @@
 import { useState, useEffect, memo } from 'react'
+import axios from 'axios'
+
 import { useApiUsersContext } from '../../../../pages/ApiContext'
 import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
-
 import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
 import { useInfoContext } from '../../Info/InfoContext'
-import axios from 'axios'
+import { useEditDetailsContext } from '../../EditDetailsContext'
 
 import PeopleIcon from '@atlaskit/icon/glyph/people'
 import Chair from '@atlaskit/icon/glyph/editor/media-wide'
@@ -21,6 +22,7 @@ import Hold from '@atlaskit/icon/glyph/notification-all'
 
 const CustomerList = () => {
     const { showDetails } = useInfoContext()
+    const { setIndexED } = useEditDetailsContext()
     const profiles = useApiUsersContext()
     const { reset, setReset } = useResetApiContext()
     const [listShow, setListShow] = useState<any>([])
@@ -32,17 +34,17 @@ const CustomerList = () => {
     const customerTime = (timeOrder: number) => {
         switch (timeOrder) {
             case 0:
-                return <div style={{ fontWeight: 600 }}>11:00 PM</div>
+                return <div style={{ fontWeight: 600 }}>11:00AM</div>
             case 1:
-                return <div style={{ fontWeight: 600 }}>11:30 PM</div>
+                return <div style={{ fontWeight: 600 }}>11:30AM</div>
             case 2:
-                return <div style={{ fontWeight: 600 }}>12:00 PM</div>
+                return <div style={{ fontWeight: 600 }}>12:00PM</div>
             case 3:
-                return <div style={{ fontWeight: 600 }}>12:30 PM</div>
+                return <div style={{ fontWeight: 600 }}>12:30PM</div>
             case 4:
-                return <div style={{ fontWeight: 600 }}>13:00 PM</div>
+                return <div style={{ fontWeight: 600 }}>13:00PM</div>
             case 5:
-                return <div style={{ fontWeight: 600 }}>13:30 PM</div>
+                return <div style={{ fontWeight: 600 }}>13:30PM</div>
             default:
                 throw new Error('Invalid time.')
         }
@@ -201,13 +203,16 @@ const CustomerList = () => {
         }
     }
 
-    const updateComfirm = (id: number, numberTable: number, quantity: number) => {
+    const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
         const newStatus = {
             status: 1,
         }
         const newSeat = {
             seat: quantity % 5 + 1,
+            status: 3,
+            timeOrder: timeOrder % 6,
         }
+
         axios.put(`${baseURL_users}/${id}`, newStatus)
             .then(res => console.log(res.data))
             .catch(error => {
@@ -223,12 +228,26 @@ const CustomerList = () => {
             })
     }
 
-    const updateSeat = (id: number) => {
+    const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
         const newStatus = {
             status: 3,
         }
+        const newSeat = {
+            seat: quantity % 5 + 1,
+            status: 0,
+            timeOrder: timeOrder % 6,
+        }
+
         axios.put(`${baseURL_users}/${id}`, newStatus)
             .then(res => console.log(res.data))
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newSeat)
+            .then(res => {                
+                setReset(!reset)
+                console.log(res.data)
+            })
             .catch(error => {
                 console.log('ERROR:', error)
             })
@@ -351,7 +370,7 @@ const CustomerList = () => {
                                 <div
                                     className='item-action'
                                     style={{ display: `${(profile.status % 100 === 0 || profile.status % 100 > 6) ? '' : 'none'}` }}
-                                    onClick={() => updateComfirm(profile.id, profile.numberTable, profile.quantity)}
+                                    onClick={() => updateComfirm(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)}
                                 >
                                     <span>
                                         <EditorDoneIcon
@@ -365,7 +384,7 @@ const CustomerList = () => {
                                 <div
                                     className='item-action'
                                     style={{ display: `${(profile.status % 100 === 3 || profile.status % 100 === 4 || profile.status % 100 === 6) ? 'none' : ''}` }}
-                                    onClick={() => updateSeat(profile.id)}
+                                    onClick={() => updateSeat(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)}
                                 >
                                     <span>
                                         <Chair
@@ -376,7 +395,10 @@ const CustomerList = () => {
                                     </span>
                                     <span>Seat</span>
                                 </div>
-                                <div className='item-action'>
+                                <div 
+                                    className='item-action'
+                                    onClick={() => setIndexED(index)}
+                                >
                                     <span>
                                         <EditFilledIcon
                                             label='edit'

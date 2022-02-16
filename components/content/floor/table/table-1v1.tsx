@@ -7,6 +7,23 @@ import Draggable from 'react-draggable'
 const Table1v1 = (props: Table) => {
     const tables = useApiTablesContext()
 
+    const customerReservTime = (timeOrder: number) => {
+        switch (timeOrder) {
+            case 0:
+                return <div style={{ fontWeight: 600 }}>11.00AM</div>
+            case 1:
+                return <div style={{ fontWeight: 600 }}>11.30AM</div>
+            case 2:
+                return <div style={{ fontWeight: 600 }}>12.00PM</div>
+            case 3:
+                return <div style={{ fontWeight: 600 }}>12.30PM</div>
+            case 4:
+                return <div style={{ fontWeight: 600 }}>13.00PM</div>
+            default:
+                return <div style={{ fontWeight: 600 }}>13.30PM</div>
+        }
+    }
+
     return (
         <Draggable
             disabled={props.move}
@@ -40,9 +57,18 @@ const Table1v1 = (props: Table) => {
                 >
                     {tables[props.index]?.numberTable}
                 </div>
+
+                {tables[props.index]?.status !== 5 &&
+                    <div
+                        className='reserv-time-1v1'
+                        style={{
+                            backgroundColor: '#E9EDF3',
+                            color: '#506690'
+                        }}
+                    >{customerReservTime(tables[props.index]?.timeOrder % 6)}</div>
+                }
             </div>
         </Draggable >
-
     )
 }
 export default memo(Table1v1)

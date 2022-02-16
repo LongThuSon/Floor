@@ -59,6 +59,18 @@
                 text-align: center;
                 color: #869AB8;
             }
+
+            .reserv-time-1v1 {
+                width: 46px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 56px;
+                left: -4px;
+                border-radius: 4px;
+            }
         }
     
         .container-table-2v2-row {
@@ -69,12 +81,24 @@
             .table-2v2-row {
                 width: 66px;
                 height: 38px;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 38px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-2v2-row {
+                width: 76px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 56px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -86,12 +110,24 @@
             .table-6v6 {
                 width: 178px;
                 height: 38px;
-                background-image: linear-gradient(to top,#A260DD 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#A260DD 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 38px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-6v6 {
+                width: 188px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 56px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -104,12 +140,24 @@
             .table-2v2-column {
                 width: 38px;
                 height: 66px;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 66px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-2v2-column {
+                width: 48px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 76px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -121,12 +169,24 @@
             .table-3v3 {
                 width: 38px;
                 height: 94px;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 94px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-3v3 {
+                width: 46px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 104px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -138,12 +198,24 @@
             .table-7v7 {
                 width: 38px;
                 height: 206px;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 206px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-7v7 {
+                width: 48px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 216px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -156,12 +228,24 @@
                 width: 48px;
                 height: 48px;
                 border-radius: 50%;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 48px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-circle-6 {
+                width: 56px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 68px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -174,12 +258,24 @@
                 width: 55px;
                 height: 55px;
                 border-radius: 50%;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 48px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-circle-8 {
+                width: 63px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 75px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     
@@ -192,12 +288,24 @@
                 width: 78px;
                 height: 78px;
                 border-radius: 50%;
-                background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
+                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 74px;
                 text-align: center;
                 color: #869AB8;
+            }
+
+            .reserv-time-circle-14 {
+                width: 86px;
+                height: 17px;
+                font-size: 10px;
+                line-height: 17px;
+                text-align: center;
+                position: absolute;
+                top: 98px;
+                left: -4px;
+                border-radius: 4px;
             }
         }
     }
