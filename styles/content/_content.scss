@@ -115,6 +115,8 @@
             display: flex;
             justify-content: space-between;
             margin: 16px 10px 0;
+            text-decoration: underline;
+            cursor: pointer;
         }
 
         .edit-name {
@@ -165,15 +167,18 @@
             .datePickerEdit {
                 position: relative;
         
-                .custom-input-edit {
+                .custom-time-edit {
                     display: flex;
                     width: 141px;
                     height: 37px;
                     justify-content: space-around;
                     align-items: center;
                     font-size: 15px;
+                    color: $primary_text;
                     background-color: #fff;
                     border: 1px solid rgba(0, 40, 100, 0.12);
+                    background-color: #000;
+                    
                 }
             }
 
@@ -181,7 +186,12 @@
                 width: 141px;
                 height: 37px;
                 padding: 0 10px;
+                color: $primary_text;
                 border: solid 1px #ccc;
+
+                &:disabled {
+                    background-color: #ccc;
+                }
             }
 
             .container-occasion {
@@ -201,7 +211,6 @@
                         font-size: 14px;
                         font-weight: 600;
                         line-height: 38px;
-                        color: $primary_bg;
                         padding-left: 12px;
                         border: solid 1px #ccc;
                         border-radius: 4px;
@@ -211,10 +220,17 @@
             
             .edit-input {
                 width: 260px;
-                min-height: 37px;
+                min-height: 50px;
+                max-height: 100px;
+                color: $primary_text;
                 border: solid 1px #ccc;
                 border-radius: 4px;
                 margin-top: 10px;
+                resize: none;
+
+                &:disabled {
+                    background-color: #ccc;
+                }
             }
 
             .edit-note {

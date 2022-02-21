@@ -1,10 +1,13 @@
-import { useState, forwardRef } from 'react'
+import { useState, forwardRef, useEffect } from 'react'
+import axios from 'axios'
 
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css'
 
 import { useEditDetailsContext } from '../../EditDetailsContext'
 import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
+import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
 
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import Save from '@atlaskit/icon/glyph/download'
@@ -25,16 +28,21 @@ import NoShow from '@atlaskit/icon/glyph/media-services/preselected'
 import Cancelled from '@atlaskit/icon/glyph/cross-circle'
 
 const EditDetails = () => {
-    const [startDate, setStartDate]: any = useState(new Date())
-
     const profiles = useApiUsersContext()
     const { indexED, setIndexED } = useEditDetailsContext()
+    const { reset, setReset } = useResetApiContext()
 
+    const [startDate, setStartDate]: any = useState(new Date())
+    const [disabledStt, setDisabledStt] = useState(false)
     const [tableAPI, setTableAPI] = useState({
         table: {
             numberTable: 105 + profiles[indexED].numberTable % 18,
             timeOrder: profiles[indexED].timeOrder % 6,
             eventTag: profiles[indexED].eventTag,
+            status: profiles[indexED].status % 100,
+            occasion: profiles[indexED].occasion,
+            otherOccasion: profiles[indexED].otherOccasion,
+            quantity: profiles[indexED].quantity % 5 + 1,
         }
     })
 
@@ -44,14 +52,22 @@ const EditDetails = () => {
             onClick?: any;
         }, ref) => (
             <div
-                className='custom-input-edit'
+                className='custom-time-edit'
+                style={{
+                    backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                        profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`
+                }}
             >
                 <span
                     onClick={() => {
-                        let today = new Date(startDate)
-                        let prevDay = today.setDate(today.getDate() - 1)
-                        setStartDate(prevDay)
+                        if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                            profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+                            let today = new Date(startDate)
+                            let prevDay = today.setDate(today.getDate() - 1)
+                            setStartDate(prevDay)
+                        }
                     }}
+
                 >
                     <ChevronLeftLargeIcon
                         label='left'
@@ -68,9 +84,12 @@ const EditDetails = () => {
 
                 <span
                     onClick={() => {
-                        let today = new Date(startDate)
-                        let prevDay = today.setDate(today.getDate() + 1)
-                        setStartDate(prevDay)
+                        if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                            profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+                            let today = new Date(startDate)
+                            let prevDay = today.setDate(today.getDate() + 1)
+                            setStartDate(prevDay)
+                        }
                     }}
                 >
                     <ChevronRightLargeIcon
@@ -86,40 +105,92 @@ const EditDetails = () => {
                 onChange={(date: any) => setStartDate(date)}
                 customInput={<ExampleCustomInput />}
                 dateFormat='dd MMM yyyy'
+                disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                    profiles[indexED].status === 5 || profiles[indexED].status === 6}
             />
         );
     };
+
+    const handleUpdateStt = (status: number) => {
+        setTableAPI(prev => ({
+            table: {
+                ...prev.table,
+                status: status,
+            }
+        }))
+
+        axios.put(`${baseURL_users}/${indexED + 1}`, { status: status })
+            .then(res => {
+                setReset(!reset)
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+    
+        setDisabledStt(false)
+    }
 
     const customerStatusEdit = (status: number) => {
         switch (status) {
             case 1:
                 return (
-                    <div
-                        className='edit-stt'
-                        style={{
-                            color: '#1B2A4E',
-                            backgroundColor: '#F1F4F8',
-                        }}
-                    >
-                        <span>
-                            <EditorDoneIcon
-                                label='booked'
-                                size='small'
-                                primaryColor='#1B2A4E'
-                            />
-                        </span>
-                        <span
-                            className='stt-text'
+                    <div>
+                        <div
+                            className='edit-stt'
+                            style={{
+                                color: '#1B2A4E',
+                                backgroundColor: '#F1F4F8',
+                            }}
                         >
-                            Comfirmed
-                        </span>
-                        <span>
-                            <HipchatChevronDownIcon
-                                label='down'
-                                size="small"
-                                primaryColor="#9999BB"
-                            />
-                        </span>
+                            <span>
+                                <EditorDoneIcon
+                                    label='booked'
+                                    size='small'
+                                    primaryColor='#1B2A4E'
+                                />
+                            </span>
+                            <span
+                                className='stt-text'
+                            >
+                                Comfirmed
+                            </span>
+                            <span onClick={() => {
+                                disabledStt ? setDisabledStt(false) : setDisabledStt(true)
+                            }}
+                            >
+                                <HipchatChevronDownIcon
+                                    label='down'
+                                    size="small"
+                                    primaryColor="#9999BB"
+                                />
+                            </span>
+                        </div>
+                        <div
+                            className='edit-stt'
+                            style={{
+                                color: '#1B2A4E',
+                                backgroundColor: '#F1F4F8',
+                                position: 'absolute',
+                                zIndex: 1,
+                                top: '190px',
+                                display: `${disabledStt ? '' : 'none'}`
+                            }}
+                            onClick={() => handleUpdateStt(0)}
+                        >
+                            <span>
+                                <EditorDoneIcon
+                                    label='booked'
+                                    size='small'
+                                    primaryColor='#1B2A4E'
+                                />
+                            </span>
+                            <span
+                                className='stt-text'
+                            >
+                                Booked
+                            </span>
+                        </div>
                     </div>
                 )
             case 2:
@@ -239,32 +310,62 @@ const EditDetails = () => {
                 )
             default:
                 return (
-                    <div
-                        className='edit-stt'
-                        style={{
-                            color: '#1B2A4E',
-                            backgroundColor: '#F1F4F8',
-                        }}
-                    >
-                        <span>
-                            <EditorDoneIcon
-                                label='booked'
-                                size='small'
-                                primaryColor='#1B2A4E'
-                            />
-                        </span>
-                        <span
-                            className='stt-text'
+                    <div>
+                        <div
+                            className='edit-stt'
+                            style={{
+                                color: '#1B2A4E',
+                                backgroundColor: '#F1F4F8',
+                            }}
                         >
-                            Booked
-                        </span>
-                        <span>
-                            <HipchatChevronDownIcon
-                                label='down'
-                                size="small"
-                                primaryColor="#9999BB"
-                            />
-                        </span>
+                            <span>
+                                <EditorDoneIcon
+                                    label='booked'
+                                    size='small'
+                                    primaryColor='#1B2A4E'
+                                />
+                            </span>
+                            <span
+                                className='stt-text'
+                            >
+                                Booked
+                            </span>
+                            <span onClick={() => {
+                                disabledStt ? setDisabledStt(false) : setDisabledStt(true)
+                            }}
+                            >
+                                <HipchatChevronDownIcon
+                                    label='down'
+                                    size="small"
+                                    primaryColor="#9999BB"
+                                />
+                            </span>
+                        </div>
+                        <div
+                            className='edit-stt'
+                            style={{
+                                color: '#1B2A4E',
+                                backgroundColor: '#F1F4F8',
+                                position: 'absolute',
+                                zIndex: 1,
+                                top: '190px',
+                                display: `${disabledStt ? '' : 'none'}`
+                            }}
+                            onClick={() => handleUpdateStt(1)}
+                        >
+                            <span>
+                                <EditorDoneIcon
+                                    label='booked'
+                                    size='small'
+                                    primaryColor='#1B2A4E'
+                                />
+                            </span>
+                            <span
+                                className='stt-text'
+                            >
+                                Comfirmed
+                            </span>
+                        </div>
                     </div>
                 )
         }
@@ -274,10 +375,9 @@ const EditDetails = () => {
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
-                numberTable: event.target.value,
+                numberTable: Number(event.target.value),
             }
         }))
-        console.log(tableAPI)
     }
 
     const handleChangeTimeOrder = (event: any) => {
@@ -287,7 +387,33 @@ const EditDetails = () => {
                 timeOrder: event.target.value,
             }
         }))
-        console.log(tableAPI)
+    }
+
+    const handleAddOccasion = (occasion: string) => {
+        if (!tableAPI.table.occasion.includes(occasion)) {
+            setTableAPI(prev => ({
+                table: {
+                    ...prev.table,
+                    occasion: [...prev.table.occasion, occasion],
+                }
+            }))
+        } else {
+            setTableAPI(prev => ({
+                table: {
+                    ...prev.table,
+                    occasion: prev.table.occasion.filter((remainElement: any) => remainElement !== occasion),
+                }
+            }))
+        }
+    }
+
+    const handleChangeOtherOcca = (event: any) => {
+        setTableAPI(prev => ({
+            table: {
+                ...prev.table,
+                otherOccasion: event.target.value,
+            }
+        }))
     }
 
     const handleChangeEventTag = (event: any) => {
@@ -297,7 +423,73 @@ const EditDetails = () => {
                 eventTag: event.target.value,
             }
         }))
-        console.log(tableAPI)
+    }
+
+    const handleSave = () => {
+        let statusTable, seatTable
+
+        const newUser = {
+            numberTable: tableAPI.table.numberTable + 3,
+            timeOrder: tableAPI.table.timeOrder,
+            eventTag: tableAPI.table.eventTag,
+            occasion: tableAPI.table.occasion,
+            otherOccasion: tableAPI.table.otherOccasion,
+        }
+
+        switch (tableAPI.table.status) {
+            case 1:
+                statusTable = 3
+                seatTable = tableAPI.table.quantity
+                break
+            default:
+                statusTable = 5
+                seatTable = 0
+        }
+
+        const resetTable = {
+            status: 5,
+            seat: 0,
+        }
+
+        const newTable = {
+            timeOrder: tableAPI.table.timeOrder,
+            status: statusTable,
+            seat: seatTable,
+        }
+
+        axios.put(`${baseURL_users}/${indexED + 1}`, newUser)
+            .then(res => {
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+
+        axios.put(`${baseURL_tables}/${newUser.numberTable % 18 + 1}`, newTable)
+            .then(res => {
+                // Reset Old Table
+                if ((newUser.numberTable % 18 + 1) !== (profiles[indexED].numberTable % 18 + 1)) {
+                    axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, resetTable)
+                        .then(res => {
+                            console.log(res.data)
+                            setReset(!reset)
+                        })
+                        .catch(error => {
+                            console.log('ERROR:', error)
+                        })
+                } else {
+                    setReset(!reset)
+                }
+
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+
+        setTimeout(() => {
+            setIndexED(-1)
+        }, 2000);
     }
 
     return (
@@ -320,7 +512,9 @@ const EditDetails = () => {
                             primaryColor='#000'
                         />
                     </span>
-                    <span>
+                    <span
+                        onClick={handleSave}
+                    >
                         Save Changes
                     </span>
                 </div>
@@ -331,6 +525,7 @@ const EditDetails = () => {
                     <span style={{ fontWeight: 600 }}>{profiles[indexED].lastname}</span>
                 </div>
             </div>
+
             <div className='reserv-id'>Reservation ID: #D83U4WE</div>
 
             <div className='phone-viewprofile'>
@@ -395,6 +590,8 @@ const EditDetails = () => {
                         className='select-element'
                         value={tableAPI.table.timeOrder}
                         onChange={handleChangeTimeOrder}
+                        disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                            profiles[indexED].status === 5 || profiles[indexED].status === 6}
                     >
                         <optgroup label="Weekday Lunch">
                             <option value="0">11:00PM</option>
@@ -427,7 +624,11 @@ const EditDetails = () => {
                     >Adults</span>
                 </div>
                 <div>
-                    <select className='select-element'>
+                    <select
+                        className='select-element'
+                        disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
+                            profiles[indexED].status === 6}
+                    >
                         <optgroup label="Adults">
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -467,7 +668,11 @@ const EditDetails = () => {
                     >Children</span>
                 </div>
                 <div>
-                    <select className='select-element'>
+                    <select
+                        className='select-element'
+                        disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
+                            profiles[indexED].status === 6}
+                    >
                         <optgroup label="Children">
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -500,6 +705,8 @@ const EditDetails = () => {
                         className='select-element'
                         value={tableAPI.table.numberTable}
                         onChange={handleChangeNumberTable}
+                        disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
+                            profiles[indexED].status === 6}
                     >
                         <optgroup label="Table">
                             <option value="105">105</option>
@@ -549,27 +756,77 @@ const EditDetails = () => {
                         }}
                     >Occasion</span>
                 </div>
-                {(profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                {((profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
                     profiles[indexED].status !== 5 && profiles[indexED].status !== 6) &&
                     <div className='container-occasion'>
                         <div className='container-element-occasion'>
-                            <div className='Occasion-element'>Casual</div>
-                            <div className='Occasion-element'>Birthday</div>
+                            <div
+                                className='Occasion-element'
+                                style={{
+                                    color: `${tableAPI.table.occasion.includes('Casual') ? '#fff' : '#7C69EF'}`,
+                                    backgroundColor: `${tableAPI.table.occasion.includes('Casual') ? '#7C69EF' : '#fff'}`
+                                }}
+                                onClick={() => handleAddOccasion('Casual')}
+                            >Casual</div>
+                            <div
+                                className='Occasion-element'
+                                style={{
+                                    color: `${tableAPI.table.occasion.includes('Birthday') ? '#fff' : '#7C69EF'}`,
+                                    backgroundColor: `${tableAPI.table.occasion.includes('Birthday') ? '#7C69EF' : '#fff'}`
+                                }}
+                                onClick={() => handleAddOccasion('Birthday')}
+                            >Birthday</div>
                         </div>
                         <div className='container-element-occasion'>
-                            <div className='Occasion-element'>Anniversary</div>
-                            <div className='Occasion-element'>Couple Date</div>
+                            <div
+                                className='Occasion-element'
+                                style={{
+                                    color: `${tableAPI.table.occasion.includes('Anniversary') ? '#fff' : '#7C69EF'}`,
+                                    backgroundColor: `${tableAPI.table.occasion.includes('Anniversary') ? '#7C69EF' : '#fff'}`
+                                }}
+                                onClick={() => handleAddOccasion('Anniversary')}
+                            >Anniversary</div>
+                            <div
+                                className='Occasion-element'
+                                style={{
+                                    color: `${tableAPI.table.occasion.includes('Couple Date') ? '#fff' : '#7C69EF'}`,
+                                    backgroundColor: `${tableAPI.table.occasion.includes('Couple Date') ? '#7C69EF' : '#fff'}`
+                                }}
+                                onClick={() => handleAddOccasion('Couple Date')}
+                            >Couple Date</div>
                         </div>
                         <div className='container-element-occasion'>
-                            <div className='Occasion-element'>Business</div>
-                            <div className='Occasion-element'>Others</div>
+                            <div
+                                className='Occasion-element'
+                                style={{
+                                    color: `${tableAPI.table.occasion.includes('Business') ? '#fff' : '#7C69EF'}`,
+                                    backgroundColor: `${tableAPI.table.occasion.includes('Business') ? '#7C69EF' : '#fff'}`
+                                }}
+                                onClick={() => handleAddOccasion('Business')}
+                            >Business</div>
+                            <div
+                                className='Occasion-element'
+                                style={{
+                                    color: `${tableAPI.table.occasion.includes('Others') ? '#fff' : '#7C69EF'}`,
+                                    backgroundColor: `${tableAPI.table.occasion.includes('Others') ? '#7C69EF' : '#fff'}`
+                                }}
+                                onClick={() => handleAddOccasion('Others')}
+                            >Others</div>
                         </div>
+                    </div>) ||
+                    <div>
+                        <textarea
+                            className='edit-input'
+                            style={{ marginTop: 0 }}
+                            value={tableAPI.table.occasion.join(', ')}
+                            disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                                profiles[indexED].status === 5 || profiles[indexED].status === 6}
+                        />
                     </div>
                 }
-
             </div>
 
-            {(profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+            {(tableAPI.table.occasion.includes('Others') && profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
                 profiles[indexED].status !== 5 && profiles[indexED].status !== 6) &&
                 <div
                     className='edit-select'
@@ -585,7 +842,11 @@ const EditDetails = () => {
                         }}
                     >Other Occasion</span>
                     <div>
-                        <textarea className='edit-input' />
+                        <textarea
+                            className='edit-input'
+                            value={''}
+                            onChange={handleChangeOtherOcca}
+                        />
                     </div>
                 </div>
             }
@@ -618,6 +879,8 @@ const EditDetails = () => {
                         className='edit-input'
                         value={tableAPI.table.eventTag}
                         onChange={handleChangeEventTag}
+                        disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                            profiles[indexED].status === 5 || profiles[indexED].status === 6}
                     />
                 </div>
             </div>
@@ -703,7 +966,7 @@ const EditDetails = () => {
                         <div className='notify-name'>Notify Via</div>
 
                         <label className="container-radio">Email
-                            <input type="radio" name="notify" />
+                            <input type="radio" name="notify" checked />
                             <span className="checkmark"></span>
                         </label>
                         <label className="container-radio">SMS ($0.04 per SMS)
@@ -723,7 +986,7 @@ const EditDetails = () => {
                         <div className='notify-name'>Type of Notification</div>
 
                         <label className="container-checkbox">Reservation Confirmation
-                            <input type="checkbox" />
+                            <input type="checkbox" checked />
                             <span className="checkmark"></span>
                         </label>
                         <label className="container-checkbox">Reservation Reminder

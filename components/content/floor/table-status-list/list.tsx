@@ -21,7 +21,7 @@ const infoList = [
         radius: ''
     },
     {
-        color: '#DCD0FF',
+        color: '#A260DD',
         define: 'Reserved',
         radius: ''
     },

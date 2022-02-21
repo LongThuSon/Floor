@@ -204,21 +204,21 @@ const CustomerList = () => {
     }
 
     const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const newStatus = {
+        const newUser = {
             status: 1,
         }
-        const newSeat = {
+        const newTable = {
             seat: quantity % 5 + 1,
             status: 3,
             timeOrder: timeOrder % 6,
         }
 
-        axios.put(`${baseURL_users}/${id}`, newStatus)
+        axios.put(`${baseURL_users}/${id}`, newUser)
             .then(res => console.log(res.data))
             .catch(error => {
                 console.log('ERROR:', error)
             })
-        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newSeat)
+        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
             .then(res => {                
                 setReset(!reset)
                 console.log(res.data)
@@ -229,21 +229,21 @@ const CustomerList = () => {
     }
 
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const newStatus = {
+        const newUser = {
             status: 3,
         }
-        const newSeat = {
+        const newTable = {
             seat: quantity % 5 + 1,
             status: 0,
             timeOrder: timeOrder % 6,
         }
 
-        axios.put(`${baseURL_users}/${id}`, newStatus)
+        axios.put(`${baseURL_users}/${id}`, newUser)
             .then(res => console.log(res.data))
             .catch(error => {
                 console.log('ERROR:', error)
             })
-        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newSeat)
+        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
             .then(res => {                
                 setReset(!reset)
                 console.log(res.data)

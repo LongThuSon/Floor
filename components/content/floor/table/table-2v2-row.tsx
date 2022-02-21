@@ -45,19 +45,19 @@ const Table2v2Row = (props: Table) => {
                 <Chair
                     top='29px'
                     left='10px'
-                    numberChair={2}
+                    numberChair={4}
                     indexTable={props.index}
                 />
                 <Chair
                     top='-9px'
                     left='38px'
-                    numberChair={3}
+                    numberChair={2}
                     indexTable={props.index}
                 />
                 <Chair
                     top='29px'
                     left='38px'
-                    numberChair={4}
+                    numberChair={3}
                     indexTable={props.index}
 
                 />

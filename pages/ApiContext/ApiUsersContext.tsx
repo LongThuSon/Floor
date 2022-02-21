@@ -15,7 +15,9 @@ interface IUser {
     eventTag: string,
     deposit: string,
     status: number,
-    timeOrder: number
+    timeOrder: number,
+    occasion: string[],
+    otherOccasion: string,
 }
 
 const ApiUsersContextDefault = [
@@ -30,7 +32,9 @@ const ApiUsersContextDefault = [
         eventTag: 'Birthday',
         deposit: '3 x 50$',
         status: 7,
-        timeOrder: 3
+        timeOrder: 3,
+        occasion: [],
+        otherOccasion: '',
     },
 ]
 

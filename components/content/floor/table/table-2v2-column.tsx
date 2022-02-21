@@ -51,13 +51,13 @@ const Table2v2Column = (props: Table) => {
                 <Chair
                     top='38px'
                     left='-9px'
-                    numberChair={2}
+                    numberChair={3}
                     indexTable={props.index}
                 />
                 <Chair
                     top='38px'
                     left='29px'
-                    numberChair={3}
+                    numberChair={2}
                     indexTable={props.index}
                 />
 

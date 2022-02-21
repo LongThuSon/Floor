@@ -323,7 +323,7 @@ const AllTables = () => {
                 percent={handleColorTable(tables[5]?.status % 7, 5, tables[5]?.percent).percent}
             />
             <Circle8
-                top="442px"
+                top="432px"
                 left="212px"
                 index={8}
                 move={move}
