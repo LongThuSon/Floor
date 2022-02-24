@@ -1,11 +1,19 @@
-import { memo } from 'react'
+import { useState, memo } from 'react'
 import { useApiTablesContext } from '../../../../pages/ApiContext'
 import Draggable from 'react-draggable'
 import Chair from "./chair"
 import { Table } from "./index"
+import { baseURL_tables } from '../../../../pages/ApiContext/baseURL'
+import axios from 'axios'
+import Save from '@atlaskit/icon/glyph/download'
 
 const Circle6 = (props: Table) => {
     const tables = useApiTablesContext()
+    const [position, setPosition] = useState({ top: 0, left: 0 })
+
+    const trackPos = (data: any) => {
+        setPosition({ top: props.top + data.y, left: props.left + data.x })
+    }
 
     const customerReservTime = (timeOrder: number) => {
         switch (timeOrder) {
@@ -24,15 +32,31 @@ const Circle6 = (props: Table) => {
         }
     }
 
+    const handleSavePosition = (id: number) => {
+        const newPosition = {
+                top: position.top,
+                left: position.left,
+        }
+
+        axios.put(`${baseURL_tables}/${id + 1}`, newPosition)
+            .then(res => {
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+    }
+    
     return (
         <Draggable
             disabled={props.move}
+            onDrag={(e, data) => trackPos(data)}
         >
             <div
                 className="container-circle-6"
                 style={{
-                    top: `${props.top}`,
-                    left: `${props.left}`,
+                    top: `${props.top}px`,
+                    left: `${props.left}px`,
                     cursor: `${props.move ? 'default' : 'move'}`
                 }}
             >
@@ -90,6 +114,19 @@ const Circle6 = (props: Table) => {
                             color: '#506690'
                         }}
                     >{customerReservTime(tables[props.index]?.timeOrder % 6)}</div>
+                }
+
+                {!props.move &&
+                    <div
+                        className='save-position'
+                        onClick={() => handleSavePosition(props.index)}
+                    >
+                        <Save
+                            label='save'
+                            size='small'
+                            primaryColor='#067E30'
+                        />
+                    </div>
                 }
             </div>
         </Draggable>

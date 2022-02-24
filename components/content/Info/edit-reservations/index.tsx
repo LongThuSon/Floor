@@ -111,7 +111,7 @@ const EditDetails = () => {
         );
     };
 
-    const handleUpdateStt = (status: number) => {
+    const updateStt = (status: number) => {
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
@@ -119,15 +119,6 @@ const EditDetails = () => {
             }
         }))
 
-        axios.put(`${baseURL_users}/${indexED + 1}`, { status: status })
-            .then(res => {
-                setReset(!reset)
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-    
         setDisabledStt(false)
     }
 
@@ -176,7 +167,7 @@ const EditDetails = () => {
                                 top: '190px',
                                 display: `${disabledStt ? '' : 'none'}`
                             }}
-                            onClick={() => handleUpdateStt(0)}
+                            onClick={() => updateStt(0)}
                         >
                             <span>
                                 <EditorDoneIcon
@@ -351,7 +342,7 @@ const EditDetails = () => {
                                 top: '190px',
                                 display: `${disabledStt ? '' : 'none'}`
                             }}
-                            onClick={() => handleUpdateStt(1)}
+                            onClick={() => updateStt(1)}
                         >
                             <span>
                                 <EditorDoneIcon
@@ -371,7 +362,7 @@ const EditDetails = () => {
         }
     }
 
-    const handleChangeNumberTable = (event: any) => {
+    const changeNumberTable = (event: any) => {
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
@@ -380,7 +371,7 @@ const EditDetails = () => {
         }))
     }
 
-    const handleChangeTimeOrder = (event: any) => {
+    const changeTimeOrder = (event: any) => {
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
@@ -389,7 +380,7 @@ const EditDetails = () => {
         }))
     }
 
-    const handleAddOccasion = (occasion: string) => {
+    const addOccasion = (occasion: string) => {
         if (!tableAPI.table.occasion.includes(occasion)) {
             setTableAPI(prev => ({
                 table: {
@@ -407,7 +398,7 @@ const EditDetails = () => {
         }
     }
 
-    const handleChangeOtherOcca = (event: any) => {
+    const changeOtherOcca = (event: any) => {
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
@@ -416,7 +407,7 @@ const EditDetails = () => {
         }))
     }
 
-    const handleChangeEventTag = (event: any) => {
+    const changeEventTag = (event: any) => {
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
@@ -426,7 +417,19 @@ const EditDetails = () => {
     }
 
     const handleSave = () => {
-        let statusTable, seatTable
+        let statusTable, seatTable, statusUser
+
+        switch (tableAPI.table.status) {
+            case 1:
+                statusTable = 3
+                seatTable = tableAPI.table.quantity
+                statusUser = 1
+                break
+            default:
+                statusTable = 5
+                seatTable = 0
+                statusUser = 0
+        }
 
         const newUser = {
             numberTable: tableAPI.table.numberTable + 3,
@@ -434,27 +437,20 @@ const EditDetails = () => {
             eventTag: tableAPI.table.eventTag,
             occasion: tableAPI.table.occasion,
             otherOccasion: tableAPI.table.otherOccasion,
-        }
-
-        switch (tableAPI.table.status) {
-            case 1:
-                statusTable = 3
-                seatTable = tableAPI.table.quantity
-                break
-            default:
-                statusTable = 5
-                seatTable = 0
+            status: statusUser,
         }
 
         const resetTable = {
             status: 5,
             seat: 0,
+            percent: 0,
         }
 
         const newTable = {
             timeOrder: tableAPI.table.timeOrder,
             status: statusTable,
             seat: seatTable,
+            percent: 0,
         }
 
         axios.put(`${baseURL_users}/${indexED + 1}`, newUser)
@@ -482,6 +478,35 @@ const EditDetails = () => {
                 }
 
                 console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+
+        setTimeout(() => {
+            setIndexED(-1)
+        }, 2000);
+    }
+
+    const handleCancelled = () => {
+        const resetTable = {
+            status: 5,
+            seat: 0,
+            percent: 0,
+        }
+
+        axios.put(`${baseURL_users}/${indexED + 1}`, { status: 6 })
+            .then(res => {
+                setReset(!reset)
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+        axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, resetTable)
+            .then(res => {
+                console.log(res.data)
+                setReset(!reset)
             })
             .catch(error => {
                 console.log('ERROR:', error)
@@ -542,7 +567,7 @@ const EditDetails = () => {
                 <div>View Profile</div>
             </div>
 
-            {customerStatusEdit(profiles[indexED].status % 100)}
+            {customerStatusEdit(tableAPI.table.status)}
 
             <div className='edit-select'>
                 <div>
@@ -589,7 +614,7 @@ const EditDetails = () => {
                     <select
                         className='select-element'
                         value={tableAPI.table.timeOrder}
-                        onChange={handleChangeTimeOrder}
+                        onChange={changeTimeOrder}
                         disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
                             profiles[indexED].status === 5 || profiles[indexED].status === 6}
                     >
@@ -704,7 +729,7 @@ const EditDetails = () => {
                     <select
                         className='select-element'
                         value={tableAPI.table.numberTable}
-                        onChange={handleChangeNumberTable}
+                        onChange={changeNumberTable}
                         disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
                             profiles[indexED].status === 6}
                     >
@@ -766,7 +791,7 @@ const EditDetails = () => {
                                     color: `${tableAPI.table.occasion.includes('Casual') ? '#fff' : '#7C69EF'}`,
                                     backgroundColor: `${tableAPI.table.occasion.includes('Casual') ? '#7C69EF' : '#fff'}`
                                 }}
-                                onClick={() => handleAddOccasion('Casual')}
+                                onClick={() => addOccasion('Casual')}
                             >Casual</div>
                             <div
                                 className='Occasion-element'
@@ -774,7 +799,7 @@ const EditDetails = () => {
                                     color: `${tableAPI.table.occasion.includes('Birthday') ? '#fff' : '#7C69EF'}`,
                                     backgroundColor: `${tableAPI.table.occasion.includes('Birthday') ? '#7C69EF' : '#fff'}`
                                 }}
-                                onClick={() => handleAddOccasion('Birthday')}
+                                onClick={() => addOccasion('Birthday')}
                             >Birthday</div>
                         </div>
                         <div className='container-element-occasion'>
@@ -784,7 +809,7 @@ const EditDetails = () => {
                                     color: `${tableAPI.table.occasion.includes('Anniversary') ? '#fff' : '#7C69EF'}`,
                                     backgroundColor: `${tableAPI.table.occasion.includes('Anniversary') ? '#7C69EF' : '#fff'}`
                                 }}
-                                onClick={() => handleAddOccasion('Anniversary')}
+                                onClick={() => addOccasion('Anniversary')}
                             >Anniversary</div>
                             <div
                                 className='Occasion-element'
@@ -792,7 +817,7 @@ const EditDetails = () => {
                                     color: `${tableAPI.table.occasion.includes('Couple Date') ? '#fff' : '#7C69EF'}`,
                                     backgroundColor: `${tableAPI.table.occasion.includes('Couple Date') ? '#7C69EF' : '#fff'}`
                                 }}
-                                onClick={() => handleAddOccasion('Couple Date')}
+                                onClick={() => addOccasion('Couple Date')}
                             >Couple Date</div>
                         </div>
                         <div className='container-element-occasion'>
@@ -802,7 +827,7 @@ const EditDetails = () => {
                                     color: `${tableAPI.table.occasion.includes('Business') ? '#fff' : '#7C69EF'}`,
                                     backgroundColor: `${tableAPI.table.occasion.includes('Business') ? '#7C69EF' : '#fff'}`
                                 }}
-                                onClick={() => handleAddOccasion('Business')}
+                                onClick={() => addOccasion('Business')}
                             >Business</div>
                             <div
                                 className='Occasion-element'
@@ -810,7 +835,7 @@ const EditDetails = () => {
                                     color: `${tableAPI.table.occasion.includes('Others') ? '#fff' : '#7C69EF'}`,
                                     backgroundColor: `${tableAPI.table.occasion.includes('Others') ? '#7C69EF' : '#fff'}`
                                 }}
-                                onClick={() => handleAddOccasion('Others')}
+                                onClick={() => addOccasion('Others')}
                             >Others</div>
                         </div>
                     </div>) ||
@@ -845,7 +870,7 @@ const EditDetails = () => {
                         <textarea
                             className='edit-input'
                             value={''}
-                            onChange={handleChangeOtherOcca}
+                            onChange={changeOtherOcca}
                         />
                     </div>
                 </div>
@@ -878,7 +903,7 @@ const EditDetails = () => {
                     <textarea
                         className='edit-input'
                         value={tableAPI.table.eventTag}
-                        onChange={handleChangeEventTag}
+                        onChange={changeEventTag}
                         disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
                             profiles[indexED].status === 5 || profiles[indexED].status === 6}
                     />
@@ -999,7 +1024,10 @@ const EditDetails = () => {
 
             {profiles[indexED].status !== 6 &&
                 <div>
-                    <button className='cancel-reserv-btn'>Cancel Reservation</button>
+                    <button
+                        className='cancel-reserv-btn'
+                        onClick={handleCancelled}
+                    >Cancel Reservation</button>
                 </div>
             }
         </div>

@@ -11,6 +11,8 @@ interface ITable {
     status: number,
     percent: number,
     timeOrder: number,
+    top: number,
+    left: number,
 }
 
 const ApiTablesContextDefault = [
@@ -21,7 +23,8 @@ const ApiTablesContextDefault = [
         status: 0,
         percent: 0,
         timeOrder: 0,
-
+        top: 50,
+        left: 380,
     },
 ]
 

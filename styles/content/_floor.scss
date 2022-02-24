@@ -35,6 +35,8 @@
         height: inherit;
         position: absolute;
         z-index: 5;
+        
+        // Chair
         .chair {
             width: 18px;
             height: 18px;
@@ -71,6 +73,21 @@
                 left: -4px;
                 border-radius: 4px;
             }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 38px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
+            }
         }
     
         .container-table-2v2-row {
@@ -100,6 +117,21 @@
                 left: -4px;
                 border-radius: 4px;
             }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 76px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
+            }
         }
     
         .container-table-6v6 {
@@ -128,6 +160,21 @@
                 top: 56px;
                 left: -4px;
                 border-radius: 4px;
+            }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 178px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
             }
         }
     
@@ -159,6 +206,21 @@
                 left: -4px;
                 border-radius: 4px;
             }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 38px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
+            }
         }
     
         .container-table-3v3 {
@@ -188,6 +250,21 @@
                 left: -4px;
                 border-radius: 4px;
             }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 38px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
+            }
         }
     
         .container-table-7v7 {
@@ -216,6 +293,21 @@
                 top: 216px;
                 left: -4px;
                 border-radius: 4px;
+            }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 38px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
             }
         }
     
@@ -247,6 +339,21 @@
                 left: -4px;
                 border-radius: 4px;
             }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 48px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
+            }
         }
     
         .container-circle-8 {
@@ -276,6 +383,21 @@
                 top: 75px;
                 left: -4px;
                 border-radius: 4px;
+            }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 55px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
             }
         }
     
@@ -307,9 +429,26 @@
                 left: -4px;
                 border-radius: 4px;
             }
+
+            // Save positons
+            .save-position {
+                display: flex;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -15px;
+                left: 78px;
+                justify-content: center;
+                align-items: center;
+                line-height: 46px;
+                border-radius: 4px;
+                background-color: rgba(225, 230, 249, 0.6);
+            }
         }
     }
 
+
+    // Transform configs
     .transform-component-module_wrapper__1_Fgj {
         width: 645px;
         height: 546px;

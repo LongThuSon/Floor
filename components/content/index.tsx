@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MoveContext } from "./MoveContext"
+import { useResetApiContext } from '../../pages/ApiContext/resetApiContext'
 import { EditDetailsContext } from "./EditDetailsContext"
 import Info from "./Info"
 import Floor from "./floor"
@@ -24,6 +25,7 @@ const Content = () => {
     const [showZoom, setShowZoom] = useState(false)
     const [move, setMove] = useState(true)
     const [indexED, setIndexED] = useState(-1)
+    const { reset, setReset } = useResetApiContext()
 
     return (
         <div id="content-main">
