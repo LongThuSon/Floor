@@ -493,6 +493,7 @@ const EditDetails = () => {
             status: 5,
             seat: 0,
             percent: 0,
+            idCustomer: 0,
         }
 
         axios.put(`${baseURL_users}/${indexED + 1}`, { status: 6 })

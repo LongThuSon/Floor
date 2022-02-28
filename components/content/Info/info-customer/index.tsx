@@ -21,15 +21,41 @@ import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
 import Hold from '@atlaskit/icon/glyph/notification-all'
 
 const CustomerList = () => {
-    const { showDetails } = useInfoContext()
+    const { showDetails, searchField } = useInfoContext()
     const { setIndexED } = useEditDetailsContext()
     const profiles = useApiUsersContext()
     const { reset, setReset } = useResetApiContext()
-    const [listShow, setListShow] = useState<any>([])
+    const [listShow, setListShow] = useState<number[]>([])
 
     useEffect(() => {
         setListShow([])
     }, [])
+
+    const profileFilter = (profile: any) => {
+        if (searchField.request.status === -1) {
+            return true
+        } else if (searchField.request.status === -2) {
+            return (profile.status === 5 || profile.status === 6)
+        } else {
+            return profile.status === searchField.request.status
+        }
+    }
+
+    const settingProfiles = profiles.filter(profileFilter)
+
+    const searchProfiles = settingProfiles.filter(
+        person => {
+            return (
+                person
+                    .firstname
+                    .toLowerCase()
+                    .includes(searchField.request.name.toLowerCase()) ||
+                person
+                    .lastname
+                    .toLowerCase()
+                    .includes(searchField.request.name.toLowerCase())
+            )
+        })
 
     const customerTime = (timeOrder: number) => {
         switch (timeOrder) {
@@ -50,7 +76,27 @@ const CustomerList = () => {
         }
     }
 
-    const customerStatus = (status: number) => {
+    const customerStatus = (id: number, timeOrder: number, status: number) => {
+        if ((status === 1 && timeOrder === 0 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:15') ||
+            (status === 1 && timeOrder === 1 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:45') ||
+            (status === 1 && timeOrder === 2 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '12:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '12:15') ||
+            (status === 1 && timeOrder === 3 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '12:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '12:45') ||
+            (status === 1 && timeOrder === 4 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '13:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '13:15') ||
+            (status === 1 && timeOrder === 5 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '13:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '13:45')) {
+            const newUser = {
+                status: 2,
+            }
+
+            axios.put(`${baseURL_users}/${id}`, newUser)
+                .then(res => {
+                    setReset(!reset)
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        }
+
         switch (status) {
             case 1:
                 return (
@@ -197,9 +243,9 @@ const CustomerList = () => {
 
     const handleshow = (index: number) => {
         if (listShow.indexOf(index) === -1) {
-            setListShow((oldArray: any) => [...oldArray, index])
+            setListShow((oldArray: number[]) => [...oldArray, index])
         } else {
-            setListShow((currentArray: any) => currentArray.filter((remainElement: any) => remainElement !== index))
+            setListShow((currentArray: number[]) => currentArray.filter((remainElement: number) => remainElement !== index))
         }
     }
 
@@ -219,7 +265,7 @@ const CustomerList = () => {
                 console.log('ERROR:', error)
             })
         axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
-            .then(res => {                
+            .then(res => {
                 setReset(!reset)
                 console.log(res.data)
             })
@@ -236,6 +282,7 @@ const CustomerList = () => {
             seat: quantity % 5 + 1,
             status: 0,
             timeOrder: timeOrder % 6,
+            idCustomer: Number(id),
         }
 
         axios.put(`${baseURL_users}/${id}`, newUser)
@@ -244,13 +291,45 @@ const CustomerList = () => {
                 console.log('ERROR:', error)
             })
         axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
-            .then(res => {                
+            .then(res => {
                 setReset(!reset)
                 console.log(res.data)
             })
             .catch(error => {
                 console.log('ERROR:', error)
             })
+    }
+
+    const holdCustomer = (id: number) => {
+        const newUser = {
+            status: 1,
+        }
+
+        const updateUser = {
+            status: 5,
+        }
+
+        axios.put(`${baseURL_users}/${id}`, newUser)
+            .then(res => {
+                // Reset Old Table
+                setReset(!reset)
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+
+        setTimeout(() => {
+            axios.put(`${baseURL_users}/${id}`, updateUser)
+                .then(res => {
+                    console.log(res.data)
+                    setReset(!reset)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        }, 60000)
+
     }
 
     return (
@@ -261,7 +340,7 @@ const CustomerList = () => {
                     padding: 0
                 }}
             >
-                {profiles.map((profile, index) => (
+                {searchProfiles.map((profile, index) => (
                     <li
                         key={profile.id}
                         style={{ padding: 0 }}
@@ -300,7 +379,7 @@ const CustomerList = () => {
                                     </span>
                                 </div>
 
-                                {customerStatus(profile.status % 100)}
+                                {customerStatus(profile.id, profile.timeOrder % 6, profile.status % 100)}
 
                             </div>
 
@@ -395,7 +474,7 @@ const CustomerList = () => {
                                     </span>
                                     <span>Seat</span>
                                 </div>
-                                <div 
+                                <div
                                     className='item-action'
                                     onClick={() => setIndexED(index)}
                                 >
@@ -411,6 +490,7 @@ const CustomerList = () => {
                                 <div
                                     className='item-action'
                                     style={{ display: `${profile.status % 100 === 2 ? '' : 'none'}` }}
+                                    onClick={() => holdCustomer(profile.id)}
                                 >
                                     <span>
                                         <Hold

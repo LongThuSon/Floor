@@ -13,6 +13,7 @@ interface ITable {
     timeOrder: number,
     top: number,
     left: number,
+    idCustomer: number,
 }
 
 const ApiTablesContextDefault = [
@@ -25,6 +26,7 @@ const ApiTablesContextDefault = [
         timeOrder: 0,
         top: 50,
         left: 380,
+        idCustomer: 5,
     },
 ]
 

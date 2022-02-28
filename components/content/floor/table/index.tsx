@@ -1,5 +1,5 @@
 import { useMoveContext } from '../../MoveContext'
-import { baseURL_tables } from '../../../../pages/ApiContext/baseURL'
+import { baseURL_tables, baseURL_users } from '../../../../pages/ApiContext/baseURL'
 import { useApiTablesContext } from '../../../../pages/ApiContext'
 import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
 import Circle12 from "./circle-14"
@@ -94,6 +94,15 @@ const AllTables = () => {
                             })
                         break
                     default:
+                        axios.put(`${baseURL_users}/${tables[id].idCustomer}`, { status: 4 })
+                            .then(res => {
+                                // setReset(!reset)
+                                console.log(res.data)
+                            })
+                            .catch(error => {
+                                console.log('ERROR:', error)
+                            })
+
                         axios.put(`${baseURL_tables}/${id + 1}`, { status: 6, percent: 0 })
                             .then(res => {
                                 setReset(!reset)
@@ -103,8 +112,9 @@ const AllTables = () => {
                                 console.log('ERROR:', error)
                             })
 
+
                 }
-            }, 60000);
+            }, 600000);
 
         }
 
@@ -168,7 +178,7 @@ const AllTables = () => {
 
     return (
         <div id="container-tables">
-            {console.log(new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }))}
+            {/* {console.log(new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }), new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '23:44' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '23:28')} */}
             <Table1v1
                 top={tables[11]?.top ?? 50}
                 left={tables[11]?.left ?? 380}
