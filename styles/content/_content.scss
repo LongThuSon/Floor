@@ -395,5 +395,79 @@
             border-radius: 4px;
             margin: 10px 20px 30px;
         }
+    
+        #modal-cancel {
+            position: fixed;
+            top: 168px;
+            left: 0;
+            right: 0;
+            // background-color: rgba(0, 0, 0, 0.4);
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            z-index: 5;
+
+            #modal-cancel-container {
+                background-color: #fff;
+                width: 480px;
+                height: 238px;
+                max-width: calc(100% - 50px);
+                min-height: 200px;
+                position: relative;
+                border: solid 1px $primary_bg;
+                animation: modalFadeIn ease 0.5s;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                flex-direction: column;
+
+                @keyframes modalFadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-150px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                #title-modal-cancel {
+                    font-size: 27px;
+                    font-weight: 700;
+                    color: $primary_text;   
+                }
+
+                #for-modal-cancel {
+                    font-size: 18px;
+                    font-weight: 400;
+                    color: $primary_text;   
+                }
+
+                #button-container {
+                    display: flex;
+                    justify-content: space-around;
+                    
+                    #not-now-btn {
+                        width: 215px;
+                        height: 38px;
+                        color: $primary_text;
+                        background-color: #D9E2EF;
+                        font-weight: 600;
+                        border-style: none;
+                        margin-right: 10px;
+                    }
+
+                    #cancel-btn {
+                        width: 215px;
+                        height: 38px;
+                        color: #fff;
+                        background-color: #DF4759;
+                        font-weight: 600;
+                        border-style: none;
+                    }
+                }
+            }
+        }
     }
 }

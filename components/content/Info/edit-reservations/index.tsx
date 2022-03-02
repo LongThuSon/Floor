@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect } from 'react'
+import { useState, forwardRef } from 'react'
 import axios from 'axios'
 
 import DatePicker from "react-datepicker"
@@ -26,6 +26,7 @@ import Deposit from '@atlaskit/icon/glyph/editor/info'
 import ShoppingCard from '@atlaskit/icon/glyph/marketplace'
 import NoShow from '@atlaskit/icon/glyph/media-services/preselected'
 import Cancelled from '@atlaskit/icon/glyph/cross-circle'
+import ModalCanCel from './modalCancel'
 
 const EditDetails = () => {
     const profiles = useApiUsersContext()
@@ -34,6 +35,7 @@ const EditDetails = () => {
 
     const [startDate, setStartDate]: any = useState(new Date())
     const [disabledStt, setDisabledStt] = useState(false)
+    const [showModal, setShowModal] = useState(false)
     const [tableAPI, setTableAPI] = useState({
         table: {
             numberTable: 105 + profiles[indexED].numberTable % 18,
@@ -552,7 +554,7 @@ const EditDetails = () => {
                 </div>
             </div>
 
-            <div className='reserv-id'>Reservation ID: #D83U4WE</div>
+            <div className='reserv-id'>Reservation ID: #{profiles[indexED].id}</div>
 
             <div className='phone-viewprofile'>
                 <div>
@@ -1027,9 +1029,16 @@ const EditDetails = () => {
                 <div>
                     <button
                         className='cancel-reserv-btn'
-                        onClick={handleCancelled}
+                        onClick={() => setShowModal(true)}
                     >Cancel Reservation</button>
                 </div>
+            }
+
+            {showModal &&
+                <ModalCanCel
+                    setShowModal={() => setShowModal(false)}
+                    handleCancelled={() => handleCancelled()}
+                />
             }
         </div>
     )

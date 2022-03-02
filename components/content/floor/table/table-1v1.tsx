@@ -1,4 +1,5 @@
 import { useState, memo } from 'react'
+import { useApiUsersContext } from '../../../../pages/ApiContext'
 import { useApiTablesContext } from '../../../../pages/ApiContext'
 import Chair from "./chair"
 import { Table } from "./index"
@@ -9,16 +10,10 @@ import Save from '@atlaskit/icon/glyph/download'
 
 const Table1v1 = (props: Table) => {
     const tables = useApiTablesContext()
+    const profiles = useApiUsersContext()
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
     const trackPos = (data: any) => {
-        // setPosition(positions.map((positon, index) => {
-        //     if (index !== props.index) {
-        //         return positon
-        //     } else {
-        //         return { top: props.top + data.y, left: props.left + data.x }
-        //     }
-        // }))
         setPosition({ top: props.top + data.y, left: props.left + data.x })
     }
 
@@ -83,7 +78,7 @@ const Table1v1 = (props: Table) => {
                 <div
                     className="table-1v1"
                     style={{
-                        backgroundImage: `linear-gradient(to top, ${props.primary1} ${props.percent}%, ${props.primary2} ${props.percent}%, ${props.primary2})`,
+                        backgroundImage: `linear-gradient(to top, ${props.primary1} ${(tables[props.index]?.status === 0 || tables[props.index]?.status === 1 || tables[props.index]?.status === 2) ? tables[props.index]?.percent : 100}%, ${tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'} ${tables[props.index]?.percent}%, ${tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'})`,
                     }}
                 >
                     {tables[props.index]?.numberTable}
@@ -93,8 +88,8 @@ const Table1v1 = (props: Table) => {
                     <div
                         className='reserv-time-1v1'
                         style={{
-                            backgroundColor: '#E9EDF3',
-                            color: '#506690'
+                            backgroundColor: `${(profiles[tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#E9EDF3' : '#FFEFE5'}`,
+                            color: `${(profiles[tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#506690' : '#FF5C00'}`
                         }}
                     >{customerReservTime(tables[props.index]?.timeOrder % 6)}</div>
                 }

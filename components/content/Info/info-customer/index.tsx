@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 
-import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { useApiUsersContext, useApiTablesContext } from '../../../../pages/ApiContext'
 import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
 import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
 import { useInfoContext } from '../../Info/InfoContext'
@@ -24,8 +24,10 @@ const CustomerList = () => {
     const { showDetails, searchField } = useInfoContext()
     const { setIndexED } = useEditDetailsContext()
     const profiles = useApiUsersContext()
+    const tables = useApiTablesContext()
     const { reset, setReset } = useResetApiContext()
     const [listShow, setListShow] = useState<number[]>([])
+    const [timeListCopy, setTimeListCopy] = useState<number[]>([])
 
     useEffect(() => {
         setListShow([])
@@ -95,6 +97,17 @@ const CustomerList = () => {
                 .catch(error => {
                     console.log('ERROR:', error)
                 })
+
+            setTimeout(() => {
+                axios.put(`${baseURL_users}/${id}`, { status: 5 })
+                    .then(res => {
+                        console.log(res.data)
+                        setReset(!reset)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            }, 600000)
         }
 
         switch (status) {
@@ -250,74 +263,81 @@ const CustomerList = () => {
     }
 
     const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const newUser = {
-            status: 1,
-        }
-        const newTable = {
-            seat: quantity % 5 + 1,
-            status: 3,
-            timeOrder: timeOrder % 6,
-        }
+        setTimeListCopy(tables[numberTable % 18].timeList)
 
-        axios.put(`${baseURL_users}/${id}`, newUser)
-            .then(res => console.log(res.data))
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
-            .then(res => {
-                setReset(!reset)
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
+        if (timeListCopy.indexOf(timeOrder % 6) === -1 || (quantity % 5 + 1) <= tables[numberTable % 18]?.quantity) {
+            setTimeListCopy((oldArray: number[]) => [...oldArray, timeOrder % 6])
+
+            console.log(timeListCopy.indexOf(timeOrder % 6))
+            
+            const newUser = {
+                status: 1,
+            }
+            const newTable = {
+                seat: quantity % 5 + 1,
+                status: 3,
+                timeOrder: timeOrder % 6,
+                idCustomer: Number(id),
+                timeList: timeListCopy
+            }
+
+            axios.put(`${baseURL_users}/${id}`, newUser)
+                .then(res => console.log(res.data))
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+            axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
+                .then(res => {
+                    setReset(!reset)
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+
+        } else {
+            alert('Status table: Clash')
+        }
     }
 
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const newUser = {
-            status: 3,
-        }
-        const newTable = {
-            seat: quantity % 5 + 1,
-            status: 0,
-            timeOrder: timeOrder % 6,
-            idCustomer: Number(id),
-        }
+        setTimeListCopy(tables[numberTable % 18].timeList)
 
-        axios.put(`${baseURL_users}/${id}`, newUser)
-            .then(res => console.log(res.data))
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
-            .then(res => {
-                setReset(!reset)
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
+        if (timeListCopy.indexOf(timeOrder % 6) !== -1 || (quantity % 5 + 1) <= tables[numberTable % 18]?.quantity) {
+            setTimeListCopy((oldArray: number[]) => [...oldArray, timeOrder])
+
+            const newUser = {
+                status: 3,
+            }
+            const newTable = {
+                seat: quantity % 5 + 1,
+                status: Math.floor(Math.random() * 3),
+                timeOrder: timeOrder % 6,
+                idCustomer: Number(id),
+            }
+
+            axios.put(`${baseURL_users}/${id}`, newUser)
+                .then(res => console.log(res.data))
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+            axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
+                .then(res => {
+                    setReset(!reset)
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        } else {
+            alert('Status table: Clash')
+        }
     }
 
     const holdCustomer = (id: number) => {
-        const newUser = {
-            status: 1,
-        }
-
         const updateUser = {
-            status: 5,
+            status: 2,
         }
-
-        axios.put(`${baseURL_users}/${id}`, newUser)
-            .then(res => {
-                // Reset Old Table
-                setReset(!reset)
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
 
         setTimeout(() => {
             axios.put(`${baseURL_users}/${id}`, updateUser)
@@ -328,7 +348,7 @@ const CustomerList = () => {
                 .catch(error => {
                     console.log('ERROR:', error)
                 })
-        }, 60000)
+        }, 660000)
 
     }
 

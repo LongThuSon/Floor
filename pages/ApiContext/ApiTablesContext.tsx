@@ -14,6 +14,8 @@ interface ITable {
     top: number,
     left: number,
     idCustomer: number,
+    quantity: number,
+    timeList: number[],
 }
 
 const ApiTablesContextDefault = [
@@ -27,6 +29,8 @@ const ApiTablesContextDefault = [
         top: 50,
         left: 380,
         idCustomer: 5,
+        quantity: 2,
+        timeList: [0],
     },
 ]
 

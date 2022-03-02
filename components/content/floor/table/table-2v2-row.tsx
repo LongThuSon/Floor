@@ -1,6 +1,6 @@
 import { useState, memo } from 'react'
 import Draggable from "react-draggable"
-import { useApiTablesContext } from '../../../../pages/ApiContext'
+import { useApiTablesContext, useApiUsersContext } from '../../../../pages/ApiContext'
 import Chair from "./chair"
 import { Table } from "./index"
 import { baseURL_tables } from '../../../../pages/ApiContext/baseURL'
@@ -9,6 +9,7 @@ import Save from '@atlaskit/icon/glyph/download'
 
 const Table2v2Row = (props: Table) => {
     const tables = useApiTablesContext()
+    const profiles = useApiUsersContext()
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
     const trackPos = (data: any) => {
@@ -90,7 +91,7 @@ const Table2v2Row = (props: Table) => {
                 <div
                     className="table-2v2-row"
                     style={{
-                        backgroundImage: `linear-gradient(to top, ${props.primary1} ${props.percent}%, ${props.primary2} ${props.percent}%, ${props.primary2})`,
+                        backgroundImage: `linear-gradient(to top, ${props.primary1} ${(tables[props.index]?.status === 0 || tables[props.index]?.status === 1 || tables[props.index]?.status === 2) ? tables[props.index]?.percent : 100}%, ${tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'} ${tables[props.index]?.percent}%, ${tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'})`,
                     }}
                 >
                     {tables[props.index]?.numberTable}
@@ -100,8 +101,8 @@ const Table2v2Row = (props: Table) => {
                     <div
                         className='reserv-time-2v2-row'
                         style={{
-                            backgroundColor: '#E9EDF3',
-                            color: '#506690'
+                            backgroundColor: `${(profiles[tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#E9EDF3' : '#FFEFE5'}`,
+                            color: `${(profiles[tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#506690' : '#FF5C00'}`
                         }}
                     >{customerReservTime(tables[props.index]?.timeOrder % 6)}</div>
                 }
