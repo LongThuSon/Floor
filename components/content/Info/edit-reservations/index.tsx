@@ -57,7 +57,7 @@ const EditDetails = () => {
         }
     })
 
-    const datePickerEdit = () => {
+    function datePickerEdit() {
         const ExampleCustomInput = forwardRef(({ value, onClick }: {
             value?: any;
             onClick?: any;

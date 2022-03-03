@@ -10,7 +10,7 @@ import ChevronRightLargeIcon from '@atlaskit/icon/glyph/chevron-right-large'
 const HeaderTime = () => {
     const [startDate, setStartDate]: any = useState(new Date());
 
-    const datePicker = () => {
+    function datePicker() {
         const ExampleCustomInput = forwardRef(({ value, onClick }: {
             value?: any;
             onClick?: any;

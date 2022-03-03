@@ -8,8 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@atlaskit/avatar": "^20.5.2",
-    "@atlaskit/icon": "^21.9.3",
+    "@atlaskit/icon": "^21.10.3",
     "@atlaskit/textfield": "^5.1.4",
     "@reduxjs/toolkit": "^1.7.1",
     "axios": "^0.24.0",
