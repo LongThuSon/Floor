@@ -1,7 +1,7 @@
 import { useMoveContext } from '../../MoveContext'
-import { baseURL_tables, baseURL_users } from '../../../../pages/ApiContext/baseURL'
-import { useApiTablesContext } from '../../../../pages/ApiContext'
-import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
+import { baseURL_tables, baseURL_users } from '../../../ApiContext/baseURL'
+import { useApiTablesContext } from '../../../ApiContext'
+import { useResetApiContext } from '../../../ApiContext/resetApiContext'
 import Circle12 from "./circle-14"
 import Circle6 from "./circle-6"
 import Circle8 from "./circle-8"

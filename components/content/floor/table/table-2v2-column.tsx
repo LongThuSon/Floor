@@ -1,6 +1,6 @@
 import { useState, memo } from 'react'
-import { useApiTablesContext, useApiUsersContext } from '../../../../pages/ApiContext'
-import { baseURL_tables } from '../../../../pages/ApiContext/baseURL'
+import { useApiTablesContext, useApiUsersContext } from '../../../ApiContext'
+import { baseURL_tables } from '../../../ApiContext/baseURL'
 import Chair from "./chair"
 import { Table } from "./index"
 import Draggable from "react-draggable"

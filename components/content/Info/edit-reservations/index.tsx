@@ -5,9 +5,9 @@ import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css'
 
 import { useEditDetailsContext } from '../../EditDetailsContext'
-import { useApiUsersContext, useApiTablesContext } from '../../../../pages/ApiContext'
-import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
-import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
+import { useApiUsersContext, useApiTablesContext } from '../../../ApiContext'
+import { baseURL_users, baseURL_tables } from '../../../ApiContext/baseURL'
+import { useResetApiContext } from '../../../ApiContext/resetApiContext'
 
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import Save from '@atlaskit/icon/glyph/download'
@@ -57,70 +57,70 @@ const EditDetails = () => {
         }
     })
 
-    function datePickerEdit() {
-        const ExampleCustomInput = forwardRef(({ value, onClick }: {
-            value?: any;
-            onClick?: any;
-        }, ref) => (
-            <div
-                className='custom-time-edit'
-                style={{
-                    backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
-                        profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`
-                }}
-            >
-                <span
-                    onClick={() => {
-                        if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
-                            profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-                            let today = new Date(startDate)
-                            let prevDay = today.setDate(today.getDate() - 1)
-                            setStartDate(prevDay)
-                        }
-                    }}
+    // function datePickerEdit() {
+    //     const ExampleCustomInput = forwardRef(({ value, onClick }: {
+    //         value?: any;
+    //         onClick?: any;
+    //     }, ref) => (
+    //         <div
+    //             className='custom-time-edit'
+    //             style={{
+    //                 backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+    //                     profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`
+    //             }}
+    //         >
+    //             <span
+    //                 onClick={() => {
+    //                     if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+    //                         profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+    //                         let today = new Date(startDate)
+    //                         let prevDay = today.setDate(today.getDate() - 1)
+    //                         setStartDate(prevDay)
+    //                     }
+    //                 }}
 
-                >
-                    <ChevronLeftLargeIcon
-                        label='left'
-                        size="small"
-                    />
-                </span>
+    //             >
+    //                 <ChevronLeftLargeIcon
+    //                     label='left'
+    //                     size="small"
+    //                 />
+    //             </span>
 
-                <span
-                    onClick={onClick}
-                    ref={ref as any}
-                >
-                    {value}
-                </span>
+    //             <span
+    //                 onClick={onClick}
+    //                 ref={ref as any}
+    //             >
+    //                 {value}
+    //             </span>
 
-                <span
-                    onClick={() => {
-                        if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
-                            profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-                            let today = new Date(startDate)
-                            let prevDay = today.setDate(today.getDate() + 1)
-                            setStartDate(prevDay)
-                        }
-                    }}
-                >
-                    <ChevronRightLargeIcon
-                        label='right'
-                        size="small"
-                    />
-                </span>
-            </div>
-        ));
-        return (
-            <DatePicker
-                selected={startDate}
-                onChange={(date: any) => setStartDate(date)}
-                customInput={<ExampleCustomInput />}
-                dateFormat='dd MMM yyyy'
-                disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
-                    profiles[indexED].status === 5 || profiles[indexED].status === 6}
-            />
-        );
-    };
+    //             <span
+    //                 onClick={() => {
+    //                     if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+    //                         profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+    //                         let today = new Date(startDate)
+    //                         let prevDay = today.setDate(today.getDate() + 1)
+    //                         setStartDate(prevDay)
+    //                     }
+    //                 }}
+    //             >
+    //                 <ChevronRightLargeIcon
+    //                     label='right'
+    //                     size="small"
+    //                 />
+    //             </span>
+    //         </div>
+    //     ));
+    //     return (
+    //         <DatePicker
+    //             selected={startDate}
+    //             onChange={(date: any) => setStartDate(date)}
+    //             customInput={<ExampleCustomInput />}
+    //             dateFormat='dd MMM yyyy'
+    //             disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+    //                 profiles[indexED].status === 5 || profiles[indexED].status === 6}
+    //         />
+    //     );
+    // };
 
     const updateStt = (status: number) => {
         setTableAPI(prev => ({
@@ -701,7 +701,7 @@ const EditDetails = () => {
                     >Date</span>
                 </div>
                 <div className='datePickerEdit'>
-                    {datePickerEdit()}
+                    {/* {datePickerEdit()} */}
                 </div>
             </div>
 

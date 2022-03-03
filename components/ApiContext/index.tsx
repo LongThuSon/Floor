@@ -2,7 +2,7 @@ import { useContext, useState } from "react"
 import ApiUsersContextProvider, { ApiUsersContext } from './ApiUsersContext'
 import ApiTablesContextProvider, { ApiTablesContext } from './ApiTablesContext'
 import { ResetApiContext } from './resetApiContext'
-import { IApiContextProps } from './ApiContextProps.interface'
+import {   IApiContextProps   } from './ApiContextProps.interface'
 
 export const useApiUsersContext = () => useContext(ApiUsersContext)
 export const useApiTablesContext = () => useContext(ApiTablesContext)

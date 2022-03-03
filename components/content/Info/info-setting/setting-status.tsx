@@ -1,5 +1,5 @@
 import Select from "react-select"
-import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { useApiUsersContext } from '../../../ApiContext'
 import { useInfoContext } from '../../Info/InfoContext'
 import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
 

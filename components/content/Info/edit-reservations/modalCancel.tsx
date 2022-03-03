@@ -1,4 +1,4 @@
-import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { useApiUsersContext } from '../../../ApiContext'
 import { useEditDetailsContext } from '../../EditDetailsContext'
 import Warning from '@atlaskit/icon/glyph/jira/failed-build-status';
 

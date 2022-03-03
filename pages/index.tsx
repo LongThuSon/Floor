@@ -1,6 +1,6 @@
 // import type { NextPage } from 'next'
 import Head from 'next/head'
-import ApiContextProvider from './ApiContext'
+import ApiContextProvider from '../components/ApiContext'
 import Header from '../components/header'
 import Content from '../components/content'
 

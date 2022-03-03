@@ -1,9 +1,9 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 
-import { useApiUsersContext, useApiTablesContext } from '../../../../pages/ApiContext'
-import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
-import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
+import { useApiUsersContext, useApiTablesContext } from '../../../ApiContext'
+import { baseURL_users, baseURL_tables } from '../../../ApiContext/baseURL'
+import { useResetApiContext } from '../../../ApiContext/resetApiContext'
 import { useInfoContext } from '../../Info/InfoContext'
 import { useEditDetailsContext } from '../../EditDetailsContext'
 

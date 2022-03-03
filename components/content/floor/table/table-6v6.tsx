@@ -1,10 +1,10 @@
 import { useState, memo } from 'react'
-import { useApiTablesContext } from '../../../../pages/ApiContext'
-import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { useApiTablesContext } from '../../../ApiContext'
+import { useApiUsersContext } from '../../../ApiContext'
 import Draggable from "react-draggable"
 import Chair from "./chair"
 import { Table } from "./index"
-import { baseURL_tables } from '../../../../pages/ApiContext/baseURL'
+import { baseURL_tables } from '../../../ApiContext/baseURL'
 import axios from 'axios'
 import Save from '@atlaskit/icon/glyph/download'
 

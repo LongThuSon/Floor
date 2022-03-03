@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { MoveContext } from "./MoveContext"
-import { useResetApiContext } from '../../pages/ApiContext/resetApiContext'
+import { useResetApiContext } from '../ApiContext/resetApiContext'
 import { EditDetailsContext } from "./EditDetailsContext"
 import Info from "./Info"
 import Floor from "./floor"
@@ -13,6 +13,7 @@ export interface ShowZoom {
     showZoom?: boolean,
     callbackShow(): void
 }
+
 
 interface MoveTableFunc {
     callbackMove(): void

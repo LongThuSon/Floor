@@ -1,5 +1,5 @@
 import {  memo  } from 'react'
-import { useApiUsersContext, useApiTablesContext } from '../../../../pages/ApiContext'
+import { useApiUsersContext, useApiTablesContext } from '../../../ApiContext'
 import { Chair } from "./index"
 
 const Chair = (props : Chair) => {
