@@ -32,6 +32,7 @@ const CustomerList = () => {
         setListShow([])
     }, [])
 
+
     const profileFilter = (profile: any) => {
         if (searchField.request.status === -1) {
             return true
@@ -294,7 +295,6 @@ const CustomerList = () => {
             .catch(error => {
                 console.log('ERROR:', error)
             })
-
     }
 
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {

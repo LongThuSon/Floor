@@ -57,70 +57,58 @@ const EditDetails = () => {
         }
     })
 
-    // function datePickerEdit() {
-    //     const ExampleCustomInput = forwardRef(({ value, onClick }: {
-    //         value?: any;
-    //         onClick?: any;
-    //     }, ref) => (
-    //         <div
-    //             className='custom-time-edit'
-    //             style={{
-    //                 backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
-    //                     profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`
-    //             }}
-    //         >
-    //             <span
-    //                 onClick={() => {
-    //                     if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
-    //                         profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-    //                         let today = new Date(startDate)
-    //                         let prevDay = today.setDate(today.getDate() - 1)
-    //                         setStartDate(prevDay)
-    //                     }
-    //                 }}
+    const ExampleCustomInput = forwardRef(({ value, onClick }: {
+        value?: any;
+        onClick?: any;
+    }, ref) => (
+        <div
+            className='custom-time-edit'
+            style={{
+                backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                    profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`
+            }}
+        >
+            <span
+                onClick={() => {
+                    if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                        profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+                        let today = new Date(startDate)
+                        let prevDay = today.setDate(today.getDate() - 1)
+                        setStartDate(prevDay)
+                    }
+                }}
 
-    //             >
-    //                 <ChevronLeftLargeIcon
-    //                     label='left'
-    //                     size="small"
-    //                 />
-    //             </span>
+            >
+                <ChevronLeftLargeIcon
+                    label='left'
+                    size="small"
+                />
+            </span>
 
-    //             <span
-    //                 onClick={onClick}
-    //                 ref={ref as any}
-    //             >
-    //                 {value}
-    //             </span>
+            <span
+                onClick={onClick}
+                ref={ref as any}
+            >
+                {value}
+            </span>
 
-    //             <span
-    //                 onClick={() => {
-    //                     if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
-    //                         profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-    //                         let today = new Date(startDate)
-    //                         let prevDay = today.setDate(today.getDate() + 1)
-    //                         setStartDate(prevDay)
-    //                     }
-    //                 }}
-    //             >
-    //                 <ChevronRightLargeIcon
-    //                     label='right'
-    //                     size="small"
-    //                 />
-    //             </span>
-    //         </div>
-    //     ));
-    //     return (
-    //         <DatePicker
-    //             selected={startDate}
-    //             onChange={(date: any) => setStartDate(date)}
-    //             customInput={<ExampleCustomInput />}
-    //             dateFormat='dd MMM yyyy'
-    //             disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
-    //                 profiles[indexED].status === 5 || profiles[indexED].status === 6}
-    //         />
-    //     );
-    // };
+            <span
+                onClick={() => {
+                    if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                        profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+                        let today = new Date(startDate)
+                        let prevDay = today.setDate(today.getDate() + 1)
+                        setStartDate(prevDay)
+                    }
+                }}
+            >
+                <ChevronRightLargeIcon
+                    label='right'
+                    size="small"
+                />
+            </span>
+        </div>
+    ));
 
     const updateStt = (status: number) => {
         setTableAPI(prev => ({
@@ -701,7 +689,14 @@ const EditDetails = () => {
                     >Date</span>
                 </div>
                 <div className='datePickerEdit'>
-                    {/* {datePickerEdit()} */}
+                    <DatePicker
+                        selected={startDate}
+                        onChange={(date: any) => setStartDate(date)}
+                        customInput={<ExampleCustomInput />}
+                        dateFormat='dd MMM yyyy'
+                        disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                            profiles[indexED].status === 5 || profiles[indexED].status === 6}
+                    />
                 </div>
             </div>
 

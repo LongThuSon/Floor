@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { MoveContext } from "./MoveContext"
-import { useResetApiContext } from '../ApiContext/resetApiContext'
 import { EditDetailsContext } from "./EditDetailsContext"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Info from "./Info"
 import Floor from "./floor"
 import TableStatusList from "./floor/table-status-list"
@@ -26,7 +27,6 @@ const Content = () => {
     const [showZoom, setShowZoom] = useState(false)
     const [move, setMove] = useState(true)
     const [indexED, setIndexED] = useState(-1)
-    const { reset, setReset } = useResetApiContext()
 
     return (
         <div id="content-main">
@@ -60,6 +60,13 @@ const Content = () => {
             }
 
             <Add />
+
+            <ToastContainer
+                style={{
+                    position: 'absolute'
+                }}
+            />
+            
         </div>
     )
 }
