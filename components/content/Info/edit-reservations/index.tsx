@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css'
 
 import { useEditDetailsContext } from '../../EditDetailsContext'
-import { useApiUsersContext } from '../../../../pages/ApiContext'
+import { useApiUsersContext, useApiTablesContext } from '../../../../pages/ApiContext'
 import { baseURL_users, baseURL_tables } from '../../../../pages/ApiContext/baseURL'
 import { useResetApiContext } from '../../../../pages/ApiContext/resetApiContext'
 
@@ -27,9 +27,11 @@ import ShoppingCard from '@atlaskit/icon/glyph/marketplace'
 import NoShow from '@atlaskit/icon/glyph/media-services/preselected'
 import Cancelled from '@atlaskit/icon/glyph/cross-circle'
 import ModalCanCel from './modalCancel'
+import Warning from '@atlaskit/icon/glyph/jira/failed-build-status'
 
 const EditDetails = () => {
     const profiles = useApiUsersContext()
+    const tables = useApiTablesContext()
     const { indexED, setIndexED } = useEditDetailsContext()
     const { reset, setReset } = useResetApiContext()
 
@@ -45,6 +47,13 @@ const EditDetails = () => {
             occasion: profiles[indexED].occasion,
             otherOccasion: profiles[indexED].otherOccasion,
             quantity: profiles[indexED].quantity % 5 + 1,
+        }
+    })
+    const [colorText, setColorText] = useState({
+        text: {
+            table: "#1B2A4E",
+            people: "#1B2A4E",
+            time: "#1B2A4E",
         }
     })
 
@@ -365,21 +374,106 @@ const EditDetails = () => {
     }
 
     const changeNumberTable = (event: any) => {
+        let timeOL = [...tables[Number(event.target.value) - 105].timeList]
+
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
                 numberTable: Number(event.target.value),
             }
         }))
+
+        if (tableAPI.table.quantity > tables[Number(event.target.value) - 105]?.quantity) {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    people: 'red',
+                    table: 'red',
+                }
+            }))
+        } else {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    people: '#1B2A4E',
+                    table: '#1B2A4E',
+                }
+            }))
+        }
+
+        if (timeOL.includes(Number(tableAPI.table.timeOrder))) {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    time: 'red',
+                    table: 'red',
+                }
+            }))
+        } else {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    time: '#1B2A4E',
+                    table: '#1B2A4E',
+                }
+            }))
+        }
+    }
+
+    const changeQuantity = (event: any) => {
+        setTableAPI(prev => ({
+            table: {
+                ...prev.table,
+                quantity: Number(event.target.value),
+            }
+        }))
+
+        if (Number(event.target.value) > tableAPI.table.quantity) {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    people: 'red',
+                    table: 'red',
+                }
+            }))
+        } else {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    people: '#1B2A4E',
+                    table: '#1B2A4E',
+                }
+            }))
+        }
     }
 
     const changeTimeOrder = (event: any) => {
+        let timeOL = [...tables[tableAPI.table.numberTable - 105].timeList]
+
         setTableAPI(prev => ({
             table: {
                 ...prev.table,
                 timeOrder: event.target.value,
             }
         }))
+
+        if (timeOL.includes(Number(event.target.value))) {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    time: 'red',
+                    table: 'red',
+                }
+            }))
+        } else {
+            setColorText(prev => ({
+                text: {
+                    ...prev.text,
+                    time: '#1B2A4E',
+                    table: '#1B2A4E',
+                }
+            }))
+        }
     }
 
     const addOccasion = (occasion: string) => {
@@ -419,75 +513,91 @@ const EditDetails = () => {
     }
 
     const handleSave = () => {
-        let statusTable, seatTable, statusUser
+        const oldTimeOL = [...tables[profiles[indexED].numberTable % 18 + 1].timeList]
+        const newTimeOL = [...tables[(tableAPI.table.numberTable + 3) % 18 + 1].timeList]
 
-        switch (tableAPI.table.status) {
-            case 1:
-                statusTable = 3
-                seatTable = tableAPI.table.quantity
-                statusUser = 1
-                break
-            default:
-                statusTable = 5
-                seatTable = 0
-                statusUser = 0
+        if (colorText.text.people === '#1B2A4E' && colorText.text.table === '#1B2A4E' && colorText.text.time === '#1B2A4E') {
+            let statusTable, seatTable, statusUser
+
+            switch (tableAPI.table.status) {
+                case 1:
+                    statusTable = 3
+                    seatTable = tableAPI.table.quantity
+                    statusUser = 1
+                    newTimeOL.push(Number(tableAPI.table.timeOrder))
+                    break
+                default:
+                    statusTable = 5
+                    seatTable = 0
+                    statusUser = 0
+                    newTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
+            }
+
+            oldTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
+
+            console.log(oldTimeOL, newTimeOL)
+
+            const newUser = {
+                numberTable: tableAPI.table.numberTable + 3,
+                timeOrder: tableAPI.table.timeOrder,
+                eventTag: tableAPI.table.eventTag,
+                occasion: tableAPI.table.occasion,
+                quantity: tableAPI.table.quantity,
+                otherOccasion: tableAPI.table.otherOccasion,
+                status: statusUser,
+            }
+
+            const resetTable = {
+                status: 5,
+                seat: 0,
+                percent: 0,
+                timeList: oldTimeOL,
+            }
+
+            const newTable = {
+                timeOrder: tableAPI.table.timeOrder,
+                status: statusTable,
+                seat: seatTable,
+                percent: 0,
+                timeList: newTimeOL,
+            }
+
+            axios.put(`${baseURL_users}/${indexED + 1}`, newUser)
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+
+            axios.put(`${baseURL_tables}/${newUser.numberTable % 18 + 1}`, newTable)
+                .then(res => {
+                    // Reset Old Table
+                    if ((newUser.numberTable % 18 + 1) !== (profiles[indexED].numberTable % 18 + 1)) {
+                        axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, resetTable)
+                            .then(res => {
+                                console.log(res.data)
+                                setReset(!reset)
+                            })
+                            .catch(error => {
+                                console.log('ERROR:', error)
+                            })
+                    } else {
+                        setReset(!reset)
+                    }
+
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+
+            setTimeout(() => {
+                setIndexED(-1)
+            }, 2000);
+        } else {
+            alert('Total pax exceeds table’s capacity or Clashes with an ongoing reservation.')
         }
-
-        const newUser = {
-            numberTable: tableAPI.table.numberTable + 3,
-            timeOrder: tableAPI.table.timeOrder,
-            eventTag: tableAPI.table.eventTag,
-            occasion: tableAPI.table.occasion,
-            otherOccasion: tableAPI.table.otherOccasion,
-            status: statusUser,
-        }
-
-        const resetTable = {
-            status: 5,
-            seat: 0,
-            percent: 0,
-        }
-
-        const newTable = {
-            timeOrder: tableAPI.table.timeOrder,
-            status: statusTable,
-            seat: seatTable,
-            percent: 0,
-        }
-
-        axios.put(`${baseURL_users}/${indexED + 1}`, newUser)
-            .then(res => {
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-
-        axios.put(`${baseURL_tables}/${newUser.numberTable % 18 + 1}`, newTable)
-            .then(res => {
-                // Reset Old Table
-                if ((newUser.numberTable % 18 + 1) !== (profiles[indexED].numberTable % 18 + 1)) {
-                    axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, resetTable)
-                        .then(res => {
-                            console.log(res.data)
-                            setReset(!reset)
-                        })
-                        .catch(error => {
-                            console.log('ERROR:', error)
-                        })
-                } else {
-                    setReset(!reset)
-                }
-
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-
-        setTimeout(() => {
-            setIndexED(-1)
-        }, 2000);
     }
 
     const handleCancelled = () => {
@@ -620,6 +730,7 @@ const EditDetails = () => {
                         onChange={changeTimeOrder}
                         disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
                             profiles[indexED].status === 5 || profiles[indexED].status === 6}
+                        style={{ color: colorText.text.time }}
                     >
                         <optgroup label="Weekday Lunch">
                             <option value="0">11:00PM</option>
@@ -649,13 +760,16 @@ const EditDetails = () => {
                             paddingLeft: 7,
                             color: '#1B2A4E'
                         }}
-                    >Adults</span>
+                    >People</span>
                 </div>
                 <div>
                     <select
                         className='select-element'
+                        value={tableAPI.table.quantity}
+                        onChange={changeQuantity}
                         disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
                             profiles[indexED].status === 6}
+                        style={{ color: colorText.text.people }}
                     >
                         <optgroup label="Adults">
                             <option value="1">1</option>
@@ -672,39 +786,6 @@ const EditDetails = () => {
                             <option value="12">12</option>
                             <option value="13">13</option>
                             <option value="14">14</option>
-                        </optgroup>
-                    </select>
-                </div>
-            </div>
-
-            <div className='edit-select'>
-                <div>
-                    <span>
-                        <PeopleIcon
-                            label='people'
-                            size='small'
-                            primaryColor='#1B2A4E'
-                        />
-                    </span>
-                    <span
-                        style={{
-                            fontSize: 15,
-                            fontWeight: 600,
-                            paddingLeft: 7,
-                            color: '#1B2A4E'
-                        }}
-                    >Children</span>
-                </div>
-                <div>
-                    <select
-                        className='select-element'
-                        disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
-                            profiles[indexED].status === 6}
-                    >
-                        <optgroup label="Children">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
                         </optgroup>
                     </select>
                 </div>
@@ -735,6 +816,7 @@ const EditDetails = () => {
                         onChange={changeNumberTable}
                         disabled={profiles[indexED].status === 4 || profiles[indexED].status === 5 ||
                             profiles[indexED].status === 6}
+                        style={{ color: colorText.text.table }}
                     >
                         <optgroup label="Table">
                             <option value="105">105</option>
@@ -759,6 +841,21 @@ const EditDetails = () => {
                     </select>
                 </div>
             </div>
+
+            {(colorText.text.people === 'red' || colorText.text.table === 'red' || colorText.text.time === 'red') &&
+                <div id='warning-edit'>
+                    <span>
+                        <Warning
+                            label='warning'
+                            size='small'
+                            primaryColor='#DF4759'
+                        />
+                    </span>
+                    <div
+                        id='warning-noti'
+                    >{`${(colorText.text.people === 'red' && colorText.text.time === 'red') ? 'Total pax exceeds table’s capacity and Clashes with an ongoing reservation.' : colorText.text.people === 'red' ? 'Total pax exceeds table’s capacity.' : 'Clashes with an ongoing reservation.'}`}</div>
+                </div>
+            }
 
             <div
                 className='edit-select'

@@ -240,6 +240,23 @@
             }
         }
 
+        #warning-edit {
+            width: 260px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFEEEB;
+            padding: 4px;
+            margin: 0 16px 20px;
+
+            #warning-noti {
+                font-size: 12px;
+                font-weight: 600;
+                color: #DF4759;
+                margin-left: 8px;
+            }
+        }
+
         .edit-notify {
             margin: 0 20px 20px;
 

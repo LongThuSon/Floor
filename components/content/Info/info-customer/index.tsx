@@ -27,7 +27,6 @@ const CustomerList = () => {
     const tables = useApiTablesContext()
     const { reset, setReset } = useResetApiContext()
     const [listShow, setListShow] = useState<number[]>([])
-    const [timeListCopy, setTimeListCopy] = useState<number[]>([])
 
     useEffect(() => {
         setListShow([])
@@ -263,48 +262,48 @@ const CustomerList = () => {
     }
 
     const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        setTimeListCopy(tables[numberTable % 18].timeList)
+        const timeOL = [...tables[numberTable % 18].timeList]
 
-        if (timeListCopy.indexOf(timeOrder % 6) === -1 || (quantity % 5 + 1) <= tables[numberTable % 18]?.quantity) {
-            setTimeListCopy((oldArray: number[]) => [...oldArray, timeOrder % 6])
-
-            console.log(timeListCopy.indexOf(timeOrder % 6))
-            
-            const newUser = {
-                status: 1,
-            }
-            const newTable = {
-                seat: quantity % 5 + 1,
-                status: 3,
-                timeOrder: timeOrder % 6,
-                idCustomer: Number(id),
-                timeList: timeListCopy
-            }
-
-            axios.put(`${baseURL_users}/${id}`, newUser)
-                .then(res => console.log(res.data))
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-            axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
-                .then(res => {
-                    setReset(!reset)
-                    console.log(res.data)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-
-        } else {
-            alert('Status table: Clash')
+        const newUser = {
+            status: 1,
         }
+        const newTable = {
+            seat: quantity % 5 + 1,
+            status: Number(`${(quantity % 5 + 1) <= tables[numberTable % 18]?.quantity && (timeOL.includes(timeOrder % 6) === false) ? 3 : 7}`),
+            timeOrder: timeOrder % 6,
+            idCustomer: Number(id),
+            timeList: timeOL
+        }
+
+        if (timeOL.includes(timeOrder % 6) === false) {
+            timeOL.push(Number(timeOrder % 6))
+        }
+
+        console.log(timeOL)
+
+        axios.put(`${baseURL_users}/${id}`, newUser)
+            .then(res => console.log(res.data))
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
+            .then(res => {
+                setReset(!reset)
+                console.log(res.data)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+
     }
 
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        setTimeListCopy(tables[numberTable % 18].timeList)
+        const timeOL = [...tables[numberTable % 18].timeList]
 
-        if (timeListCopy.indexOf(timeOrder % 6) !== -1 || (quantity % 5 + 1) <= tables[numberTable % 18]?.quantity) {
-            setTimeListCopy((oldArray: number[]) => [...oldArray, timeOrder])
+        if ((quantity % 5 + 1) <= tables[numberTable % 18]?.quantity) {
+            if (!timeOL.includes(timeOrder % 6)) {
+                timeOL.push(Number(timeOrder % 6))
+            }
 
             const newUser = {
                 status: 3,

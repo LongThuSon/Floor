@@ -28,7 +28,6 @@ export interface Table {
     primary1: string,
 }
 
-
 const AllTables = () => {
     const { move } = useMoveContext()
     const { reset, setReset } = useResetApiContext()
