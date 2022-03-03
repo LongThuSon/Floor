@@ -106,7 +106,7 @@ const CustomerList = () => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-            }, 600000)
+            }, 60000)
         }
 
         switch (status) {
@@ -347,7 +347,7 @@ const CustomerList = () => {
                 .catch(error => {
                     console.log('ERROR:', error)
                 })
-        }, 660000)
+        }, 120000)
 
     }
 

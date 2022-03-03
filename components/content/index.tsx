@@ -59,7 +59,6 @@ const Content = () => {
             }
 
             <Add />
-
         </div>
     )
 }

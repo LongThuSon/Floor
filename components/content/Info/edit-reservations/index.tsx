@@ -513,8 +513,8 @@ const EditDetails = () => {
     }
 
     const handleSave = () => {
-        const oldTimeOL = [...tables[profiles[indexED].numberTable % 18 + 1].timeList]
-        const newTimeOL = [...tables[(tableAPI.table.numberTable + 3) % 18 + 1].timeList]
+        const oldTimeOL = [...tables[profiles[indexED].numberTable % 18 + 1]?.timeList]
+        const newTimeOL = [...tables[(tableAPI.table.numberTable + 3) % 18 + 1]?.timeList]
 
         if (colorText.text.people === '#1B2A4E' && colorText.text.table === '#1B2A4E' && colorText.text.time === '#1B2A4E') {
             let statusTable, seatTable, statusUser
