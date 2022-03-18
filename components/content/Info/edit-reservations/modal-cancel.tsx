@@ -1,5 +1,6 @@
-import { useApiUsersContext } from '../../../ApiContext'
-import { useEditDetailsContext } from '../../EditDetailsContext'
+import {  memo  } from 'react'
+import { useApiUsersContext } from '../../../context/ApiContext'
+import { useContentContext } from '../../../context/ContentContext'
 import Warning from '@atlaskit/icon/glyph/jira/failed-build-status';
 
 interface IModalCancel {
@@ -9,7 +10,7 @@ interface IModalCancel {
 
 const ModalCanCel = ({ setShowModal, handleCancelled }: IModalCancel) => {
     const profiles = useApiUsersContext()
-    const { indexED, setIndexED } = useEditDetailsContext()
+    const { indexED } = useContentContext()
 
     return (
         <div id="modal-cancel">
@@ -37,4 +38,4 @@ const ModalCanCel = ({ setShowModal, handleCancelled }: IModalCancel) => {
         </div>
     )
 }
-export default ModalCanCel
+export default memo(ModalCanCel)

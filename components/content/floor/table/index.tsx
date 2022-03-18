@@ -1,8 +1,8 @@
-import { useMoveContext } from '../../MoveContext'
-import { baseURL_tables, baseURL_users } from '../../../ApiContext/baseURL'
-import { useApiTablesContext } from '../../../ApiContext'
-import { useResetApiContext } from '../../../ApiContext/resetApiContext'
-import Circle12 from "./circle-14"
+import { memo } from 'react'
+import { useContentContext } from '../../../context/ContentContext'
+import { baseURL_tables, baseURL_users } from '../../../context/ApiContext/baseURL'
+import { useApiTablesContext } from '../../../context/ApiContext'
+import Circle14 from "./circle-14"
 import Circle6 from "./circle-6"
 import Circle8 from "./circle-8"
 import Table1v1 from "./table-1v1"
@@ -25,92 +25,80 @@ export interface Table {
     left: number,
     index: number,
     move: boolean,
-    primary1: string,
+    primary1?: string,
+}
+
+
+export const colorTable = (id: number, status: number, timeSeated: number, updateBack: number, idCustomer: number) => {
+    if (status === 0 || status === 1 || status === 2) {
+        let currentTime = new Date().getTime()
+        console.log(currentTime - timeSeated)
+
+        if (currentTime - timeSeated <= 600000 && updateBack !== 1) {
+            axios.put(`${baseURL_tables}/${id}`, { percent: 16, updateBack: 1 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        } else if (600000 < currentTime - timeSeated && currentTime - timeSeated <= 1200000 && updateBack !== 2) {
+            axios.put(`${baseURL_tables}/${id}`, { percent: 33, updateBack: 2 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        } else if (1200000 < currentTime - timeSeated && currentTime - timeSeated <= 1800000 && updateBack !== 3) {
+            axios.put(`${baseURL_tables}/${id}`, { percent: 50, updateBack: 3 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        } else if (1800000 < currentTime - timeSeated && currentTime - timeSeated <= 2400000 && updateBack !== 4) {
+            axios.put(`${baseURL_tables}/${id}`, { percent: 66, updateBack: 4 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        } else if (2400000 < currentTime - timeSeated && currentTime - timeSeated <= 3000000 && updateBack !== 5) {
+            axios.put(`${baseURL_tables}/${id}`, { percent: 83, updateBack: 5 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        } else if (currentTime - timeSeated > 3000000) {
+            axios.put(`${baseURL_users}/${idCustomer}`, { status: 4 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+
+            axios.put(`${baseURL_tables}/${id}`, { status: 6, percent: 0, timeSeated: 0, updateBack: 0 })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        }
+    }
 }
 
 const AllTables = () => {
-    const { move } = useMoveContext()
-    const { reset, setReset } = useResetApiContext()
+    const { move } = useContentContext()
     const tables = useApiTablesContext()
 
-    const colorTable = (status: number, id: number, percent: number) => {
-        if (status === 0 || status === 1 || status === 2) {
-            setTimeout(() => {
-                switch (percent) {
-                    case 0:
-                        axios.put(`${baseURL_tables}/${id + 1}`, { percent: 16, })
-                            .then(res => {
-                                setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-                        break
-                    case 16:
-                        axios.put(`${baseURL_tables}/${id + 1}`, { percent: 33, })
-                            .then(res => {
-                                setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-                        break
-                    case 33:
-                        axios.put(`${baseURL_tables}/${id + 1}`, { percent: 50, })
-                            .then(res => {
-                                setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-                        break
-                    case 50:
-                        axios.put(`${baseURL_tables}/${id + 1}`, { percent: 66, })
-                            .then(res => {
-                                setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-                        break
-                    case 66:
-                        axios.put(`${baseURL_tables}/${id + 1}`, { percent: 83, })
-                            .then(res => {
-                                setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-                        break
-                    default:
-                        axios.put(`${baseURL_users}/${tables[id].idCustomer}`, { status: 4 })
-                            .then(res => {
-                                // setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-
-                        axios.put(`${baseURL_tables}/${id + 1}`, { status: 6, percent: 0 })
-                            .then(res => {
-                                setReset(!reset)
-                                console.log(res.data)
-                            })
-                            .catch(error => {
-                                console.log('ERROR:', error)
-                            })
-
-
-                }
-            }, 60000);
-        }
-
+    const primary1 = (status: number) => {
         switch (status) {
             case 0:
                 return '#A9EAFF'
@@ -140,28 +128,28 @@ const AllTables = () => {
                 left={tables[11]?.left ?? 380}
                 index={11}
                 move={move}
-                primary1={`${colorTable(tables[11]?.status, 11, tables[11]?.percent)}`}
+                primary1={`${primary1(tables[11]?.status)}`}
             />
             <Table1v1
                 top={tables[12]?.top ?? 50}
                 left={tables[12]?.left ?? 436}
                 index={12}
                 move={move}
-                primary1={`${colorTable(tables[12]?.status, 12, tables[12]?.percent)}`}
+                primary1={`${primary1(tables[12]?.status)}`}
             />
             <Table1v1
                 top={tables[13]?.top ?? 50}
                 left={tables[13]?.left ?? 492}
                 index={13}
                 move={move}
-                primary1={`${colorTable(tables[13]?.status, 13, tables[13]?.percent)}`}
+                primary1={`${primary1(tables[13]?.status)}`}
             />
             <Table1v1
                 top={tables[14]?.top ?? 162}
                 left={tables[14]?.left ?? 408}
                 index={14}
                 move={move}
-                primary1={`${colorTable(tables[14]?.status, 14, tables[14]?.percent)}`}
+                primary1={`${primary1(tables[14]?.status)}`}
             />
 
             <Table2v2Row
@@ -169,7 +157,7 @@ const AllTables = () => {
                 left={tables[15]?.left ?? 464}
                 index={15}
                 move={move}
-                primary1={`${colorTable(tables[15]?.status, 15, tables[15]?.percent)}`}
+                primary1={`${primary1(tables[15]?.status)}`}
             />
 
             <Table6v6
@@ -177,14 +165,14 @@ const AllTables = () => {
                 left={tables[16]?.left ?? 408}
                 index={16}
                 move={move}
-                primary1={`${colorTable(tables[16]?.status, 16, tables[16]?.percent)}`}
+                primary1={`${primary1(tables[16]?.status)}`}
             />
             <Table6v6
                 top={tables[17]?.top ?? 420}
                 left={tables[17]?.left ?? 408}
                 index={17}
                 move={move}
-                primary1={`${colorTable(tables[17]?.status, 17, tables[17]?.percent)}`}
+                primary1={`${primary1(tables[17]?.status)}`}
             />
 
             <Table2v2Column
@@ -192,7 +180,7 @@ const AllTables = () => {
                 left={tables[1]?.left ?? 128}
                 index={1}
                 move={move}
-                primary1={`${colorTable(tables[1]?.status, 1, tables[1]?.percent)}`}
+                primary1={`${primary1(tables[1]?.status)}`}
             />
 
             <Table3v3
@@ -200,21 +188,21 @@ const AllTables = () => {
                 left={tables[0]?.left ?? 16}
                 index={0}
                 move={move}
-                primary1={`${colorTable(tables[0]?.status, 0, tables[0]?.percent)}`}
+                primary1={`${primary1(tables[0]?.status)}`}
             />
             <Table3v3
                 top={tables[10]?.top ?? 162}
                 left={tables[10]?.left ?? 324}
                 index={10}
                 move={move}
-                primary1={`${colorTable(tables[10]?.status, 10, tables[10]?.percent)}`}
+                primary1={`${primary1(tables[10]?.status)}`}
             />
             <Table3v3
                 top={tables[9]?.top ?? 330}
                 left={tables[9]?.left ?? 324}
                 index={9}
                 move={move}
-                primary1={`${colorTable(tables[9]?.status, 9, tables[9]?.percent)}`}
+                primary1={`${primary1(tables[9]?.status)}`}
             />
 
             <Table7v7
@@ -222,7 +210,7 @@ const AllTables = () => {
                 left={tables[3]?.left ?? 212}
                 index={3}
                 move={move}
-                primary1={`${colorTable(tables[3]?.status, 3, tables[3]?.percent)}`}
+                primary1={`${primary1(tables[3]?.status)}`}
             />
 
             <Circle6
@@ -230,14 +218,14 @@ const AllTables = () => {
                 left={tables[6]?.left ?? 16}
                 index={6}
                 move={move}
-                primary1={`${colorTable(tables[6]?.status, 6, tables[6]?.percent)}`}
+                primary1={`${primary1(tables[6]?.status)}`}
             />
             <Circle6
                 top={tables[7]?.top ?? 442}
                 left={tables[7]?.left ?? 128}
                 index={7}
                 move={move}
-                primary1={`${colorTable(tables[7]?.status, 7, tables[7]?.percent)}`}
+                primary1={`${primary1(tables[7]?.status)}`}
             />
 
             <Circle8
@@ -245,32 +233,32 @@ const AllTables = () => {
                 left={tables[4]?.left ?? 16}
                 index={4}
                 move={move}
-                primary1={`${colorTable(tables[4]?.status, 4, tables[4]?.percent)}`}
+                primary1={`${primary1(tables[4]?.status)}`}
             />
             <Circle8
                 top={tables[5]?.top ?? 330}
                 left={tables[5]?.left ?? 128}
                 index={5}
                 move={move}
-                primary1={`${colorTable(tables[5]?.status, 5, tables[5]?.percent)}`}
+                primary1={`${primary1(tables[5]?.status)}`}
             />
             <Circle8
                 top={tables[8]?.top ?? 432}
                 left={tables[8]?.left ?? 212}
                 index={8}
                 move={move}
-                primary1={`${colorTable(tables[8]?.status, 8, tables[8]?.percent)}`}
+                primary1={`${primary1(tables[8]?.status)}`}
             />
 
-            <Circle12
-                top={tables[0]?.top ?? 162}
+            <Circle14
+                top={tables[2]?.top ?? 162}
                 left={tables[2]?.left ?? 100}
                 index={2}
                 move={move}
-                primary1={`${colorTable(tables[2]?.status, 2, tables[2]?.percent)}`}
+                primary1={`${primary1(tables[2]?.status)}`}
             />
-        </div>
+        </div >
     )
 }
 
-export default AllTables
+export default memo(AllTables)

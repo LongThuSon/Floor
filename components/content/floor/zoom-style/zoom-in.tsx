@@ -1,15 +1,23 @@
+import {  usePageContext  } from '../../../context/PageContext'
 import BulletListIcon from '@atlaskit/icon/glyph/bullet-list'
 import MediaServicesLineIcon from '@atlaskit/icon/glyph/media-services/line'
 import MediaServicesZoomInIcon from '@atlaskit/icon/glyph/media-services/zoom-in'
 import MediaServicesZoomOutIcon from '@atlaskit/icon/glyph/media-services/zoom-out'
 import MediaServicesActualSizeIcon from '@atlaskit/icon/glyph/media-services/actual-size'
-import { ZoomIn } from "../index"
 
-const ZoomIn = ({ callbackShow, setZoomIn, setZoomOut, setReset }: ZoomIn) => {
+interface ZoomIn {
+    setZoomIn(): void;
+    setZoomOut(): void;
+    setReset(): void
+}
+
+const ZoomIn = ({ setZoomIn, setZoomOut, setReset }: ZoomIn) => {
+    const { showZoom, setShowZoom, setEnableInfo } = usePageContext()
+
     return (
         <div id="zoom-in">
             <span
-                onClick={callbackShow}
+                onClick={() => setShowZoom(!showZoom)}
             >
                 <BulletListIcon
                     label='table-list'

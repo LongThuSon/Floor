@@ -1,5 +1,4 @@
-import { useInfoContext } from '../../Info/InfoContext'
-import Textfield from '@atlaskit/textfield'
+import { useInfoContext } from '../../../context/InfoContext'
 
 const Search = () => {
     const { setSearchField } = useInfoContext()
@@ -21,12 +20,8 @@ const Search = () => {
                 type='search'
                 placeholder='Search'
                 onChange={handleSearchChange}
+                autoComplete="off"
             />
-
-            {/* <Textfield
-                placeholder='Search'
-                style={{ height: "34px" }}
-            /> */}
         </div>
     )
 }

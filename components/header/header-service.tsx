@@ -3,7 +3,7 @@ import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
 
 const options = [
     { value: "Lunch Service" },
-    { value: "Dinner Service" }
+    // { value: "Dinner Service" }
 ];
 
 const formatOptionLabel = ({ value, quantity }: any) => (
@@ -23,12 +23,12 @@ const formatOptionLabel = ({ value, quantity }: any) => (
 const customStyles = {
     option: (provided: any, state: any) => ({
         ...provided,
-        width: 155,
+        width: 150,
         height: 40
     }),
     control: () => ({
         // none of react-select's styles are passed to <Control />
-        width: 155,
+        width: 150,
     }),
     singleValue: (provided: any, state: any) => {
         const opacity = state.isDisabled ? 0.5 : 1;
@@ -48,6 +48,7 @@ const HeaderSer = () => {
                 formatOptionLabel={formatOptionLabel}
                 options={options}
                 isSearchable={false}
+                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
             />
             <span
                 id="header-service-drop-down"

@@ -3,69 +3,13 @@
 
 #content-main {
     display: block;
-    width: 960px;
-    height: 546px;
+    width: 100%;
+    height: calc(100vh - 54px);
     position: relative;
     left: 0;
     right: 0;
     margin: 0 auto;
     overflow: hidden;
-
-    //Table list
-    #table-status-list {
-        width: 46px;
-        height: 46px;
-        position: absolute;
-        top: 12px;
-        left: 327px;
-        z-index: 3;
-        background: rgba(225, 230, 249, 0.6);
-        border-radius: 4px;
-        text-align: center;
-        line-height: 46px;
-        cursor: pointer;
-    }
-
-    #container-list {
-        display: flex;
-        flex-direction: column;
-        width: 153px;
-        height: 461px;
-        position: absolute;
-        top: 52px;
-        background-color: #fff;
-        font-size: 12px;
-        font-weight: 600;
-        color: $primary_text;
-        text-align: left;
-        line-height: 32px;
-        padding-top: 10px;
-
-        .table-color {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            position: relative;
-            left: 5px;
-            margin: 0 10px;
-            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14), 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .status-time {
-            display: inline-block;
-            width: 46px;
-            height: 17px;
-            position: relative;
-            left: 5px;
-            padding-top: 0;
-            margin: 0 10px;
-            font-size: 10px;
-            text-align: center;
-            line-height: 17px;
-            border-radius: 4px;
-            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14), 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-    }
 
     // Zoom out
     #zoom-out {
@@ -74,12 +18,17 @@
         height: 134px;
         position: absolute;
         top: 12px;
-        left: 902px;
+        right: 12px;
         z-index: 3;
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
         background-color: rgba(225, 230, 249, 0.6);
+        cursor: pointer;
+        
+        @include respond(phone) {
+            z-index: 2;
+        }
     }
 
     // Button add
@@ -87,8 +36,8 @@
         width: 50px;
         height: 50px;
         position: absolute;
-        top: 476px;
-        left: 890px;
+        right: 20px;
+        bottom: 20px;
         z-index: 3;
         font-size: 40px;
         text-align: center;
@@ -97,12 +46,20 @@
         border-radius: 50%;
         background-color: $primary_bg;
         cursor: pointer;
+    
+        @include respond(phone) {
+            width: 46px;
+            height: 46px;
+            font-size: 32px;
+            z-index: 2;
+        }
     }
 
     // Edit
     .container-edit {
         display: block;
-        width: 315px;
+        width: 25%;
+        min-width: 300px;
         height: 100%;
         position: absolute;
         z-index: 2;
@@ -110,6 +67,12 @@
         background-color: #fff;
         overflow: scroll;
         overflow-x: hidden;
+
+        @include respond(phone) {
+            width: 100vw;
+            min-width: 280px;
+            z-index: 4;
+        }
 
         .edit-header {
             display: flex;
@@ -147,7 +110,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 260px;
+            width: calc(100% - 40px);
             height: 39px;
             margin: 20px;
 
@@ -188,6 +151,8 @@
                 padding: 0 10px;
                 color: $primary_text;
                 border: solid 1px #ccc;
+                background-color: #fff;
+                cursor: pointer;
 
                 &:disabled {
                     background-color: #ccc;
@@ -206,7 +171,7 @@
 
                     .Occasion-element {
                         display: inline-block;
-                        width: 124px;
+                        width: 48%;
                         height: 38px;
                         font-size: 14px;
                         font-weight: 600;
@@ -214,12 +179,13 @@
                         padding-left: 12px;
                         border: solid 1px #ccc;
                         border-radius: 4px;
+                        cursor: pointer;
                     }
                 }
             }
             
             .edit-input {
-                width: 260px;
+                width: 100%;
                 min-height: 50px;
                 max-height: 100px;
                 color: $primary_text;
@@ -241,7 +207,7 @@
         }
 
         #warning-edit {
-            width: 260px;
+            width: calc(100% - 36px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -404,13 +370,14 @@
         }
 
         .cancel-reserv-btn {
-            width: 260px;
+            width: calc(100% - 40px);
             height: 38px;
             color: #fff;
             background-color: #DF4759;
             border-style: none;
             border-radius: 4px;
             margin: 10px 20px 30px;
+            cursor: pointer;
         }
     
         #modal-cancel {
@@ -418,7 +385,6 @@
             top: 168px;
             left: 0;
             right: 0;
-            // background-color: rgba(0, 0, 0, 0.4);
             align-items: center;
             justify-content: center;
             display: flex;
@@ -453,6 +419,10 @@
                     font-size: 27px;
                     font-weight: 700;
                     color: $primary_text;   
+
+                    @include respond(phone) {
+                        font-size: 20px;
+                    }
                 }
 
                 #for-modal-cancel {
@@ -462,6 +432,7 @@
                 }
 
                 #button-container {
+                    width: 100%;
                     display: flex;
                     justify-content: space-around;
                     
@@ -473,6 +444,12 @@
                         font-weight: 600;
                         border-style: none;
                         margin-right: 10px;
+                        cursor: pointer;
+
+                        @include respond(phone) {
+                            width: 45%;
+                            margin-right: 0;
+                        }
                     }
 
                     #cancel-btn {
@@ -482,6 +459,11 @@
                         background-color: #DF4759;
                         font-weight: 600;
                         border-style: none;
+                        cursor: pointer;
+
+                        @include respond(phone) {
+                            width: 45%;
+                        }
                     }
                 }
             }

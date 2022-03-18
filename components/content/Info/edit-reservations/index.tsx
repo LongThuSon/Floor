@@ -1,13 +1,15 @@
-import { useState, forwardRef } from 'react'
+import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 
-import DatePicker from "react-datepicker"
-import 'react-datepicker/dist/react-datepicker.css'
+import DatePicker from "react-multi-date-picker"
 
-import { useEditDetailsContext } from '../../EditDetailsContext'
-import { useApiUsersContext, useApiTablesContext } from '../../../ApiContext'
-import { baseURL_users, baseURL_tables } from '../../../ApiContext/baseURL'
-import { useResetApiContext } from '../../../ApiContext/resetApiContext'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+import { useContentContext } from '../../../context/ContentContext'
+import { useApiUsersContext, useApiTablesContext } from '../../../context/ApiContext'
+import { baseURL_users, baseURL_tables } from '../../../context/ApiContext/baseURL'
+import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
 
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import Save from '@atlaskit/icon/glyph/download'
@@ -26,18 +28,20 @@ import Deposit from '@atlaskit/icon/glyph/editor/info'
 import ShoppingCard from '@atlaskit/icon/glyph/marketplace'
 import NoShow from '@atlaskit/icon/glyph/media-services/preselected'
 import Cancelled from '@atlaskit/icon/glyph/cross-circle'
-import ModalCanCel from './modalCancel'
+import ModalCanCel from './modal-cancel'
 import Warning from '@atlaskit/icon/glyph/jira/failed-build-status'
+import ModalWarning from './modal-warning'
 
 const EditDetails = () => {
     const profiles = useApiUsersContext()
     const tables = useApiTablesContext()
-    const { indexED, setIndexED } = useEditDetailsContext()
+    const { indexED, setIndexED, setCurrentPeople, setChangedNTable } = useContentContext()
     const { reset, setReset } = useResetApiContext()
 
     const [startDate, setStartDate]: any = useState(new Date())
     const [disabledStt, setDisabledStt] = useState(false)
     const [showModal, setShowModal] = useState(false)
+    const [showWModal, setShowWModal] = useState(false)
     const [tableAPI, setTableAPI] = useState({
         table: {
             numberTable: 105 + profiles[indexED].numberTable % 18,
@@ -57,58 +61,17 @@ const EditDetails = () => {
         }
     })
 
-    const ExampleCustomInput = forwardRef(({ value, onClick }: {
-        value?: any;
-        onClick?: any;
-    }, ref) => (
-        <div
-            className='custom-time-edit'
-            style={{
-                backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
-                    profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`
-            }}
-        >
-            <span
-                onClick={() => {
-                    if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
-                        profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-                        let today = new Date(startDate)
-                        let prevDay = today.setDate(today.getDate() - 1)
-                        setStartDate(prevDay)
-                    }
-                }}
+    useEffect(() => {
+        setCurrentPeople(tableAPI.table.quantity)
+    }, [])
 
-            >
-                <ChevronLeftLargeIcon
-                    label='left'
-                    size="small"
-                />
-            </span>
+    useEffect(() => {
+        setCurrentPeople(tableAPI.table.quantity)
+    }, [tableAPI.table.quantity])
 
-            <span
-                onClick={onClick}
-                ref={ref as any}
-            >
-                {value}
-            </span>
-
-            <span
-                onClick={() => {
-                    if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
-                        profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-                        let today = new Date(startDate)
-                        let prevDay = today.setDate(today.getDate() + 1)
-                        setStartDate(prevDay)
-                    }
-                }}
-            >
-                <ChevronRightLargeIcon
-                    label='right'
-                    size="small"
-                />
-            </span>
-        </div>
-    ));
+    useEffect(() => {
+        setChangedNTable(tableAPI.table.numberTable)
+    }, [tableAPI.table.numberTable])
 
     const updateStt = (status: number) => {
         setTableAPI(prev => ({
@@ -145,9 +108,11 @@ const EditDetails = () => {
                             >
                                 Comfirmed
                             </span>
-                            <span onClick={() => {
-                                disabledStt ? setDisabledStt(false) : setDisabledStt(true)
-                            }}
+                            <span
+                                onClick={() => {
+                                    disabledStt ? setDisabledStt(false) : setDisabledStt(true)
+                                }}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <HipchatChevronDownIcon
                                     label='down'
@@ -320,9 +285,11 @@ const EditDetails = () => {
                             >
                                 Booked
                             </span>
-                            <span onClick={() => {
-                                disabledStt ? setDisabledStt(false) : setDisabledStt(true)
-                            }}
+                            <span
+                                onClick={() => {
+                                    disabledStt ? setDisabledStt(false) : setDisabledStt(true)
+                                }}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <HipchatChevronDownIcon
                                     label='down'
@@ -416,7 +383,7 @@ const EditDetails = () => {
             }
         }))
 
-        if (Number(event.target.value) > tableAPI.table.quantity) {
+        if (Number(event.target.value) > tables[profiles[indexED].numberTable % 18]?.quantity) {
             setColorText(prev => ({
                 text: {
                     ...prev.text,
@@ -500,6 +467,8 @@ const EditDetails = () => {
         }))
     }
 
+    const notify = () => toast.success('Reservation successfully updated!')
+
     const handleSave = () => {
         const oldTimeOL = [...tables[profiles[indexED].numberTable % 18 + 1]?.timeList]
         const newTimeOL = [...tables[(tableAPI.table.numberTable + 3) % 18 + 1]?.timeList]
@@ -530,7 +499,7 @@ const EditDetails = () => {
                 timeOrder: tableAPI.table.timeOrder,
                 eventTag: tableAPI.table.eventTag,
                 occasion: tableAPI.table.occasion,
-                quantity: tableAPI.table.quantity,
+                quantity: tableAPI.table.quantity - 1,
                 otherOccasion: tableAPI.table.otherOccasion,
                 status: statusUser,
             }
@@ -582,9 +551,11 @@ const EditDetails = () => {
 
             setTimeout(() => {
                 setIndexED(-1)
-            }, 2000);
+                setCurrentPeople(-1)
+                setChangedNTable(-1)
+            }, 1000);
         } else {
-            alert('Total pax exceeds table’s capacity or Clashes with an ongoing reservation.')
+            setShowWModal(true)
         }
     }
 
@@ -615,14 +586,20 @@ const EditDetails = () => {
 
         setTimeout(() => {
             setIndexED(-1)
-        }, 2000);
+            setCurrentPeople(-1)
+            setChangedNTable(-1)
+        }, 1000);
     }
 
     return (
         <div className="container-edit">
             <div className='edit-header'>
                 <span
-                    onClick={() => setIndexED(-1)}
+                    onClick={() => {
+                        setIndexED(-1)
+                        setCurrentPeople(-1)
+                        setChangedNTable(-1)
+                    }}
                 >
                     <ArrowLeftIcon
                         label='comeback'
@@ -639,7 +616,12 @@ const EditDetails = () => {
                         />
                     </span>
                     <span
-                        onClick={handleSave}
+                        onClick={() => {
+                            handleSave()
+                            if (colorText.text.people === '#1B2A4E' && colorText.text.table === '#1B2A4E' && colorText.text.time === '#1B2A4E') {
+                                notify()
+                            }
+                        }}
                     >
                         Save Changes
                     </span>
@@ -690,12 +672,59 @@ const EditDetails = () => {
                 </div>
                 <div className='datePickerEdit'>
                     <DatePicker
-                        selected={startDate}
-                        onChange={(date: any) => setStartDate(date)}
-                        customInput={<ExampleCustomInput />}
-                        dateFormat='dd MMM yyyy'
+                        value={startDate}
+                        format="DD MMM YYYY"
+                        onChange={setStartDate}
                         disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
                             profiles[indexED].status === 5 || profiles[indexED].status === 6}
+                        render={(value: Date, openCalendar: any) => {
+                            return (
+                                <div
+                                    className='custom-time-edit'
+                                    style={{
+                                        backgroundColor: `${(profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
+                                            profiles[indexED].status === 5 || profiles[indexED].status === 6) ? '#ccc' : '#fff'}`,
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <span
+                                        onClick={() => {
+                                            if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                                                profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+                                                let today = new Date(startDate)
+                                                let prevDay = today.setDate(today.getDate() - 1)
+                                                setStartDate(prevDay)
+                                            }
+                                        }}
+                                    >
+                                        <ChevronLeftLargeIcon
+                                            label='left'
+                                            size="small"
+                                        />
+                                    </span>
+
+                                    <span onClick={openCalendar}>
+                                        {value}
+                                    </span>
+
+                                    <span
+                                        onClick={() => {
+                                            if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
+                                                profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
+                                                let today = new Date(startDate)
+                                                let prevDay = today.setDate(today.getDate() + 1)
+                                                setStartDate(prevDay)
+                                            }
+                                        }}
+                                    >
+                                        <ChevronRightLargeIcon
+                                            label='right'
+                                            size="small"
+                                        />
+                                    </span>
+                                </div>
+                            )
+                        }}
                     />
                 </div>
             </div>
@@ -772,7 +801,7 @@ const EditDetails = () => {
                             <option value="3">3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
-                            <option value="6">6</option>
+                            {/* <option value="6">6</option>
                             <option value="7">7</option>
                             <option value="8">8</option>
                             <option value="9">9</option>
@@ -780,7 +809,7 @@ const EditDetails = () => {
                             <option value="11">11</option>
                             <option value="12">12</option>
                             <option value="13">13</option>
-                            <option value="14">14</option>
+                            <option value="14">14</option> */}
                         </optgroup>
                     </select>
                 </div>
@@ -1086,7 +1115,7 @@ const EditDetails = () => {
                         <div className='notify-name'>Notify Via</div>
 
                         <label className="container-radio">Email
-                            <input type="radio" name="notify" checked />
+                            <input type="radio" name="notify" />
                             <span className="checkmark"></span>
                         </label>
                         <label className="container-radio">SMS ($0.04 per SMS)
@@ -1132,8 +1161,24 @@ const EditDetails = () => {
                     handleCancelled={() => handleCancelled()}
                 />
             }
+
+            {showWModal &&
+                <ModalWarning
+                    setShowWModal={() => setShowWModal(false)}
+                    handleSave={() => {
+                        setColorText({
+                            text: {
+                                table: "#1B2A4E",
+                                people: "#1B2A4E",
+                                time: "#1B2A4E",
+                            }
+                        })
+                        setTimeout(() => handleSave(), 1000)
+                    }}
+                />
+            }
         </div>
     )
 }
 
-export default EditDetails
+export default memo(EditDetails)

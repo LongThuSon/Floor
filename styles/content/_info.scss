@@ -1,6 +1,7 @@
 #container-info {
     display: inline-block;
-    width: 315px;
+    width: 25%;
+    min-width: 300px;
     height: inherit;
     position: relative;
     z-index: 2;
@@ -8,10 +9,17 @@
     overflow: scroll;
     overflow-x: hidden;
 
+    @include respond(phone) {
+        display: inline-block;
+        width: 100vw;
+        min-width: 280px;
+        z-index: 3;
+    }
+
     // Request
     #info-search-data {
         display: flex;
-        width: 300px;
+        width: 100%;
         height: 38px;
         position: sticky;
         top: 0px;
@@ -34,8 +42,7 @@
 
     #info-request {
         display: block;
-        width: 300px;
-        // min-height: 88px;
+        width: 100%;
         max-height: 88px;
         background-color: $primary_bg;
         position: sticky;
@@ -55,7 +62,7 @@
             padding-bottom: 10px;
             
             #search-input{
-                width: 280px;
+                width: calc(100% - 20px);
                 height: 40px;
                 border-style: none;
                 border-radius: 4px;
@@ -72,7 +79,7 @@
 
         #setting-status {
             display: flex;
-            width: 300px;
+            width: 100%;
             height: 40px;
             margin: 0;
             justify-content: space-between;
@@ -101,15 +108,11 @@
                 color: $primary_text;
             }
     
-            // Hide arrow select
-            .css-1hb7zxy-IndicatorsContainer {
-                display: none;
-            }
-    
             #setting-drop-down {
                 position: absolute;
                 top: 9px;
                 left: 128px;
+                cursor: pointer;
             }
         }
 
@@ -117,7 +120,7 @@
             display: flex;
             position: absolute;
             top: 11px;
-            left: 175px;
+            right: 25px;
             font-size: 12px;
             color: #506690;
 
@@ -150,6 +153,7 @@
                         left: 15px;
                         background: #E8EBFB;
                         border-radius: 50%;
+                        cursor: pointer;
                     }
                 }
             }
@@ -158,7 +162,8 @@
     
     // Customer
     .info-customer {
-        width: 300px;
+        // width: 300px;
+        width: 100%;
         border: 1px solid rgba(0, 40, 100, 0.12);
         position: relative;
         top: -18px;
@@ -211,6 +216,7 @@
             width: inherit;
             height: 74px;
             background-color: $primary_bg;
+            cursor: pointer;
             
             .item-action {
                 display: flex;

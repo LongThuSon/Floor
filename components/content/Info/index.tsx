@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { InfoContext } from "./InfoContext"
+import { useState, memo } from 'react'
+import { InfoContext } from "../../context/InfoContext"
 import SearchData from "./info-request/info-search-data"
 import Request from "./info-request"
 import Setting from "./info-setting"
@@ -27,4 +27,4 @@ const Info = () => {
         </div>
     )
 }
-export default Info
+export default memo(Info)

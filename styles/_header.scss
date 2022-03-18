@@ -1,6 +1,7 @@
 .header-main {
     display: block;
-    width: 960px;
+    // width: 960px;
+    width: 100%;
     height: 54px;
     background: #F1F4F8;
     position: relative;
@@ -15,12 +16,25 @@
         position: absolute;
         left: 14px;
         top: 15px;
+        cursor: pointer;
     }
 
     #container-time {
         position: absolute;
         top: 7px;
-        left: 281px;
+        right: 435px;
+
+        @include respond(tab-port) {
+            right: 280px;    
+        }
+
+        @include respond(phone) {
+            right: 280px;    
+        }
+
+        @include hidden(_header) {
+            right: 120px;
+        }
 
         #custom-input {
             display: flex;
@@ -31,17 +45,29 @@
             font-size: 15px;
             background-color: #fff;
             border: 1px solid rgba(0, 40, 100, 0.12);
+        
+            @include respond(phone) {
+                width: 70px;
+            }
         }
     }
 
     #nav {
         display: inline-block;
-        width: 155px;
+        width: 150px;
         height: 40px;
         position: absolute;
         top: 7px;
-        left: 545px;
+        right: 260px;
         background-color: #fff;
+
+        @include respond(tab-port) {
+            right: 120px;        
+        }
+
+        @include hidden(_header) {
+            display: none;
+        }
 
         // Hide arrow select
         .css-1hb7zxy-IndicatorsContainer {
@@ -52,13 +78,23 @@
             position: absolute;
             top: 12px;
             left: 120px;
+            cursor: pointer;
         }
     }
 
     #docu {
         position: absolute;
         top: 15px;
-        left: 720px;
+        right: 222px;
+        cursor: pointer;
+
+        @include respond(tab-port) {
+            right: 82px;
+        }
+
+        // @include respond(tab-port) {
+        //     display: none;
+        // }
     }
 
     #container-profile {
@@ -72,6 +108,14 @@
         font-size: 18px;
         line-height: 40px;
         
+        // @include respond(tab-port) {
+        //     display: none;
+        // }
+
+        @include respond(tab-port) {
+            width: 62px;
+        }
+
         #container-avatar {
             display: inline-block;
             width: 62px;

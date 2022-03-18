@@ -1,4 +1,4 @@
-import {  useInfoContext  } from '../../Info/InfoContext'
+import {  useInfoContext  } from '../../../context/InfoContext'
 
 const ShowDetails = () => {
     const { showDetails, setShowDetails } = useInfoContext()

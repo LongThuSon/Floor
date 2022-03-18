@@ -1,39 +1,29 @@
+import {  memo  } from 'react'
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"
+import {  usePageContext  } from '../../context/PageContext'
 import AllTables from "./table"
+import TableStatusList from "./table-status-list"
 import ZoomIn from './zoom-style/zoom-in'
-import { ShowZoom } from "../index"
 
+const Floor = () => {
+    const { showZoom } = usePageContext()
 
-export interface Chair {
-    top: string;
-    left: string;
-}
-
-export interface Table {
-    top: string;
-    left: string;
-    number: number;
-}
-
-export interface ZoomIn extends ShowZoom {
-    setZoomIn(): void;
-    setZoomOut(): void;
-    setReset(): void
-}
-
-const Floor = ({ showZoom, callbackShow }: ShowZoom) => {
     return (
         <div id="container-floor">
-            {(!showZoom && <AllTables />) ||
+            {(!showZoom && 
+            <>
+                <TableStatusList />
+                <AllTables />
+            </>) ||
                 <TransformWrapper
                     initialScale={1}
                     initialPositionX={0}
                     initialPositionY={0}
+                    
                 >
                     {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
                         <>
                             <ZoomIn
-                                callbackShow={callbackShow}
                                 setZoomIn={() => zoomIn()}
                                 setZoomOut={() => zoomOut()}
                                 setReset={() => resetTransform()}
@@ -49,4 +39,5 @@ const Floor = ({ showZoom, callbackShow }: ShowZoom) => {
 
     )
 }
-export default Floor
+
+export default memo(Floor)

@@ -1,3 +1,4 @@
+import {  memo  } from 'react'
 import HeaderMenu from './header-menu'
 import HeaderTime from "./header-time"
 import HeaderSer from './header-service'
@@ -8,11 +9,11 @@ const Header = () => {
     return (
         <div className="header-main">
             <HeaderMenu />
-            <HeaderTime />          
+            <HeaderTime />           
             <HeaderSer />
             <HeaderDocu />
             <HeaderProfile />
         </div>
     )
 }
-export default Header
+export default memo(Header)

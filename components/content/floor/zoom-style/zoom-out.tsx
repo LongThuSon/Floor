@@ -1,18 +1,20 @@
-import { useMoveContext } from '../../MoveContext'
+import { useContentContext } from '../../../context/ContentContext'
+import {  usePageContext  } from '../../../context/PageContext'
 import MediaServicesZoomInIcon from '@atlaskit/icon/glyph/media-services/zoom-in'
 import MediaServicesZoomOutIcon from '@atlaskit/icon/glyph/media-services/zoom-out'
 import EditorExpandIcon from '@atlaskit/icon/glyph/editor/expand'
-import { ZoomStyle } from "../../index"
 
-const ZoomOut = ({ callbackShow, callbackMove, callbackMoveFalse }: ZoomStyle) => {
-    const { move } = useMoveContext()
+const ZoomOut = () => {
+    const { move, setMove } = useContentContext()
+    const { enableInfo, setEnableInfo, showZoom, setShowZoom } = usePageContext()
 
     return (
         <div id="zoom-out">
             <span
                 onClick={() => {
-                    callbackShow()
-                    callbackMoveFalse()
+                    setShowZoom(!showZoom)
+                    setMove(true)
+                    setEnableInfo(false)
                 }}
             >
                 <MediaServicesZoomInIcon
@@ -23,8 +25,9 @@ const ZoomOut = ({ callbackShow, callbackMove, callbackMoveFalse }: ZoomStyle) =
             </span>
             <span
                 onClick={() => {
-                    callbackShow()
-                    callbackMoveFalse()
+                    setShowZoom(!showZoom)
+                    setMove(true)
+                    setEnableInfo(false)
                 }}
             >
                 <MediaServicesZoomOutIcon
@@ -34,7 +37,7 @@ const ZoomOut = ({ callbackShow, callbackMove, callbackMoveFalse }: ZoomStyle) =
                 />
             </span>
             <span
-                onClick={callbackMove}
+                onClick={() => setMove(!move)}
             >
                 <EditorExpandIcon
                     label='distance'

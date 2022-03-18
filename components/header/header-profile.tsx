@@ -1,7 +1,12 @@
+import {  usePageContext  } from '../context/PageContext'
+
 const HeaderProfile = () => {
+    const {  winSize  } = usePageContext()
+
     return (
         <div id="container-profile"> 
-            Long Nguyễn
+            {winSize.width > 900 && 'Long Nguyễn'}
+
             <div id="container-avatar">
             </div>
         </div>

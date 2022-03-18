@@ -1,11 +1,14 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 
-import { useApiUsersContext, useApiTablesContext } from '../../../ApiContext'
-import { baseURL_users, baseURL_tables } from '../../../ApiContext/baseURL'
-import { useResetApiContext } from '../../../ApiContext/resetApiContext'
-import { useInfoContext } from '../../Info/InfoContext'
-import { useEditDetailsContext } from '../../EditDetailsContext'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+import { useApiUsersContext, useApiTablesContext } from '../../../context/ApiContext'
+import { baseURL_users, baseURL_tables } from '../../../context/ApiContext/baseURL'
+import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
+import { useInfoContext } from '../../../context/InfoContext'
+import { useContentContext } from '../../../context/ContentContext'
 
 import PeopleIcon from '@atlaskit/icon/glyph/people'
 import Chair from '@atlaskit/icon/glyph/editor/media-wide'
@@ -22,7 +25,7 @@ import Hold from '@atlaskit/icon/glyph/notification-all'
 
 const CustomerList = () => {
     const { showDetails, searchField } = useInfoContext()
-    const { setIndexED } = useEditDetailsContext()
+    const { setIndexED } = useContentContext()
     const profiles = useApiUsersContext()
     const tables = useApiTablesContext()
     const { reset, setReset } = useResetApiContext()
@@ -78,7 +81,9 @@ const CustomerList = () => {
         }
     }
 
-    const customerStatus = (id: number, timeOrder: number, status: number) => {
+    const customerStatus = (id: number, timeOrder: number, status: number, timeLate: number, noShow: boolean) => {
+        let currentTime = new Date().getTime()
+
         if ((status === 1 && timeOrder === 0 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:15') ||
             (status === 1 && timeOrder === 1 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:45') ||
             (status === 1 && timeOrder === 2 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '12:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '12:15') ||
@@ -87,6 +92,8 @@ const CustomerList = () => {
             (status === 1 && timeOrder === 5 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '13:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '13:45')) {
             const newUser = {
                 status: 2,
+                timeLate: new Date().getTime(),
+                noShow: true,
             }
 
             axios.put(`${baseURL_users}/${id}`, newUser)
@@ -97,17 +104,17 @@ const CustomerList = () => {
                 .catch(error => {
                     console.log('ERROR:', error)
                 })
+        }
 
-            setTimeout(() => {
-                axios.put(`${baseURL_users}/${id}`, { status: 5 })
-                    .then(res => {
-                        console.log(res.data)
-                        setReset(!reset)
-                    })
-                    .catch(error => {
-                        console.log('ERROR:', error)
-                    })
-            }, 60000)
+        if (status === 2 && noShow && (currentTime - timeLate >= 900000)) {
+            axios.put(`${baseURL_users}/${id}`, { status: 5 })
+                .then(res => {
+                    console.log(res.data)
+                    setReset(!reset)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
         }
 
         switch (status) {
@@ -262,6 +269,16 @@ const CustomerList = () => {
         }
     }
 
+    const notify = (status: string, name: string, numberTable?: number) => {
+        if (status === 'comfirm') {
+            toast.success(`Reservation confirmed for ${name}!`)
+        } else if (status === 'seated') {
+            toast.success(`${name} seated at Table ${numberTable}.`)
+        } else {
+            toast.success(`Table ${numberTable} has been put on hold.`)
+        }
+    }
+
     const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
         const timeOL = [...tables[numberTable % 18].timeList]
 
@@ -300,7 +317,7 @@ const CustomerList = () => {
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
         const timeOL = [...tables[numberTable % 18].timeList]
 
-        if ((quantity % 5 + 1) <= tables[numberTable % 18]?.quantity) {
+        if ((quantity % 5 + 1) <= tables[numberTable % 18]?.quantity && tables[numberTable % 18]?.status === 5) {
             if (!timeOL.includes(timeOrder % 6)) {
                 timeOL.push(Number(timeOrder % 6))
             }
@@ -313,6 +330,7 @@ const CustomerList = () => {
                 status: Math.floor(Math.random() * 3),
                 timeOrder: timeOrder % 6,
                 idCustomer: Number(id),
+                timeSeated: new Date().getTime(),
             }
 
             axios.put(`${baseURL_users}/${id}`, newUser)
@@ -335,20 +353,17 @@ const CustomerList = () => {
 
     const holdCustomer = (id: number) => {
         const updateUser = {
-            status: 2,
+            noShow: false,
         }
 
-        setTimeout(() => {
-            axios.put(`${baseURL_users}/${id}`, updateUser)
-                .then(res => {
-                    console.log(res.data)
-                    setReset(!reset)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-        }, 120000)
-
+        axios.put(`${baseURL_users}/${id}`, updateUser)
+            .then(res => {
+                console.log(res.data)
+                setReset(!reset)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
     }
 
     return (
@@ -398,7 +413,7 @@ const CustomerList = () => {
                                     </span>
                                 </div>
 
-                                {customerStatus(profile.id, profile.timeOrder % 6, profile.status % 100)}
+                                {customerStatus(profile.id, profile.timeOrder % 6, profile.status % 100, 0, profile.noShow)}
 
                             </div>
 
@@ -468,7 +483,10 @@ const CustomerList = () => {
                                 <div
                                     className='item-action'
                                     style={{ display: `${(profile.status % 100 === 0 || profile.status % 100 > 6) ? '' : 'none'}` }}
-                                    onClick={() => updateComfirm(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)}
+                                    onClick={() => {
+                                        updateComfirm(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)
+                                        notify('comfirm', profile.lastname)
+                                    }}
                                 >
                                     <span>
                                         <EditorDoneIcon
@@ -482,7 +500,12 @@ const CustomerList = () => {
                                 <div
                                     className='item-action'
                                     style={{ display: `${(profile.status % 100 === 3 || profile.status % 100 === 4 || profile.status % 100 === 6) ? 'none' : ''}` }}
-                                    onClick={() => updateSeat(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)}
+                                    onClick={() => {
+                                        updateSeat(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)
+                                        if ((profile.quantity % 5 + 1) <= tables[profile.numberTable % 18]?.quantity && tables[profile.numberTable % 18]?.status === 5) {
+                                            notify('seated', profile.lastname, 105 + profile.numberTable % 18)
+                                        }
+                                    }}
                                 >
                                     <span>
                                         <Chair
@@ -495,7 +518,7 @@ const CustomerList = () => {
                                 </div>
                                 <div
                                     className='item-action'
-                                    onClick={() => setIndexED(index)}
+                                    onClick={() => setIndexED(profile.id - 1)}
                                 >
                                     <span>
                                         <EditFilledIcon
@@ -509,7 +532,10 @@ const CustomerList = () => {
                                 <div
                                     className='item-action'
                                     style={{ display: `${profile.status % 100 === 2 ? '' : 'none'}` }}
-                                    onClick={() => holdCustomer(profile.id)}
+                                    onClick={() => {
+                                        holdCustomer(profile.id)
+                                        notify('hold', profile.lastname, 105 + profile.numberTable % 18)
+                                    }}
                                 >
                                     <span>
                                         <Hold

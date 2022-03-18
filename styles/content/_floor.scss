@@ -1,6 +1,6 @@
 #container-floor {
     display: inline-block;
-    width: 645px;
+    width: 100vw;
     height: inherit;
     position: absolute;
     top: 0;
@@ -19,19 +19,20 @@
         display: flex;
         width: 46px;
         height: 184px;
-        position: absolute;
+        position: fixed;
         top: 12px;
-        left: 587px;
+        right: 12px;
         z-index: 3;
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
         background-color: rgba(225, 230, 249, 0.6);
+        cursor: pointer;
     }
 
     // All tables
     #container-tables {
-        width: inherit;
+        width: -webkit-fill-available;
         height: inherit;
         position: absolute;
         z-index: 5;
@@ -40,7 +41,6 @@
         .chair {
             width: 18px;
             height: 18px;
-            // background: #007296;
             border-radius: 50%;
             
         }
@@ -54,12 +54,10 @@
             .table-1v1 {
                 width: 38px;
                 height: 38px;
-                // background-image: linear-gradient(to top,#A260DD 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 38px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-1v1 {
@@ -99,12 +97,10 @@
             .table-2v2-row {
                 width: 66px;
                 height: 38px;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 38px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-2v2-row {
@@ -144,12 +140,10 @@
             .table-6v6 {
                 width: 178px;
                 height: 38px;
-                // background-image: linear-gradient(to top,#A260DD 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 38px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-6v6 {
@@ -190,12 +184,10 @@
             .table-2v2-column {
                 width: 38px;
                 height: 66px;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 66px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-2v2-column {
@@ -235,12 +227,10 @@
             .table-3v3 {
                 width: 38px;
                 height: 94px;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 94px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-3v3 {
@@ -280,12 +270,10 @@
             .table-7v7 {
                 width: 38px;
                 height: 206px;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 206px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-7v7 {
@@ -326,12 +314,10 @@
                 width: 48px;
                 height: 48px;
                 border-radius: 50%;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 48px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-circle-6 {
@@ -372,12 +358,10 @@
                 width: 55px;
                 height: 55px;
                 border-radius: 50%;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 48px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-circle-8 {
@@ -418,12 +402,10 @@
                 width: 78px;
                 height: 78px;
                 border-radius: 50%;
-                // background-image: linear-gradient(to top,#FFA4A4 100%, #cde0eb 100%, #cde0eb);
                 position: absolute;
                 font-size: 14px;
                 line-height: 74px;
                 text-align: center;
-                color: #869AB8;
             }
 
             .reserv-time-circle-14 {
@@ -456,17 +438,73 @@
         }
     }
 
+    //Table list
+    #table-status-list {
+        width: 46px;
+        height: 46px;
+        position: absolute;
+        top: 12px;
+        left: 10px;
+        z-index: 6;
+        background: rgba(225, 230, 249, 0.6);
+        border-radius: 4px;
+        text-align: center;
+        line-height: 46px;
+        cursor: pointer;
+    }
+
+    #container-list {
+        display: flex;
+        flex-direction: column;
+        width: 153px;
+        height: 461px;
+        position: absolute;
+        top: 52px;
+        background-color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        color: $primary_text;
+        text-align: left;
+        line-height: 32px;
+        padding-top: 10px;
+
+        .table-color {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            position: relative;
+            left: 5px;
+            margin: 0 10px;
+            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14), 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-time {
+            display: inline-block;
+            width: 46px;
+            height: 17px;
+            position: relative;
+            left: 5px;
+            padding-top: 0;
+            margin: 0 10px;
+            font-size: 10px;
+            text-align: center;
+            line-height: 17px;
+            border-radius: 4px;
+            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14), 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    }
+
 
     // Transform configs
     .transform-component-module_wrapper__1_Fgj {
-        width: 645px;
-        height: 546px;
+        width: -webkit-fill-available;
+        height: -webkit-fill-available;
         overflow: visible;
 
         .transform-component-module_content__2jYgh {
             transform: translate3d(0px, 0px, 0px) scale(1.346);
-            width: 645px;
-            height: 546px;
+            width: -webkit-fill-available;
+            height: -webkit-fill-available;
             overflow: visible;
         
         } 

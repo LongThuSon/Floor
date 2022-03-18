@@ -18,6 +18,8 @@ interface IUser {
     timeOrder: number,
     occasion: string[],
     otherOccasion: string,
+    timeLate: number,
+    noShow: boolean,
 }
 
 const ApiUsersContextDefault = [
@@ -35,6 +37,8 @@ const ApiUsersContextDefault = [
         timeOrder: 3,
         occasion: [],
         otherOccasion: '',
+        timeLate: 0,
+        noShow: false,
     },
 ]
 

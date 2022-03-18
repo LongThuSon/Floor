@@ -1,6 +1,6 @@
 import Select from "react-select"
-import { useApiUsersContext } from '../../../ApiContext'
-import { useInfoContext } from '../../Info/InfoContext'
+import { useApiUsersContext } from '../../../context/ApiContext'
+import { useInfoContext } from '../../../context/InfoContext'
 import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
 
 const SettingStatus = () => {
@@ -11,11 +11,9 @@ const SettingStatus = () => {
         const settingProfiles = profiles.filter(
             person => (person.status % 100) === value
         )
-
         return settingProfiles.length
-
     }
-     
+
     const handleSettingChange = (status: number) => {
         setSearchField((prev: any) => ({
             request: {
@@ -32,7 +30,7 @@ const SettingStatus = () => {
         { status: -2, value: "Absent", quantity: `${sumQuantity(5) + sumQuantity(6)}` },
     ];
 
-    const formatOptionLabel = ( { status, value, quantity }: any) => (
+    const formatOptionLabel = ({ status, value, quantity }: any) => (
         <div style={{
             display: "flex",
         }}
@@ -46,12 +44,12 @@ const SettingStatus = () => {
     const customStyles = {
         option: (provided: any, state: any) => ({
             ...provided,
-            width: 300,
+            width: 450,
             height: 40
         }),
         control: () => ({
             // none of react-select's styles are passed to <Control />
-            width: 300,
+            width: 450,
         }),
         singleValue: (provided: any, state: any) => {
             const opacity = state.isDisabled ? 0.5 : 1;
@@ -69,6 +67,7 @@ const SettingStatus = () => {
                 defaultValue={options[0]}
                 formatOptionLabel={formatOptionLabel}
                 options={options}
+                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
             />
             <span
                 id="setting-drop-down"

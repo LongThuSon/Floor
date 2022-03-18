@@ -1,7 +1,18 @@
+import { useApiUsersContext } from '../../../context/ApiContext'
 import BookIcon from '@atlaskit/icon/glyph/book'
 import PeopleIcon from '@atlaskit/icon/glyph/people'
 
 const SearchData = () => {
+    const profiles = useApiUsersContext()
+
+    const sumQuantity = () => {
+        let sumQuantity = 0
+        for (let i in profiles) {
+            sumQuantity += (profiles[i].quantity % 5 + 1)
+        }
+        return sumQuantity
+    }
+    
     return (
         <div id="info-search-data">
             <div 
@@ -13,7 +24,7 @@ const SearchData = () => {
                         label="book"
                     />
                 </span>
-                22 Bookings
+                {profiles.length ?? 0} Bookings
             </div>
             <div 
                 className='search-data-item'
@@ -24,7 +35,8 @@ const SearchData = () => {
                         label="people"
                     />
                 </span>
-                15 Covers
+                {sumQuantity() ?? 0} Covers
+                {/* 0 Covers */}
             </div>
         </div>
     )
