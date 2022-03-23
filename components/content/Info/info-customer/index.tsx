@@ -8,7 +8,7 @@ import { useApiUsersContext, useApiTablesContext } from '../../../context/ApiCon
 import { baseURL_users, baseURL_tables } from '../../../context/ApiContext/baseURL'
 import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
 import { useInfoContext } from '../../../context/InfoContext'
-import { useContentContext } from '../../../context/ContentContext'
+import { usePageContext } from '../../../context/PageContext'
 
 import PeopleIcon from '@atlaskit/icon/glyph/people'
 import Chair from '@atlaskit/icon/glyph/editor/media-wide'
@@ -25,16 +25,23 @@ import Hold from '@atlaskit/icon/glyph/notification-all'
 
 const CustomerList = () => {
     const { showDetails, searchField } = useInfoContext()
-    const { setIndexED } = useContentContext()
+    const { setIndexED } = usePageContext()
     const profiles = useApiUsersContext()
     const tables = useApiTablesContext()
-    const { reset, setReset } = useResetApiContext()
+    const { reset, setReset, date } = useResetApiContext()
     const [listShow, setListShow] = useState<number[]>([])
 
     useEffect(() => {
         setListShow([])
     }, [])
 
+    const profilesFD = profiles.filter(
+        person => {
+            return (
+                person.date.includes(date)
+            )
+        }
+    )
 
     const profileFilter = (profile: any) => {
         if (searchField.request.status === -1) {
@@ -46,7 +53,7 @@ const CustomerList = () => {
         }
     }
 
-    const settingProfiles = profiles.filter(profileFilter)
+    const settingProfiles = profilesFD.filter(profileFilter)
 
     const searchProfiles = settingProfiles.filter(
         person => {
@@ -62,20 +69,38 @@ const CustomerList = () => {
             )
         })
 
-    const customerTime = (timeOrder: number) => {
+    const customerTime = (timeOrder: number, timeOL: number[]) => {
         switch (timeOrder) {
             case 0:
-                return <div style={{ fontWeight: 600 }}>11:00AM</div>
+                return <div style={{
+                    fontWeight: 600,
+                }}
+                >11:00AM</div>
             case 1:
-                return <div style={{ fontWeight: 600 }}>11:30AM</div>
+                return <div style={{
+                    fontWeight: 600,
+                }}
+                >11:30AM</div>
             case 2:
-                return <div style={{ fontWeight: 600 }}>12:00PM</div>
+                return <div style={{
+                    fontWeight: 600,
+                }}
+                >12:00PM</div>
             case 3:
-                return <div style={{ fontWeight: 600 }}>12:30PM</div>
+                return <div style={{
+                    fontWeight: 600,
+                }}
+                >12:30PM</div>
             case 4:
-                return <div style={{ fontWeight: 600 }}>13:00PM</div>
+                return <div style={{
+                    fontWeight: 600,
+                }}
+                >13:00PM</div>
             case 5:
-                return <div style={{ fontWeight: 600 }}>13:30PM</div>
+                return <div style={{
+                    fontWeight: 600,
+                }}
+                >13:30PM</div>
             default:
                 throw new Error('Invalid time.')
         }
@@ -280,18 +305,25 @@ const CustomerList = () => {
     }
 
     const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const timeOL = [...tables[numberTable % 18].timeList]
+        const timeOL = [...tables[0]?.tables[numberTable % 18]?.timeList]
 
         const newUser = {
             status: 1,
         }
-        const newTable = {
+
+        const newTable = [...tables[0]?.tables].fill({
+            id: tables[0]?.tables[numberTable % 18]?.id,
+            numberTable: tables[0]?.tables[numberTable % 18]?.numberTable,
             seat: quantity % 5 + 1,
-            status: Number(`${(quantity % 5 + 1) <= tables[numberTable % 18]?.quantity && (timeOL.includes(timeOrder % 6) === false) ? 3 : 7}`),
+            status: Number(`${(quantity % 5 + 1) <= tables[0].tables[numberTable % 18]?.quantity && (timeOL.includes(timeOrder % 6) === false) ? 3 : 7}`),
+            percent: tables[0]?.tables[numberTable % 18]?.percent,
             timeOrder: timeOrder % 6,
             idCustomer: Number(id),
-            timeList: timeOL
-        }
+            quantity: tables[0]?.tables[numberTable % 18]?.quantity,
+            timeList: timeOL,
+            timeSeated: tables[0]?.tables[numberTable % 18]?.timeSeated,
+            updateBack: tables[0]?.tables[numberTable % 18]?.updateBack,
+        }, numberTable % 18, numberTable % 18 + 1)
 
         if (timeOL.includes(timeOrder % 6) === false) {
             timeOL.push(Number(timeOrder % 6))
@@ -304,7 +336,7 @@ const CustomerList = () => {
             .catch(error => {
                 console.log('ERROR:', error)
             })
-        axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
+        axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
             .then(res => {
                 setReset(!reset)
                 console.log(res.data)
@@ -315,9 +347,9 @@ const CustomerList = () => {
     }
 
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const timeOL = [...tables[numberTable % 18].timeList]
+        const timeOL = [...tables[0]?.tables[numberTable % 18]?.timeList]
 
-        if ((quantity % 5 + 1) <= tables[numberTable % 18]?.quantity && tables[numberTable % 18]?.status === 5) {
+        if ((quantity % 5 + 1) <= tables[0]?.tables[numberTable % 18]?.quantity && tables[0]?.tables[numberTable % 18]?.status === 5) {
             if (!timeOL.includes(timeOrder % 6)) {
                 timeOL.push(Number(timeOrder % 6))
             }
@@ -325,20 +357,27 @@ const CustomerList = () => {
             const newUser = {
                 status: 3,
             }
-            const newTable = {
+
+            const newTable = [...tables[0]?.tables].fill({
+                id: tables[0]?.tables[numberTable % 18]?.id,
+                numberTable: tables[0]?.tables[numberTable % 18]?.numberTable,
                 seat: quantity % 5 + 1,
                 status: Math.floor(Math.random() * 3),
+                percent: tables[0]?.tables[numberTable % 18]?.percent,
                 timeOrder: timeOrder % 6,
                 idCustomer: Number(id),
+                quantity: tables[0]?.tables[numberTable % 18]?.quantity,
+                timeList: [...tables[0]?.tables[numberTable % 18]?.timeList],
                 timeSeated: new Date().getTime(),
-            }
+                updateBack: tables[0]?.tables[numberTable % 18]?.updateBack,
+            }, numberTable % 18, numberTable % 18 + 1)
 
             axios.put(`${baseURL_users}/${id}`, newUser)
                 .then(res => console.log(res.data))
                 .catch(error => {
                     console.log('ERROR:', error)
                 })
-            axios.put(`${baseURL_tables}/${numberTable % 18 + 1}`, newTable)
+            axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
                 .then(res => {
                     setReset(!reset)
                     console.log(res.data)
@@ -371,14 +410,18 @@ const CustomerList = () => {
             <ul
                 style={{
                     listStyleType: "none",
-                    padding: 0
+                    padding: 0,
                 }}
             >
-                {searchProfiles.map((profile, index) => (
+                {searchProfiles.map((profile) => (
                     <li
                         key={profile.id}
-                        style={{ padding: 0 }}
-                        onClick={() => handleshow(index)}
+                        style={{
+                            padding: 0,
+                            margin: '-18px 0 18px',
+                            backgroundColor: `${tables[0]?.tables[profile.numberTable % 18]?.status === 7 ? '#FFEEEB' : '#fff'}`,
+                        }}
+                        onClick={() => handleshow(profile.id)}
                     >
                         <div className="info-customer">
                             <div className="customer-title">
@@ -386,30 +429,34 @@ const CustomerList = () => {
                                     <span style={{ fontWeight: 600 }}>{profile.lastname}</span>
                                 </div>
 
-                                {customerTime(profile.timeOrder % 6)}
+                                {customerTime(profile.timeOrder % 6, tables[0]?.tables[profile.numberTable % 18]?.timeList)}
 
                             </div>
                             <div className='customer-setup'>
                                 <div>
                                     <span
                                         style={{
-                                            marginRight: "10px"
+                                            marginRight: "10px",
                                         }}
                                     >
                                         <PeopleIcon
                                             label='people'
                                             size='small'
-                                            primaryColor='#506690'
+                                            primaryColor={`${((profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status !== 7) ? '#506690' : '#DF4759'}`}
                                         />
-                                        {profile.quantity % 5 + 1}
+                                        <span style={{ color: `${((profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status !== 7) ? '#506690' : '#DF4759'}` }}>
+                                            {profile.quantity % 5 + 1}
+                                        </span>
                                     </span>
                                     <span>
                                         <Chair
                                             label='chair'
                                             size='small'
-                                            primaryColor='#506690'
+                                            primaryColor={`${(tables[0]?.tables[profile.numberTable % 18]?.status === 7 && (profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity) ? '#DF4759' : '#506690'}`}
                                         />
-                                        {105 + profile.numberTable % 18}
+                                        <span style={{ color: `${(tables[0]?.tables[profile.numberTable % 18]?.status === 7 && (profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity) ? '#DF4759' : '#506690'}` }}>
+                                            {105 + profile.numberTable % 18}
+                                        </span>
                                     </span>
                                 </div>
 
@@ -419,7 +466,7 @@ const CustomerList = () => {
 
                             <div
                                 className='customer-tag'
-                                style={{ display: `${(showDetails || listShow.includes(index)) ? '' : 'none'}` }}
+                                style={{ display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}` }}
                             >
                                 <div className='tag-title'>
                                     <MobileIcon
@@ -443,14 +490,14 @@ const CustomerList = () => {
                                 <div
                                     style={{
                                         paddingLeft: '16px',
-                                        display: `${(showDetails || listShow.includes(index)) ? '' : 'none'}`
+                                        display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}`
                                     }}
                                 >{profile.eventTag}</div>
                             </div>
 
                             <div
                                 className='customer-tag'
-                                style={{ display: `${(showDetails || listShow.includes(index)) ? '' : 'none'}` }}
+                                style={{ display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}` }}
                             >
                                 <div className='tag-title'>
                                     <Deposit
@@ -460,12 +507,12 @@ const CustomerList = () => {
                                     />
                                     Deposit
                                 </div>
-                                <div style={{ paddingLeft: '16px' }}>{profile.deposit}</div>
+                                <div style={{ paddingLeft: '16px' }}>{profile.quantity % 5 + 1} x 50$</div>
                             </div>
 
                             <div
                                 className='customer-tag'
-                                style={{ display: `${(showDetails || listShow.includes(index)) ? '' : 'none'}` }}
+                                style={{ display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}` }}
                             >
                                 <div className='tag-title'>
                                     <ShoppingCard
@@ -478,7 +525,7 @@ const CustomerList = () => {
                             </div>
                             <div
                                 className='actions-status'
-                                style={{ display: `${listShow.includes(index) ? '' : 'none'}` }}
+                                style={{ display: `${listShow.includes(profile.id) ? '' : 'none'}` }}
                             >
                                 <div
                                     className='item-action'
@@ -502,7 +549,7 @@ const CustomerList = () => {
                                     style={{ display: `${(profile.status % 100 === 3 || profile.status % 100 === 4 || profile.status % 100 === 6) ? 'none' : ''}` }}
                                     onClick={() => {
                                         updateSeat(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)
-                                        if ((profile.quantity % 5 + 1) <= tables[profile.numberTable % 18]?.quantity && tables[profile.numberTable % 18]?.status === 5) {
+                                        if ((profile.quantity % 5 + 1) <= tables[0].tables[profile.numberTable % 18]?.quantity && tables[0].tables[profile.numberTable % 18]?.status === 5) {
                                             notify('seated', profile.lastname, 105 + profile.numberTable % 18)
                                         }
                                     }}

@@ -6,7 +6,7 @@ import EditorExpandIcon from '@atlaskit/icon/glyph/editor/expand'
 
 const ZoomOut = () => {
     const { move, setMove } = useContentContext()
-    const { enableInfo, setEnableInfo, showZoom, setShowZoom } = usePageContext()
+    const { setEnableInfo, showZoom, setShowZoom } = usePageContext()
 
     return (
         <div id="zoom-out">

@@ -12,7 +12,7 @@ interface ZoomIn {
 }
 
 const ZoomIn = ({ setZoomIn, setZoomOut, setReset }: ZoomIn) => {
-    const { showZoom, setShowZoom, setEnableInfo } = usePageContext()
+    const { showZoom, setShowZoom } = usePageContext()
 
     return (
         <div id="zoom-in">

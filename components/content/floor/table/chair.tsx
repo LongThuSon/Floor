@@ -1,11 +1,11 @@
 import {  memo  } from 'react'
 import { useApiTablesContext } from '../../../context/ApiContext'
-import {  useContentContext  } from '../../../context/ContentContext'
+import {  usePageContext  } from '../../../context/PageContext'
 import { Chair } from "./index"
 
 const Chair = (props : Chair) => {
     const tables = useApiTablesContext()
-    const { currentPeople } = useContentContext()
+    const { currentPeople } = usePageContext()
 
     return (
         <div
@@ -14,7 +14,7 @@ const Chair = (props : Chair) => {
                     position: "absolute",
                     top: `${props.top}`,
                     left: `${props.left}`,
-                    backgroundColor: `${(props.numberChair <= tables[props.indexTable]?.seat) ? '#007296' : (currentPeople > tables[props.indexTable]?.quantity && tables[props.indexTable]?.status === 5) ? 'rgba(223, 71, 89, 0.5)' : 'rgba(0, 40, 100, 0.12)'}`
+                    backgroundColor: `${(props.numberChair <= tables[0]?.tables[props.indexTable]?.seat) ? '#007296' : (currentPeople > tables[0]?.tables[props.indexTable]?.quantity && tables[0]?.tables[props.indexTable]?.status === 5) ? 'rgba(223, 71, 89, 0.5)' : 'rgba(0, 40, 100, 0.12)'}`
                 }}
             >
             </div>

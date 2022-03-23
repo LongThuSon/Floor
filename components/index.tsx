@@ -14,7 +14,10 @@ function getWindowDimensions() {
 
 const App = () => {
     const [enableInfo, setEnableInfo] = useState(true)
+    const [indexED, setIndexED] = useState(-1)
     const [showZoom, setShowZoom] = useState(false)
+    const [currentPeople, setCurrentPeople] = useState(-1)
+    const [changedNTable, setChangedNTable] = useState(-1)
     const [winSize, setWinSize] = useState({ width: 1536, height: 677 })
 
     useEffect(() => {
@@ -35,7 +38,7 @@ const App = () => {
         <div>
             <ApiContextProvider>
                 <PageContext.Provider
-                    value={{ enableInfo, setEnableInfo, showZoom, setShowZoom, winSize }}
+                    value={{ enableInfo, setEnableInfo, indexED, setIndexED, showZoom, setShowZoom, winSize, currentPeople, setCurrentPeople, changedNTable, setChangedNTable }}
                 >
                     <Header />
                     <Content />

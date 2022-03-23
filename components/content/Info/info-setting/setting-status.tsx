@@ -1,14 +1,24 @@
 import Select from "react-select"
 import { useApiUsersContext } from '../../../context/ApiContext'
+import {  useResetApiContext  } from '../../../context/ApiContext/resetApiContext'
 import { useInfoContext } from '../../../context/InfoContext'
 import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
 
 const SettingStatus = () => {
     const profiles = useApiUsersContext()
+    const { date } = useResetApiContext()
     const { setSearchField } = useInfoContext()
 
+    const profilesFD = profiles.filter(
+        person => {
+            return (
+                person.date.includes(date)
+            )
+        }
+    )
+
     const sumQuantity = (value: number) => {
-        const settingProfiles = profiles.filter(
+        const settingProfiles = profilesFD.filter(
             person => (person.status % 100) === value
         )
         return settingProfiles.length
@@ -24,7 +34,7 @@ const SettingStatus = () => {
     }
 
     const options = [
-        { status: -1, value: "Upcoming", quantity: `${profiles.length}` },
+        { status: -1, value: "Upcoming", quantity: `${profilesFD.length}` },
         { status: 3, value: "Seated", quantity: `${sumQuantity(3)}` },
         { status: 4, value: "Completed", quantity: `${sumQuantity(4)}` },
         { status: -2, value: "Absent", quantity: `${sumQuantity(5) + sumQuantity(6)}` },

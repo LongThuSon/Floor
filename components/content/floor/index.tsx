@@ -13,6 +13,7 @@ const Floor = () => {
             {(!showZoom && 
             <>
                 <TableStatusList />
+                
                 <AllTables />
             </>) ||
                 <TransformWrapper

@@ -165,7 +165,6 @@
         // width: 300px;
         width: 100%;
         border: 1px solid rgba(0, 40, 100, 0.12);
-        position: relative;
         top: -18px;
         z-index: 1;
 
@@ -182,7 +181,6 @@
             justify-content: space-between;
             align-items: center;
             margin: 10px;
-            color: #506690;
             font-size: 15px;
 
             .customer-status {

@@ -1,18 +1,22 @@
-import {  useState  } from 'react'
-import {  usePageContext  } from '../context/PageContext'
+import { usePageContext } from '../context/PageContext'
 import MenuIcon from '@atlaskit/icon/glyph/menu'
 
 const HeaderMenu = () => {
-    const { enableInfo, setEnableInfo, showZoom } = usePageContext()
+    const { enableInfo, setEnableInfo, showZoom, setIndexED, setCurrentPeople, setChangedNTable } = usePageContext()
 
     const handleEnableInfo = () => {
-        if (!showZoom) setEnableInfo(!enableInfo)
+        if (!showZoom) {
+            setEnableInfo(!enableInfo)
+            setIndexED(-1)
+            setCurrentPeople(-1)
+            setChangedNTable(-1)
+        }
     }
 
     return (
-        <span 
+        <span
             id='menu'
-            onClick={handleEnableInfo}    
+            onClick={handleEnableInfo}
         >
             <MenuIcon
                 label='menu'

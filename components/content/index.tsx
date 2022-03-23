@@ -18,11 +18,8 @@ const getCurrentTime = () => {
 
 const Content = () => {
     const [move, setMove] = useState(true)
-    const [indexED, setIndexED] = useState(-1)
     const [time, setTime] = useState(getCurrentTime())
-    const [currentPeople, setCurrentPeople] = useState(-1)
-    const [changedNTable, setChangedNTable] = useState(-1)
-    const { enableInfo, showZoom } = usePageContext()
+    const { enableInfo, showZoom, indexED } = usePageContext()
     const { reset, setReset } = useResetApiContext()
 
     useEffect(() => {
@@ -39,7 +36,7 @@ const Content = () => {
             id="content-main"
         >
             <ContentContext.Provider
-                value={{ move, setMove, indexED, setIndexED, time, currentPeople, setCurrentPeople, changedNTable, setChangedNTable }}
+                value={{ move, setMove, time }}
             >
                 {enableInfo && <Info />}
                 {enableInfo && indexED !== -1 && <EditDetails />}

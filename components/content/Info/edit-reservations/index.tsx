@@ -1,12 +1,12 @@
 import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
 
-import DatePicker from "react-multi-date-picker"
+import DatePicker, { DateObject } from "react-multi-date-picker"
 
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { useContentContext } from '../../../context/ContentContext'
+import { usePageContext } from '../../../context/PageContext'
 import { useApiUsersContext, useApiTablesContext } from '../../../context/ApiContext'
 import { baseURL_users, baseURL_tables } from '../../../context/ApiContext/baseURL'
 import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
@@ -35,22 +35,24 @@ import ModalWarning from './modal-warning'
 const EditDetails = () => {
     const profiles = useApiUsersContext()
     const tables = useApiTablesContext()
-    const { indexED, setIndexED, setCurrentPeople, setChangedNTable } = useContentContext()
+    const { indexED, setIndexED, setCurrentPeople, setChangedNTable } = usePageContext()
     const { reset, setReset } = useResetApiContext()
 
-    const [startDate, setStartDate]: any = useState(new Date())
+    const [startDate, setStartDate] = useState<any>(profiles[indexED]?.date)
     const [disabledStt, setDisabledStt] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [showWModal, setShowWModal] = useState(false)
     const [tableAPI, setTableAPI] = useState({
         table: {
-            numberTable: 105 + profiles[indexED].numberTable % 18,
-            timeOrder: profiles[indexED].timeOrder % 6,
-            eventTag: profiles[indexED].eventTag,
-            status: profiles[indexED].status % 100,
-            occasion: profiles[indexED].occasion,
-            otherOccasion: profiles[indexED].otherOccasion,
-            quantity: profiles[indexED].quantity % 5 + 1,
+            numberTable: 105 + profiles[indexED]?.numberTable % 18,
+            timeOrder: profiles[indexED]?.timeOrder % 6,
+            eventTag: profiles[indexED]?.eventTag,
+            status: profiles[indexED]?.status % 100,
+            occasion: profiles[indexED]?.occasion,
+            otherOccasion: profiles[indexED]?.otherOccasion,
+            quantity: profiles[indexED]?.quantity % 5 + 1,
+            checkDate: false,
+            date: profiles[indexED]?.date
         }
     })
     const [colorText, setColorText] = useState({
@@ -83,6 +85,8 @@ const EditDetails = () => {
 
         setDisabledStt(false)
     }
+
+    { console.log(profiles[indexED]?.date) }
 
     const customerStatusEdit = (status: number) => {
         switch (status) {
@@ -329,7 +333,7 @@ const EditDetails = () => {
     }
 
     const changeNumberTable = (event: any) => {
-        let timeOL = [...tables[Number(event.target.value) - 105].timeList]
+        let timeOL = [...tables[0]?.tables[Number(event.target.value) - 105]?.timeList]
 
         setTableAPI(prev => ({
             table: {
@@ -338,7 +342,7 @@ const EditDetails = () => {
             }
         }))
 
-        if (tableAPI.table.quantity > tables[Number(event.target.value) - 105]?.quantity) {
+        if (tableAPI.table.quantity > tables[0]?.tables[Number(event.target.value) - 105]?.quantity) {
             setColorText(prev => ({
                 text: {
                     ...prev.text,
@@ -383,7 +387,7 @@ const EditDetails = () => {
             }
         }))
 
-        if (Number(event.target.value) > tables[profiles[indexED].numberTable % 18]?.quantity) {
+        if (Number(event.target.value) > tables[0]?.tables[profiles[indexED].numberTable % 18]?.quantity) {
             setColorText(prev => ({
                 text: {
                     ...prev.text,
@@ -403,7 +407,7 @@ const EditDetails = () => {
     }
 
     const changeTimeOrder = (event: any) => {
-        let timeOL = [...tables[tableAPI.table.numberTable - 105].timeList]
+        let timeOL = [...tables[0]?.tables[tableAPI.table.numberTable - 105]?.timeList]
 
         setTableAPI(prev => ({
             table: {
@@ -470,11 +474,11 @@ const EditDetails = () => {
     const notify = () => toast.success('Reservation successfully updated!')
 
     const handleSave = () => {
-        const oldTimeOL = [...tables[profiles[indexED].numberTable % 18 + 1]?.timeList]
-        const newTimeOL = [...tables[(tableAPI.table.numberTable + 3) % 18 + 1]?.timeList]
+        const oldTimeOL = [...tables[0].tables[profiles[indexED].numberTable % 18 + 1]?.timeList ?? '']
+        const newTimeOL = [...tables[0].tables[(tableAPI.table.numberTable + 3) % 18 + 1]?.timeList ?? '']
 
         if (colorText.text.people === '#1B2A4E' && colorText.text.table === '#1B2A4E' && colorText.text.time === '#1B2A4E') {
-            let statusTable, seatTable, statusUser
+            let statusTable, seatTable, statusUser, newUser: any = {}
 
             switch (tableAPI.table.status) {
                 case 1:
@@ -494,30 +498,56 @@ const EditDetails = () => {
 
             console.log(oldTimeOL, newTimeOL)
 
-            const newUser = {
-                numberTable: tableAPI.table.numberTable + 3,
-                timeOrder: tableAPI.table.timeOrder,
-                eventTag: tableAPI.table.eventTag,
-                occasion: tableAPI.table.occasion,
-                quantity: tableAPI.table.quantity - 1,
-                otherOccasion: tableAPI.table.otherOccasion,
-                status: statusUser,
+            if (tableAPI.table.checkDate) {
+                newUser = {
+                    numberTable: tableAPI.table.numberTable + 3,
+                    timeOrder: tableAPI.table.timeOrder,
+                    eventTag: tableAPI.table.eventTag,
+                    occasion: tableAPI.table.occasion,
+                    quantity: tableAPI.table.quantity - 1,
+                    otherOccasion: tableAPI.table.otherOccasion,
+                    status: statusUser,
+                    date: `${startDate?.year}-${(startDate?.month?.number > 9) ? (startDate?.month?.number) : ('0' + (startDate?.month?.number))}-${(startDate?.day > 9) ? (startDate?.day) : ('0' + (startDate?.day))}`
+                }
+            } else {
+                const newUser = {
+                    numberTable: tableAPI.table.numberTable + 3,
+                    timeOrder: tableAPI.table.timeOrder,
+                    eventTag: tableAPI.table.eventTag,
+                    occasion: tableAPI.table.occasion,
+                    quantity: tableAPI.table.quantity - 1,
+                    otherOccasion: tableAPI.table.otherOccasion,
+                    status: statusUser,
+                }
             }
 
-            const resetTable = {
-                status: 5,
+            const resetTable = [...tables[0]?.tables].fill({
+                id: tables[0]?.tables[profiles[indexED].numberTable % 18]?.id,
+                numberTable: tables[0]?.tables[profiles[indexED].numberTable % 18]?.numberTable,
                 seat: 0,
+                status: 5,
                 percent: 0,
+                timeOrder: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeOrder,
+                idCustomer: tables[0]?.tables[profiles[indexED].numberTable % 18]?.idCustomer,
+                quantity: tables[0]?.tables[profiles[indexED].numberTable % 18]?.quantity,
                 timeList: oldTimeOL,
-            }
+                timeSeated: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeSeated,
+                updateBack: tables[0]?.tables[profiles[indexED].numberTable % 18]?.updateBack,
+            }, profiles[indexED].numberTable % 18, profiles[indexED].numberTable % 18 + 1)
 
-            const newTable = {
-                timeOrder: tableAPI.table.timeOrder,
-                status: statusTable,
+            const newTable = [...tables[0]?.tables].fill({
+                id: tables[0]?.tables[newUser.numberTable % 18]?.id,
+                numberTable: tables[0]?.tables[newUser.numberTable % 18]?.numberTable,
                 seat: seatTable,
+                status: statusTable,
                 percent: 0,
+                timeOrder: tableAPI.table.timeOrder,
+                idCustomer: tables[0]?.tables[newUser.numberTable % 18]?.idCustomer,
+                quantity: tables[0]?.tables[newUser.numberTable % 18]?.quantity,
                 timeList: newTimeOL,
-            }
+                timeSeated: tables[0]?.tables[newUser.numberTable % 18]?.timeSeated,
+                updateBack: tables[0]?.tables[newUser.numberTable % 18]?.updateBack,
+            }, newUser.numberTable % 18, newUser.numberTable % 18 + 1)
 
             axios.put(`${baseURL_users}/${indexED + 1}`, newUser)
                 .then(res => {
@@ -527,11 +557,11 @@ const EditDetails = () => {
                     console.log('ERROR:', error)
                 })
 
-            axios.put(`${baseURL_tables}/${newUser.numberTable % 18 + 1}`, newTable)
+            axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
                 .then(res => {
                     // Reset Old Table
                     if ((newUser.numberTable % 18 + 1) !== (profiles[indexED].numberTable % 18 + 1)) {
-                        axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, resetTable)
+                        axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: resetTable })
                             .then(res => {
                                 console.log(res.data)
                                 setReset(!reset)
@@ -560,12 +590,19 @@ const EditDetails = () => {
     }
 
     const handleCancelled = () => {
-        const resetTable = {
-            status: 5,
+        const resetTable = [...tables[0]?.tables].fill({
+            id: tables[0]?.tables[profiles[indexED].numberTable % 18]?.id,
+            numberTable: tables[0]?.tables[profiles[indexED].numberTable % 18]?.numberTable,
             seat: 0,
+            status: 5,
             percent: 0,
+            timeOrder: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeOrder,
             idCustomer: 0,
-        }
+            quantity: tables[0]?.tables[profiles[indexED].numberTable % 18]?.quantity,
+            timeList: [...tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeList],
+            timeSeated: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeSeated,
+            updateBack: tables[0]?.tables[profiles[indexED].numberTable % 18]?.updateBack,
+        }, profiles[indexED].numberTable % 18, profiles[indexED].numberTable % 18 + 1)
 
         axios.put(`${baseURL_users}/${indexED + 1}`, { status: 6 })
             .then(res => {
@@ -575,7 +612,7 @@ const EditDetails = () => {
             .catch(error => {
                 console.log('ERROR:', error)
             })
-        axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, resetTable)
+        axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, { tables: resetTable })
             .then(res => {
                 console.log(res.data)
                 setReset(!reset)
@@ -674,7 +711,15 @@ const EditDetails = () => {
                     <DatePicker
                         value={startDate}
                         format="DD MMM YYYY"
-                        onChange={setStartDate}
+                        onChange={array => {
+                            setStartDate(array)
+                            setTableAPI(prev => ({
+                                table: {
+                                    ...prev.table,
+                                    checkDate: true,
+                                }
+                            }))
+                        }}
                         disabled={profiles[indexED].status === 3 || profiles[indexED].status === 4 ||
                             profiles[indexED].status === 5 || profiles[indexED].status === 6}
                         render={(value: Date, openCalendar: any) => {
@@ -691,9 +736,15 @@ const EditDetails = () => {
                                         onClick={() => {
                                             if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
                                                 profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-                                                let today = new Date(startDate)
-                                                let prevDay = today.setDate(today.getDate() - 1)
+                                                let today = new DateObject(startDate)
+                                                let prevDay = today.setDate(today.subtract(1, 'day'))
                                                 setStartDate(prevDay)
+                                                setTableAPI(prev => ({
+                                                    table: {
+                                                        ...prev.table,
+                                                        checkDate: true,
+                                                    }
+                                                }))
                                             }
                                         }}
                                     >
@@ -711,9 +762,15 @@ const EditDetails = () => {
                                         onClick={() => {
                                             if (profiles[indexED].status !== 3 && profiles[indexED].status !== 4 &&
                                                 profiles[indexED].status !== 5 && profiles[indexED].status !== 6) {
-                                                let today = new Date(startDate)
-                                                let prevDay = today.setDate(today.getDate() + 1)
+                                                let today = new DateObject(startDate)
+                                                let prevDay = today.setDate(today.add(1, 'day'))
                                                 setStartDate(prevDay)
+                                                setTableAPI(prev => ({
+                                                    table: {
+                                                        ...prev.table,
+                                                        checkDate: true,
+                                                    }
+                                                }))
                                             }
                                         }}
                                     >

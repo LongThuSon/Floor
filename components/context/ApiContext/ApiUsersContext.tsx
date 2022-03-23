@@ -20,6 +20,7 @@ interface IUser {
     otherOccasion: string,
     timeLate: number,
     noShow: boolean,
+    date: string,
 }
 
 const ApiUsersContextDefault = [
@@ -39,6 +40,7 @@ const ApiUsersContextDefault = [
         otherOccasion: '',
         timeLate: 0,
         noShow: false,
+        date: '2022-03-21'
     },
 ]
 
@@ -46,7 +48,7 @@ export const ApiUsersContext = createContext<IUser[]>(ApiUsersContextDefault)
 
 const ApiUsersContextProvider = ({ children }: IApiContextProps) => {
     const [profiles, setProfiles] = useState<IUser[]>([])
-    const { reset } = useResetApiContext()
+    const { reset, date } = useResetApiContext()
 
     useEffect(() => {
         axios.get<IUser[]>(baseURL_users).then((response) => {
@@ -56,7 +58,7 @@ const ApiUsersContextProvider = ({ children }: IApiContextProps) => {
             .catch(error => {
                 console.log('ERROR:', error)
             })
-    }, [reset])
+    }, [reset, date])
 
     return (
         <ApiUsersContext.Provider value={profiles}>

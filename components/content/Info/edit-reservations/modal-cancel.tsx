@@ -1,6 +1,6 @@
 import {  memo  } from 'react'
 import { useApiUsersContext } from '../../../context/ApiContext'
-import { useContentContext } from '../../../context/ContentContext'
+import { usePageContext } from '../../../context/PageContext'
 import Warning from '@atlaskit/icon/glyph/jira/failed-build-status';
 
 interface IModalCancel {
@@ -10,7 +10,7 @@ interface IModalCancel {
 
 const ModalCanCel = ({ setShowModal, handleCancelled }: IModalCancel) => {
     const profiles = useApiUsersContext()
-    const { indexED } = useContentContext()
+    const { indexED } = usePageContext()
 
     return (
         <div id="modal-cancel">
