@@ -329,27 +329,28 @@ const CustomerList = () => {
             timeOL.push(Number(timeOrder % 6))
         }
 
-        console.log(timeOL)
-
         axios.put(`${baseURL_users}/${id}`, newUser)
             .then(res => console.log(res.data))
             .catch(error => {
                 console.log('ERROR:', error)
             })
-        axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
-            .then(res => {
-                setReset(!reset)
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
+
+        if (tables[0]?.tables[numberTable % 18]?.status === 1 || tables[0]?.tables[numberTable % 18]?.status === 2 || tables[0]?.tables[numberTable % 18]?.status === 3) {
+            axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
+                .then(res => {
+                    setReset(!reset)
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    console.log('ERROR:', error)
+                })
+        }
     }
 
     const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
         const timeOL = [...tables[0]?.tables[numberTable % 18]?.timeList]
 
-        if ((quantity % 5 + 1) <= tables[0]?.tables[numberTable % 18]?.quantity && tables[0]?.tables[numberTable % 18]?.status === 5) {
+        if (((quantity % 5 + 1) <= tables[0]?.tables[numberTable % 18]?.quantity && tables[0]?.tables[numberTable % 18]?.status === 5) || (tables[0]?.tables[numberTable % 18]?.status === 3)) {
             if (!timeOL.includes(timeOrder % 6)) {
                 timeOL.push(Number(timeOrder % 6))
             }
@@ -367,7 +368,7 @@ const CustomerList = () => {
                 timeOrder: timeOrder % 6,
                 idCustomer: Number(id),
                 quantity: tables[0]?.tables[numberTable % 18]?.quantity,
-                timeList: [...tables[0]?.tables[numberTable % 18]?.timeList],
+                timeList: timeOL,
                 timeSeated: new Date().getTime(),
                 updateBack: tables[0]?.tables[numberTable % 18]?.updateBack,
             }, numberTable % 18, numberTable % 18 + 1)
@@ -442,9 +443,9 @@ const CustomerList = () => {
                                         <PeopleIcon
                                             label='people'
                                             size='small'
-                                            primaryColor={`${((profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status !== 7) ? '#506690' : '#DF4759'}`}
+                                            primaryColor={`${((profile.quantity % 5 + 1) > tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status === 7) ? '#DF4759' : '#506690'}`}
                                         />
-                                        <span style={{ color: `${((profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status !== 7) ? '#506690' : '#DF4759'}` }}>
+                                        <span style={{ color: `${((profile.quantity % 5 + 1) > tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status === 7) ? '#DF4759' : '#506690'}` }}>
                                             {profile.quantity % 5 + 1}
                                         </span>
                                     </span>
@@ -507,7 +508,7 @@ const CustomerList = () => {
                                     />
                                     Deposit
                                 </div>
-                                <div style={{ paddingLeft: '16px' }}>{profile.quantity % 5 + 1} x 50$</div>
+                                <div style={{ paddingLeft: '16px' }}>{profile.quantity % 5 + 1} x 50$ = {(profile.quantity % 5 + 1) * 50}$</div>
                             </div>
 
                             <div

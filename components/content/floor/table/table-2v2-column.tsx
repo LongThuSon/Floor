@@ -1,10 +1,10 @@
 import { useState, useEffect, memo } from 'react'
 import { useApiTablesContext, useApiUsersContext } from '../../../context/ApiContext'
-import { baseURL_positions } from '../../../context/ApiContext/baseURL'
+import { baseURL_positions, baseURL_tables, baseURL_users } from '../../../context/ApiContext/baseURL'
 import {  usePageContext  } from '../../../context/PageContext'
 import {  useContentContext  } from '../../../context/ContentContext'
 import Chair from "./chair"
-import { Table, colorTable } from "./index"
+import { Table } from "./index"
 import Draggable from "react-draggable"
 import axios from 'axios'
 import Save from '@atlaskit/icon/glyph/download'
@@ -17,8 +17,116 @@ const Table2v2Column = (props: Table) => {
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
     useEffect(() => {
-        colorTable(props.index + 1, tables[0]?.tables[props.index]?.status, tables[0]?.tables[props.index]?.timeSeated, tables[0]?.tables[props.index]?.updateBack, tables[0]?.tables[props.index]?.idCustomer)
+        colorTable(props.index, tables[0]?.tables[props.index]?.status, tables[0]?.tables[props.index]?.timeSeated, tables[0]?.tables[props.index]?.updateBack, tables[0]?.tables[props.index]?.idCustomer)
     }, [time])
+
+    const colorTable = (index: number, status: number, timeSeated: number, updateBack: number, idCustomer: number) => {
+        if (status === 0 || status === 1 || status === 2) {
+            let currentTime = new Date().getTime()
+            
+            const newTable = (percent: number, updateBack: number) => {
+                return (
+                    [...tables[0]?.tables].fill({
+                        id: tables[0]?.tables[index]?.id,
+                        numberTable: tables[0]?.tables[index]?.numberTable,
+                        seat: tables[0]?.tables[index]?.seat,
+                        status: tables[0]?.tables[index]?.status,
+                        percent: percent,
+                        timeOrder: tables[0]?.tables[index]?.timeOrder,
+                        idCustomer: tables[0]?.tables[index]?.idCustomer,
+                        quantity: tables[0]?.tables[index]?.quantity,
+                        timeList: tables[0]?.tables[index]?.timeList,
+                        timeSeated: tables[0]?.tables[index]?.timeSeated,
+                        updateBack: updateBack,
+                    }, index, index + 1)
+                )
+            }  
+
+            const lastTable = [...tables[0]?.tables].fill({
+                id: tables[0]?.tables[index]?.id,
+                numberTable: tables[0]?.tables[index]?.numberTable,
+                seat: tables[0]?.tables[index]?.seat,
+                status: 6,
+                percent: 0,
+                timeOrder: tables[0]?.tables[index]?.timeOrder,
+                idCustomer: tables[0]?.tables[index]?.idCustomer,
+                quantity: tables[0]?.tables[index]?.quantity,
+                timeList: tables[0]?.tables[index]?.timeList,
+                timeSeated: 0,
+                updateBack: 0,
+            }, index, index + 1)
+    
+            if (currentTime - timeSeated <= 60000 && updateBack !== 1) {
+                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
+                    tables: newTable(16, 1)
+                })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            } else if (60000 < currentTime - timeSeated && currentTime - timeSeated <= 120000 && updateBack !== 2) {
+                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
+                    tables: newTable(33, 2)
+                })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            } else if (120000 < currentTime - timeSeated && currentTime - timeSeated <= 180000 && updateBack !== 3) {
+                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
+                    tables: newTable(50, 3)
+                })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            } else if (180000 < currentTime - timeSeated && currentTime - timeSeated <= 240000 && updateBack !== 4) {
+                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
+                    tables: newTable(66, 4)
+                })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            } else if (240000 < currentTime - timeSeated && currentTime - timeSeated <= 300000 && updateBack !== 5) {
+                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
+                    tables: newTable(83, 5)
+                })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            } else if (currentTime - timeSeated > 300000) {
+                axios.put(`${baseURL_users}/${idCustomer}`, { status: 4 })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+    
+                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
+                    tables: lastTable
+                })
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log('ERROR:', error)
+                    })
+            }
+        }
+    }
 
     const trackPos = (data: any) => {
         setPosition({ top: props.top + data.y, left: props.left + data.x })

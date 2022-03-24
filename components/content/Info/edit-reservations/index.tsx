@@ -52,7 +52,7 @@ const EditDetails = () => {
             otherOccasion: profiles[indexED]?.otherOccasion,
             quantity: profiles[indexED]?.quantity % 5 + 1,
             checkDate: false,
-            date: profiles[indexED]?.date
+            date: profiles[indexED]?.date,
         }
     })
     const [colorText, setColorText] = useState({
@@ -85,8 +85,6 @@ const EditDetails = () => {
 
         setDisabledStt(false)
     }
-
-    { console.log(profiles[indexED]?.date) }
 
     const customerStatusEdit = (status: number) => {
         switch (status) {
@@ -478,25 +476,7 @@ const EditDetails = () => {
         const newTimeOL = [...tables[0].tables[(tableAPI.table.numberTable + 3) % 18 + 1]?.timeList ?? '']
 
         if (colorText.text.people === '#1B2A4E' && colorText.text.table === '#1B2A4E' && colorText.text.time === '#1B2A4E') {
-            let statusTable, seatTable, statusUser, newUser: any = {}
-
-            switch (tableAPI.table.status) {
-                case 1:
-                    statusTable = 3
-                    seatTable = tableAPI.table.quantity
-                    statusUser = 1
-                    newTimeOL.push(Number(tableAPI.table.timeOrder))
-                    break
-                default:
-                    statusTable = 5
-                    seatTable = 0
-                    statusUser = 0
-                    newTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
-            }
-
-            oldTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
-
-            console.log(oldTimeOL, newTimeOL)
+            let statusTable : number, seatTable : number, statusUser : number, newUser: any = {}
 
             if (tableAPI.table.checkDate) {
                 newUser = {
@@ -506,22 +486,53 @@ const EditDetails = () => {
                     occasion: tableAPI.table.occasion,
                     quantity: tableAPI.table.quantity - 1,
                     otherOccasion: tableAPI.table.otherOccasion,
-                    status: statusUser,
+                    status: tableAPI.table.status,
                     date: `${startDate?.year}-${(startDate?.month?.number > 9) ? (startDate?.month?.number) : ('0' + (startDate?.month?.number))}-${(startDate?.day > 9) ? (startDate?.day) : ('0' + (startDate?.day))}`
                 }
             } else {
-                const newUser = {
+                newUser = {
                     numberTable: tableAPI.table.numberTable + 3,
                     timeOrder: tableAPI.table.timeOrder,
                     eventTag: tableAPI.table.eventTag,
                     occasion: tableAPI.table.occasion,
                     quantity: tableAPI.table.quantity - 1,
                     otherOccasion: tableAPI.table.otherOccasion,
-                    status: statusUser,
+                    status: tableAPI.table.status,
                 }
             }
 
+            switch (tableAPI.table.status) {
+                case 1:
+                    statusTable = 3
+                    seatTable = tableAPI.table.quantity
+                    newTimeOL.push(Number(tableAPI.table.timeOrder))
+                    break
+                case 3:
+                    statusTable = tables[0]?.tables[profiles[indexED].numberTable % 18]?.status
+                    seatTable = tableAPI.table.quantity
+                    newTimeOL.push(Number(tableAPI.table.timeOrder))
+                    break
+                default:
+                    statusTable = 5
+                    seatTable = 0
+                    newTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
+            }
+
+            oldTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
+
             const resetTable = [...tables[0]?.tables].fill({
+                id: tables[0]?.tables[newUser.numberTable % 18]?.id,
+                numberTable: tables[0]?.tables[newUser.numberTable % 18]?.numberTable,
+                seat: seatTable,
+                status: statusTable,
+                percent: 0,
+                timeOrder: tableAPI.table.timeOrder,
+                idCustomer: tables[0]?.tables[newUser.numberTable % 18]?.idCustomer,
+                quantity: tables[0]?.tables[newUser.numberTable % 18]?.quantity,
+                timeList: newTimeOL,
+                timeSeated: tables[0]?.tables[newUser.numberTable % 18]?.timeSeated,
+                updateBack: tables[0]?.tables[newUser.numberTable % 18]?.updateBack,
+            }, newUser.numberTable % 18, newUser.numberTable % 18 + 1).fill({
                 id: tables[0]?.tables[profiles[indexED].numberTable % 18]?.id,
                 numberTable: tables[0]?.tables[profiles[indexED].numberTable % 18]?.numberTable,
                 seat: 0,
@@ -588,6 +599,7 @@ const EditDetails = () => {
             setShowWModal(true)
         }
     }
+
 
     const handleCancelled = () => {
         const resetTable = [...tables[0]?.tables].fill({
