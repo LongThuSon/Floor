@@ -47,7 +47,7 @@ export const ApiTablesContext = createContext<ITableFD[]>(ApiTableFDContextDefau
 
 const ApiTablesContextProvider = ({ children }: IApiContextProps) => {
     const [tables, setTables] = useState<ITableFD[]>([])
-    const { reset, setReset, date } = useResetApiContext()
+    const { reset, date } = useResetApiContext()
 
     useEffect(() => {
         axios.get<ITableFD[]>(`${baseURL_tables}?date=${date}`).then((response) => {
@@ -57,7 +57,6 @@ const ApiTablesContextProvider = ({ children }: IApiContextProps) => {
                 axios.post<ITableFD[]>(baseURL_tables, { tables: table, date: date }).then((response) => {
                     // console.log(response.data)
                     setTables(response.data)  
-                    setReset(!reset)        
                 })
                     .catch(error => {
                         console.log('ERROR:', error)

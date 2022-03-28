@@ -40,6 +40,7 @@ const ApiPositionsContextProvider = ({ children }: IApiContextProps) => {
 
     return (
         <ApiPositionsContext.Provider value={TPositions}>
+            {console.log(TPositions)}
             {children}
         </ApiPositionsContext.Provider>
     )
