@@ -10,13 +10,11 @@ interface ITable {
     numberTable: number,
     seat: number,
     status: number,
-    percent: number,
     timeOrder: number,
     idCustomer: number,
     quantity: number,
     timeList: number[],
     timeSeated: number,
-    updateBack: number,
 }
 
 interface ITableFD {
@@ -34,13 +32,11 @@ const ApiTableFDContextDefault = [
                 numberTable: 106,
                 seat: 2,
                 status: 0,
-                percent: 0,
                 timeOrder: 0,
                 idCustomer: 5,
                 quantity: 2,
                 timeList: [0],
                 timeSeated: 0,
-                updateBack: 0,
             },
         ],
         date: '2022-03-21',
@@ -55,11 +51,11 @@ const ApiTablesContextProvider = ({ children }: IApiContextProps) => {
 
     useEffect(() => {
         axios.get<ITableFD[]>(`${baseURL_tables}?date=${date}`).then((response) => {
-            console.log(response.data)
+            // console.log(response.data)
 
             if (response.data.length === 0) {
                 axios.post<ITableFD[]>(baseURL_tables, { tables: table, date: date }).then((response) => {
-                    console.log(response.data)
+                    // console.log(response.data)
                     setTables(response.data)  
                     setReset(!reset)        
                 })
@@ -73,13 +69,11 @@ const ApiTablesContextProvider = ({ children }: IApiContextProps) => {
             .catch(error => {
                 console.log('ERROR:', error)
             })
-
-
-
     }, [reset, date])
 
     return (
         <ApiTablesContext.Provider value={tables}>
+            {console.log(tables)}
             {children}
         </ApiTablesContext.Provider>
     )

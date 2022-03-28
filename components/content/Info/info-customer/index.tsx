@@ -48,6 +48,8 @@ const CustomerList = () => {
             return true
         } else if (searchField.request.status === -2) {
             return (profile.status === 5 || profile.status === 6)
+        } else if (searchField.request.status === -3) {
+            return (profile.status !== 3 && profile.status !== 4 && profile.status !== 5 && profile.status !== 6)
         } else {
             return profile.status === searchField.request.status
         }
@@ -107,8 +109,6 @@ const CustomerList = () => {
     }
 
     const customerStatus = (id: number, timeOrder: number, status: number, timeLate: number, noShow: boolean) => {
-        let currentTime = new Date().getTime()
-
         if ((status === 1 && timeOrder === 0 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:15') ||
             (status === 1 && timeOrder === 1 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:45') ||
             (status === 1 && timeOrder === 2 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '12:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '12:15') ||
@@ -123,7 +123,6 @@ const CustomerList = () => {
 
             axios.put(`${baseURL_users}/${id}`, newUser)
                 .then(res => {
-                    setReset(!reset)
                     console.log(res.data)
                 })
                 .catch(error => {
@@ -131,16 +130,21 @@ const CustomerList = () => {
                 })
         }
 
-        if (status === 2 && noShow && (currentTime - timeLate >= 900000)) {
-            axios.put(`${baseURL_users}/${id}`, { status: 5 })
+        if (((status === 1 || status === 2) && timeOrder === 0 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '11:15' && noShow) ||
+            ((status === 1 || status === 2) && timeOrder === 1 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '11:45' && noShow) ||
+            ((status === 1 || status === 2) && timeOrder === 2 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '12:15' && noShow) ||
+            ((status === 1 || status === 2) && timeOrder === 3 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '12:45' && noShow) ||
+            ((status === 1 || status === 2) && timeOrder === 4 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '13:15' && noShow) ||
+            ((status === 1 || status === 2) && timeOrder === 5 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '13:45' && noShow)) {
+
+                axios.put(`${baseURL_users}/${id}`, { status: 5, noShow: false })
                 .then(res => {
                     console.log(res.data)
-                    setReset(!reset)
                 })
                 .catch(error => {
                     console.log('ERROR:', error)
                 })
-        }
+            }
 
         switch (status) {
             case 1:
@@ -315,14 +319,12 @@ const CustomerList = () => {
             id: tables[0]?.tables[numberTable % 18]?.id,
             numberTable: tables[0]?.tables[numberTable % 18]?.numberTable,
             seat: quantity % 5 + 1,
-            status: Number(`${(quantity % 5 + 1) <= tables[0].tables[numberTable % 18]?.quantity && (timeOL.includes(timeOrder % 6) === false) ? 3 : 7}`),
-            percent: tables[0]?.tables[numberTable % 18]?.percent,
+            status: Number(`${((quantity % 5 + 1) <= tables[0].tables[numberTable % 18]?.quantity && (timeOL.includes(timeOrder % 6) === false)) ? 3 : 7}`),
             timeOrder: timeOrder % 6,
             idCustomer: Number(id),
             quantity: tables[0]?.tables[numberTable % 18]?.quantity,
             timeList: timeOL,
             timeSeated: tables[0]?.tables[numberTable % 18]?.timeSeated,
-            updateBack: tables[0]?.tables[numberTable % 18]?.updateBack,
         }, numberTable % 18, numberTable % 18 + 1)
 
         if (timeOL.includes(timeOrder % 6) === false) {
@@ -330,12 +332,17 @@ const CustomerList = () => {
         }
 
         axios.put(`${baseURL_users}/${id}`, newUser)
-            .then(res => console.log(res.data))
+            .then(res => {
+                console.log(res.data)
+                if (tables[0]?.tables[numberTable % 18]?.status === 1 || tables[0]?.tables[numberTable % 18]?.status === 2 || tables[0]?.tables[numberTable % 18]?.status === 3) {
+                    setReset(!reset)
+                }
+            })
             .catch(error => {
                 console.log('ERROR:', error)
             })
 
-        if (tables[0]?.tables[numberTable % 18]?.status === 1 || tables[0]?.tables[numberTable % 18]?.status === 2 || tables[0]?.tables[numberTable % 18]?.status === 3) {
+        if (tables[0]?.tables[numberTable % 18]?.status !== 1 && tables[0]?.tables[numberTable % 18]?.status !== 2 && tables[0]?.tables[numberTable % 18]?.status !== 3) {
             axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
                 .then(res => {
                     setReset(!reset)
@@ -364,13 +371,11 @@ const CustomerList = () => {
                 numberTable: tables[0]?.tables[numberTable % 18]?.numberTable,
                 seat: quantity % 5 + 1,
                 status: Math.floor(Math.random() * 3),
-                percent: tables[0]?.tables[numberTable % 18]?.percent,
                 timeOrder: timeOrder % 6,
                 idCustomer: Number(id),
                 quantity: tables[0]?.tables[numberTable % 18]?.quantity,
                 timeList: timeOL,
                 timeSeated: new Date().getTime(),
-                updateBack: tables[0]?.tables[numberTable % 18]?.updateBack,
             }, numberTable % 18, numberTable % 18 + 1)
 
             axios.put(`${baseURL_users}/${id}`, newUser)
@@ -399,7 +404,6 @@ const CustomerList = () => {
         axios.put(`${baseURL_users}/${id}`, updateUser)
             .then(res => {
                 console.log(res.data)
-                setReset(!reset)
             })
             .catch(error => {
                 console.log('ERROR:', error)

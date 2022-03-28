@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import Select from "react-select"
 import { useApiUsersContext } from '../../../context/ApiContext'
-import {  useResetApiContext  } from '../../../context/ApiContext/resetApiContext'
+import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
 import { useInfoContext } from '../../../context/InfoContext'
 import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
 
@@ -9,7 +10,7 @@ const SettingStatus = () => {
     const { date } = useResetApiContext()
     const { setSearchField } = useInfoContext()
 
-    const profilesFD = profiles.filter(
+    const profilesFD  = profiles.filter(
         person => {
             return (
                 person.date.includes(date)
@@ -18,9 +19,16 @@ const SettingStatus = () => {
     )
 
     const sumQuantity = (value: number) => {
-        const settingProfiles = profilesFD.filter(
-            person => (person.status % 100) === value
-        )
+        let settingProfiles
+        if (value === 3 || value === 4 || value === 5 || value === 6) {
+            settingProfiles = profilesFD.filter(
+                person => (person.status % 100) === value
+            )
+        } else {
+            settingProfiles = profilesFD.filter(
+                person => (person.status % 100) !== 3 && (person.status % 100) !== 4 && (person.status % 100) !== 5 && (person.status % 100) !== 6
+            )
+        }
         return settingProfiles.length
     }
 
@@ -34,7 +42,8 @@ const SettingStatus = () => {
     }
 
     const options = [
-        { status: -1, value: "Upcoming", quantity: `${profilesFD.length}` },
+        { status: -1, value: "All", quantity: `${profilesFD.length}` },
+        { status: -3, value: "Upcoming", quantity: `${sumQuantity(0)}` },
         { status: 3, value: "Seated", quantity: `${sumQuantity(3)}` },
         { status: 4, value: "Completed", quantity: `${sumQuantity(4)}` },
         { status: -2, value: "Absent", quantity: `${sumQuantity(5) + sumQuantity(6)}` },
@@ -74,7 +83,7 @@ const SettingStatus = () => {
             <Select
                 instanceId="setting-status"
                 styles={customStyles}
-                defaultValue={options[0]}
+                // defaultValue={options[0]}
                 formatOptionLabel={formatOptionLabel}
                 options={options}
                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}

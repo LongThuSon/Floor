@@ -21,16 +21,24 @@ const App = () => {
     const [winSize, setWinSize] = useState({ width: 1536, height: 677 })
 
     useEffect(() => {
+        const windowHeight = () => {
+            const doc = document.documentElement
+            doc.style.setProperty('--window-height', `${window.innerHeight}px`)
+        }
+        windowHeight()
+
         setWinSize(getWindowDimensions())
 
         function handleResize() {
             setWinSize(getWindowDimensions());
         }
 
+        window.addEventListener('resize', windowHeight);
         window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', handleResize)
+            window.removeEventListener('resize', windowHeight);
+            window.removeEventListener('resize', handleResize);
         };
     }, [enableInfo, showZoom]);
 

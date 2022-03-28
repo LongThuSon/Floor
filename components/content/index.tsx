@@ -25,7 +25,7 @@ const Content = () => {
     useEffect(() => {
         const timeOut = setTimeout(() => {
             setTime(getCurrentTime());
-        }, 60000);
+        }, 180000);
         setReset(!reset)
         console.log(time);
         return () => clearTimeout(timeOut);

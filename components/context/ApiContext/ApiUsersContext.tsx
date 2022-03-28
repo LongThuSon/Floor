@@ -52,7 +52,7 @@ const ApiUsersContextProvider = ({ children }: IApiContextProps) => {
 
     useEffect(() => {
         axios.get<IUser[]>(baseURL_users).then((response) => {
-            console.log(response.data)
+            // console.log(response.data)
             setProfiles(response.data)
         })
             .catch(error => {
@@ -62,6 +62,7 @@ const ApiUsersContextProvider = ({ children }: IApiContextProps) => {
 
     return (
         <ApiUsersContext.Provider value={profiles}>
+            {console.log(profiles)}
             {children}
         </ApiUsersContext.Provider>
     )

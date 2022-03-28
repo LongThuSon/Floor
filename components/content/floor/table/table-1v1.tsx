@@ -1,65 +1,37 @@
 import { useState, useEffect, memo } from 'react'
-import { useApiUsersContext } from '../../../context/ApiContext'
-import { useApiTablesContext } from '../../../context/ApiContext'
+import { useApiUsersContext, useApiTablesContext, useApiPositionsContext } from '../../../context/ApiContext'
+import {  useResetApiContext  } from '../../../context/ApiContext/resetApiContext'
 import { usePageContext } from '../../../context/PageContext'
 import { useContentContext } from '../../../context/ContentContext'
 import Chair from "./chair"
 import { Table } from "./index"
 import Draggable from 'react-draggable'
-import { baseURL_positions, baseURL_tables, baseURL_users } from '../../../context/ApiContext/baseURL'
+import { baseURL_positions, baseURL_users } from '../../../context/ApiContext/baseURL'
 import axios from 'axios'
 import Save from '@atlaskit/icon/glyph/download'
 
 const Table1v1 = (props: Table) => {
     const tables = useApiTablesContext()
     const profiles = useApiUsersContext()
+    const TPositions = useApiPositionsContext()
+    const { reset } = useResetApiContext()
     const { winSize, currentPeople, indexED, changedNTable } = usePageContext()
     const { time } = useContentContext()
     const [position, setPosition] = useState({ top: props.top, left: props.left })
 
     useEffect(() => {
-        colorTable(props.index, tables[0]?.tables[props.index]?.status, tables[0]?.tables[props.index]?.timeSeated, tables[0]?.tables[props.index]?.updateBack, tables[0]?.tables[props.index]?.idCustomer)
-    }, [time])
+        if (tables.length === 1) {
+            colorTable(props.index, tables[0]?.tables[props.index]?.status, tables[0]?.tables[props.index]?.timeSeated, TPositions[props.index]?.updateBack, tables[0]?.tables[props.index]?.idCustomer)
+        }
+    }, [time, reset])
 
     const colorTable = (index: number, status: number, timeSeated: number, updateBack: number, idCustomer: number) => {
         if (status === 0 || status === 1 || status === 2) {
             let currentTime = new Date().getTime()
             
-            const newTable = (percent: number, updateBack: number) => {
-                return (
-                    [...tables[0]?.tables].fill({
-                        id: tables[0]?.tables[index]?.id,
-                        numberTable: tables[0]?.tables[index]?.numberTable,
-                        seat: tables[0]?.tables[index]?.seat,
-                        status: tables[0]?.tables[index]?.status,
-                        percent: percent,
-                        timeOrder: tables[0]?.tables[index]?.timeOrder,
-                        idCustomer: tables[0]?.tables[index]?.idCustomer,
-                        quantity: tables[0]?.tables[index]?.quantity,
-                        timeList: tables[0]?.tables[index]?.timeList,
-                        timeSeated: tables[0]?.tables[index]?.timeSeated,
-                        updateBack: updateBack,
-                    }, index, index + 1)
-                )
-            }  
-
-            const lastTable = [...tables[0]?.tables].fill({
-                id: tables[0]?.tables[index]?.id,
-                numberTable: tables[0]?.tables[index]?.numberTable,
-                seat: tables[0]?.tables[index]?.seat,
-                status: 6,
-                percent: 0,
-                timeOrder: tables[0]?.tables[index]?.timeOrder,
-                idCustomer: tables[0]?.tables[index]?.idCustomer,
-                quantity: tables[0]?.tables[index]?.quantity,
-                timeList: tables[0]?.tables[index]?.timeList,
-                timeSeated: 0,
-                updateBack: 0,
-            }, index, index + 1)
-    
-            if (currentTime - timeSeated <= 60000 && updateBack !== 1) {
-                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
-                    tables: newTable(16, 1)
+            if (currentTime - timeSeated <= 600000 && updateBack !== 1) {
+                axios.put(`${baseURL_positions}/${index + 1}`, {
+                    percent: 16, updateBack: 1
                 })
                     .then(res => {
                         console.log(res.data)
@@ -67,9 +39,9 @@ const Table1v1 = (props: Table) => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-            } else if (60000 < currentTime - timeSeated && currentTime - timeSeated <= 120000 && updateBack !== 2) {
-                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
-                    tables: newTable(33, 2)
+            } else if (600000 < currentTime - timeSeated && currentTime - timeSeated <= 1200000 && updateBack !== 2) {
+                axios.put(`${baseURL_positions}/${index + 1}`, {
+                    percent: 33, updateBack: 2
                 })
                     .then(res => {
                         console.log(res.data)
@@ -77,9 +49,9 @@ const Table1v1 = (props: Table) => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-            } else if (120000 < currentTime - timeSeated && currentTime - timeSeated <= 180000 && updateBack !== 3) {
-                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
-                    tables: newTable(50, 3)
+            } else if (1200000 < currentTime - timeSeated && currentTime - timeSeated <= 1800000 && updateBack !== 3) {
+                axios.put(`${baseURL_positions}/${index + 1}`, {
+                    percent: 50, updateBack: 3
                 })
                     .then(res => {
                         console.log(res.data)
@@ -87,9 +59,9 @@ const Table1v1 = (props: Table) => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-            } else if (180000 < currentTime - timeSeated && currentTime - timeSeated <= 240000 && updateBack !== 4) {
-                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
-                    tables: newTable(66, 4)
+            } else if (1800000 < currentTime - timeSeated && currentTime - timeSeated <= 2400000 && updateBack !== 4) {
+                axios.put(`${baseURL_positions}/${index + 1}`, {
+                    percent: 66, updateBack: 4
                 })
                     .then(res => {
                         console.log(res.data)
@@ -97,9 +69,9 @@ const Table1v1 = (props: Table) => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-            } else if (240000 < currentTime - timeSeated && currentTime - timeSeated <= 300000 && updateBack !== 5) {
-                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
-                    tables: newTable(83, 5)
+            } else if (2400000 < currentTime - timeSeated && currentTime - timeSeated <= 3000000 && updateBack !== 5) {
+                axios.put(`${baseURL_positions}/${index + 1}`, {
+                    percent: 83, updateBack: 5
                 })
                     .then(res => {
                         console.log(res.data)
@@ -107,7 +79,7 @@ const Table1v1 = (props: Table) => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-            } else if (currentTime - timeSeated > 300000) {
+            } else if (currentTime - timeSeated > 3000000 && updateBack !== 6) {
                 axios.put(`${baseURL_users}/${idCustomer}`, { status: 4 })
                     .then(res => {
                         console.log(res.data)
@@ -115,9 +87,9 @@ const Table1v1 = (props: Table) => {
                     .catch(error => {
                         console.log('ERROR:', error)
                     })
-    
-                axios.put(`${baseURL_tables}/${tables[0]?.id}`, {
-                    tables: lastTable
+
+                axios.put(`${baseURL_positions}/${index + 1}`, {
+                    percent: 0, updateBack: 6
                 })
                     .then(res => {
                         console.log(res.data)
@@ -154,7 +126,7 @@ const Table1v1 = (props: Table) => {
     const handleSavePosition = (id: number) => {
         const newTable = {
             top: position.top,
-            left: position.left, 
+            left: position.left,
         }
 
         axios.put(`${baseURL_positions}/${id + 1}`, newTable)
@@ -171,62 +143,64 @@ const Table1v1 = (props: Table) => {
             disabled={props.move}
             onDrag={(e, data) => trackPos(data)}
         >
-            <div
-                className="container-table-1v1"
-                style={{
-                    top: `${((props.top) / (667)) * (winSize.height)}px`,
-                    left: `${((props.left) / (1535)) * (winSize.width)}px`,
-                    cursor: `${props.move ? 'default' : 'move'}`
-                }}
-            >
-                <Chair
-                    top='-9px'
-                    left='10px'
-                    numberChair={1}
-                    indexTable={props.index}
-                />
-                <Chair
-                    top='29px'
-                    left='10px'
-                    numberChair={2}
-                    indexTable={props.index}
-                />
-
+            {tables.length === 1 &&
                 <div
-                    className="table-1v1"
+                    className="container-table-1v1"
                     style={{
-                        backgroundImage: `linear-gradient(to top, ${props.primary1} ${(tables[0]?.tables[props.index]?.status === 0 || tables[0]?.tables[props.index]?.status === 1 || tables[0]?.tables[props.index]?.status === 2) ? tables[0]?.tables[props.index]?.percent : 100}%, ${tables[0]?.tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[0]?.tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[0]?.tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'} ${tables[0]?.tables[props.index]?.percent}%, ${tables[0]?.tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[0]?.tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[0]?.tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'})`,
-                        color: `${tables[0]?.tables[props.index]?.status === 7 ? '#fff' : (currentPeople > tables[0]?.tables[props.index]?.quantity && tables[0]?.tables[props.index]?.status === 5) ? 'rgba(223, 71, 89, 0.5)' : '#869AB8'}`,
-                        border: `${(105 + profiles[indexED]?.numberTable % 18 === tables[0]?.tables[props.index]?.numberTable) ? '2px dashed #506690' : (changedNTable === tables[0]?.tables[props.index]?.numberTable) ? '2px solid #506690' : 'none'}`,
+                        top: `${((props.top) / (667)) * (winSize.height)}px`,
+                        left: `${((props.left) / (1535)) * (winSize.width)}px`,
+                        cursor: `${props.move ? 'default' : 'move'}`
                     }}
                 >
-                    {tables[0]?.tables[props.index]?.numberTable}
-                </div>
+                    <Chair
+                        top='-9px'
+                        left='10px'
+                        numberChair={1}
+                        indexTable={props.index}
+                    />
+                    <Chair
+                        top='29px'
+                        left='10px'
+                        numberChair={2}
+                        indexTable={props.index}
+                    />
 
-
-                {tables[0]?.tables[props.index]?.status !== 5 &&
                     <div
-                        className='reserv-time-1v1'
+                        className="table-1v1"
                         style={{
-                            backgroundColor: `${tables[0]?.tables[props.index]?.status === 7 ? '#DF4759' : (profiles[tables[0]?.tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#E9EDF3' : '#FFEFE5'}`,
-                            color: `${tables[0]?.tables[props.index]?.status === 7 ? '#fff' : (profiles[tables[0]?.tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#506690' : '#FF5C00'}`
+                            backgroundImage: `linear-gradient(to top, ${props.primary1} ${(tables[0]?.tables[props.index]?.status === 0 || tables[0]?.tables[props.index]?.status === 1 || tables[0]?.tables[props.index]?.status === 2) ? TPositions[props.index]?.percent : 100}%, ${TPositions[props.index]?.updateBack === 6 ? '#FFA4A4' : tables[0]?.tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[0]?.tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[0]?.tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'} ${TPositions[props.index]?.percent}%, ${TPositions[props.index]?.updateBack === 6 ? '#FFA4A4' : tables[0]?.tables[props.index]?.status === 0 ? 'rgb(220, 239, 245)' : tables[0]?.tables[props.index]?.status === 1 ? 'rgb(253, 241, 218)' : tables[0]?.tables[props.index]?.status === 2 ? 'rgb(255, 235, 248)' : '#fff'})`,
+                            color: `${tables[0]?.tables[props.index]?.status === 7 ? '#fff' : (currentPeople > tables[0]?.tables[props.index]?.quantity && tables[0]?.tables[props.index]?.status === 5) ? 'rgba(223, 71, 89, 0.5)' : '#869AB8'}`,
+                            border: `${(105 + profiles[indexED]?.numberTable % 18 === tables[0]?.tables[props.index]?.numberTable) ? '2px dashed #506690' : (changedNTable === tables[0]?.tables[props.index]?.numberTable) ? '2px solid #506690' : 'none'}`,
                         }}
-                    >{customerReservTime(tables[0]?.tables[props.index]?.timeOrder % 6)}</div>
-                }
-
-                {!props.move &&
-                    <div
-                        className='save-position'
-                        onClick={() => handleSavePosition(props.index)}
                     >
-                        <Save
-                            label='save'
-                            size='small'
-                            primaryColor='#067E30'
-                        />
+                        {tables[0]?.tables[props.index]?.numberTable}
                     </div>
-                }
-            </div>
+
+
+                    {tables[0]?.tables[props.index]?.status !== 5 &&
+                        <div
+                            className='reserv-time-1v1'
+                            style={{
+                                backgroundColor: `${tables[0]?.tables[props.index]?.status === 7 ? '#DF4759' : (profiles[tables[0]?.tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#E9EDF3' : '#FFEFE5'}`,
+                                color: `${tables[0]?.tables[props.index]?.status === 7 ? '#fff' : (profiles[tables[0]?.tables[props.index]?.idCustomer - 1]?.status % 6) !== 2 ? '#506690' : '#FF5C00'}`
+                            }}
+                        >{customerReservTime(tables[0]?.tables[props.index]?.timeOrder % 6)}</div>
+                    }
+
+                    {!props.move &&
+                        <div
+                            className='save-position'
+                            onClick={() => handleSavePosition(props.index)}
+                        >
+                            <Save
+                                label='save'
+                                size='small'
+                                primaryColor='#067E30'
+                            />
+                        </div>
+                    }
+                </div>
+            }
         </Draggable >
     )
 }

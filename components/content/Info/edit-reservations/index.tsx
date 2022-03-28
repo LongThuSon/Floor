@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import { usePageContext } from '../../../context/PageContext'
 import { useApiUsersContext, useApiTablesContext } from '../../../context/ApiContext'
-import { baseURL_users, baseURL_tables } from '../../../context/ApiContext/baseURL'
+import { baseURL_users, baseURL_tables, baseURL_positions } from '../../../context/ApiContext/baseURL'
 import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
 
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
@@ -476,7 +476,7 @@ const EditDetails = () => {
         const newTimeOL = [...tables[0].tables[(tableAPI.table.numberTable + 3) % 18 + 1]?.timeList ?? '']
 
         if (colorText.text.people === '#1B2A4E' && colorText.text.table === '#1B2A4E' && colorText.text.time === '#1B2A4E') {
-            let statusTable : number, seatTable : number, statusUser : number, newUser: any = {}
+            let statusTable: number, seatTable: number, newUser: any = {}
 
             if (tableAPI.table.checkDate) {
                 newUser = {
@@ -501,6 +501,8 @@ const EditDetails = () => {
                 }
             }
 
+            oldTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
+
             switch (tableAPI.table.status) {
                 case 1:
                     statusTable = 3
@@ -518,32 +520,26 @@ const EditDetails = () => {
                     newTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
             }
 
-            oldTimeOL.filter((remainElement: number) => remainElement !== (profiles[indexED].timeOrder % 6))
-
             const resetTable = [...tables[0]?.tables].fill({
                 id: tables[0]?.tables[newUser.numberTable % 18]?.id,
                 numberTable: tables[0]?.tables[newUser.numberTable % 18]?.numberTable,
                 seat: seatTable,
                 status: statusTable,
-                percent: 0,
                 timeOrder: tableAPI.table.timeOrder,
                 idCustomer: tables[0]?.tables[newUser.numberTable % 18]?.idCustomer,
                 quantity: tables[0]?.tables[newUser.numberTable % 18]?.quantity,
                 timeList: newTimeOL,
                 timeSeated: tables[0]?.tables[newUser.numberTable % 18]?.timeSeated,
-                updateBack: tables[0]?.tables[newUser.numberTable % 18]?.updateBack,
             }, newUser.numberTable % 18, newUser.numberTable % 18 + 1).fill({
                 id: tables[0]?.tables[profiles[indexED].numberTable % 18]?.id,
                 numberTable: tables[0]?.tables[profiles[indexED].numberTable % 18]?.numberTable,
                 seat: 0,
                 status: 5,
-                percent: 0,
                 timeOrder: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeOrder,
                 idCustomer: tables[0]?.tables[profiles[indexED].numberTable % 18]?.idCustomer,
                 quantity: tables[0]?.tables[profiles[indexED].numberTable % 18]?.quantity,
                 timeList: oldTimeOL,
                 timeSeated: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeSeated,
-                updateBack: tables[0]?.tables[profiles[indexED].numberTable % 18]?.updateBack,
             }, profiles[indexED].numberTable % 18, profiles[indexED].numberTable % 18 + 1)
 
             const newTable = [...tables[0]?.tables].fill({
@@ -551,13 +547,11 @@ const EditDetails = () => {
                 numberTable: tables[0]?.tables[newUser.numberTable % 18]?.numberTable,
                 seat: seatTable,
                 status: statusTable,
-                percent: 0,
                 timeOrder: tableAPI.table.timeOrder,
                 idCustomer: tables[0]?.tables[newUser.numberTable % 18]?.idCustomer,
                 quantity: tables[0]?.tables[newUser.numberTable % 18]?.quantity,
                 timeList: newTimeOL,
                 timeSeated: tables[0]?.tables[newUser.numberTable % 18]?.timeSeated,
-                updateBack: tables[0]?.tables[newUser.numberTable % 18]?.updateBack,
             }, newUser.numberTable % 18, newUser.numberTable % 18 + 1)
 
             axios.put(`${baseURL_users}/${indexED + 1}`, newUser)
@@ -607,13 +601,11 @@ const EditDetails = () => {
             numberTable: tables[0]?.tables[profiles[indexED].numberTable % 18]?.numberTable,
             seat: 0,
             status: 5,
-            percent: 0,
             timeOrder: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeOrder,
             idCustomer: 0,
             quantity: tables[0]?.tables[profiles[indexED].numberTable % 18]?.quantity,
             timeList: [...tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeList],
-            timeSeated: tables[0]?.tables[profiles[indexED].numberTable % 18]?.timeSeated,
-            updateBack: tables[0]?.tables[profiles[indexED].numberTable % 18]?.updateBack,
+            timeSeated: 0,
         }, profiles[indexED].numberTable % 18, profiles[indexED].numberTable % 18 + 1)
 
         axios.put(`${baseURL_users}/${indexED + 1}`, { status: 6 })
@@ -624,10 +616,18 @@ const EditDetails = () => {
             .catch(error => {
                 console.log('ERROR:', error)
             })
-        axios.put(`${baseURL_tables}/${profiles[indexED].numberTable % 18 + 1}`, { tables: resetTable })
+        axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: resetTable })
             .then(res => {
                 console.log(res.data)
                 setReset(!reset)
+            })
+            .catch(error => {
+                console.log('ERROR:', error)
+            })
+
+        axios.put(`${baseURL_positions}/${profiles[indexED].numberTable % 18 + 1}`, { updateBack: 0 })
+            .then(res => {
+                console.log(res.data)
             })
             .catch(error => {
                 console.log('ERROR:', error)

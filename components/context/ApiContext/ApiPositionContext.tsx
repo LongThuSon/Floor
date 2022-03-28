@@ -8,6 +8,8 @@ interface IPosition {
     id: number,
     top: number,
     left: number,
+    percent: number,
+    updateBack: number,
 }
 
 const ApiPositionsContextDefault = [
@@ -15,7 +17,8 @@ const ApiPositionsContextDefault = [
         id: 1,
         top: 50,
         left: 380,
-
+        percent: 0,
+        updateBack: 0,
     },
 ]
 
@@ -27,7 +30,7 @@ const ApiPositionsContextProvider = ({ children }: IApiContextProps) => {
 
     useEffect(() => {
         axios.get<IPosition[]>(baseURL_positions).then((response) => {
-            console.log(response.data)
+            // console.log(response.data)
             setTPositions(response.data)
         })
             .catch(error => {
