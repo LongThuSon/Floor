@@ -24,8 +24,6 @@ const App = () => {
         setWinSize(getWindowDimensions())
 
         function handleResize() {
-            const doc = document.documentElement
-            doc.style.setProperty('--window-height', `${window.innerHeight}px`)
             setWinSize(getWindowDimensions());
         }
 
