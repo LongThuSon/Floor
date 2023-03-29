@@ -1,12 +1,14 @@
-import type { AppProps } from 'next/app'
+import type { AppProps } from 'next/app';
 
-import '../styles/globals.scss'
-import '../styles/app.scss'
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
+
+import '../styles/globals.scss';
+import '../styles/app.scss';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Component {...pageProps} />
   )
-}
+};
 
-export default MyApp
+export default MyApp;
