@@ -1,42 +1,48 @@
-import { CustomerState, CustomerStatus, TimeOrder, TypeService } from "../public/DataConstant";
+import {
+    CustomerState,
+    CustomerStatus,
+    TimeOrder,
+    TypeService,
+} from '../public/data-constant';
 
 type TCustomer = {
-    _id: String,
-    name: String,
-    quantityBook: Number,
-    idTable: String,
-    phone: Number,
-    status: CustomerStatus,
-    dateOrder: Date,
-    typeService: TypeService,
-    timeOrder: TimeOrder,
-    isHold: Boolean,
-    note: String,
-    keyRestaurant: String,
-    state: CustomerState,
+    _id: string;
+    name: string;
+    quantityBook: number;
+    idTable: string;
+    phone: number;
+    status: CustomerStatus;
+    dateOrder: Date;
+    typeService: TypeService;
+    timeOrder: TimeOrder;
+    isHold: number;
+    note: string;
+    keyRestaurant: string;
+    state: CustomerState;
 };
 
 type TCustomerCreate = {
-    name: String,
-    quantityBook: Number,
-    phone: Number,
-    dateOrder: Date,
-    typeService: TypeService,
-    timeOrder: TimeOrder,
-    note: String,
-    keyRestaurant: String,
+    name: string;
+    quantityBook: number;
+    phone: number;
+    dateOrder: Date;
+    typeService: TypeService;
+    timeOrder: TimeOrder;
+    note: string;
+    keyRestaurant: string;
 };
 
 type TCustomerUpdate = {
-    id: String,
-    data: any,
+    id: string;
+    data: any;
 };
 
 type TCustomerData = {
     // In `status` we will watch
     // if tables are being loaded.
-    isLoading: Boolean;
+    isLoading: boolean;
     customerList: TCustomer[];
+    customerChoosen: TCustomer | null;
 };
 
 export type { TCustomer, TCustomerCreate, TCustomerUpdate, TCustomerData };
