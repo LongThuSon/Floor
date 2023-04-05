@@ -1,3 +1,6 @@
+import { TCustomer } from '../../type/customer.type';
+import { TTable } from '../../type/table.type';
+
 enum ActionUser {
     Login = 'login',
     Logout = 'logout',
@@ -11,7 +14,6 @@ enum TableStatus {
     InUse = 2,
     Overstay = 3,
     Clash = 4,
-    Block = 5,
 }
 
 enum TableType {
@@ -31,9 +33,9 @@ enum CustomerStatus {
     Confirmed = 1,
     Late = 2,
     Seated = 3,
-    Completed = 5,
-    NoShow = 6,
-    Cancelled = 7,
+    Completed = 4,
+    NoShow = 5,
+    Cancelled = 6,
 }
 
 enum TypeService {
@@ -62,6 +64,35 @@ enum TimeOrder {
     _other = 'other',
 }
 
+const tableDF: TTable = {
+    _id: '',
+    number: 0,
+    type: TableType._1v1,
+    totalChair: 2,
+    idCustomer: '',
+    isBlock: false,
+    topPositon: 0,
+    leftPositon: 0,
+    keyRestaurant: '',
+};
+
+const customerDF: TCustomer = {
+    _id: '',
+    name: 'DF',
+    quantityBook: 0,
+    idTable: '',
+    phone: 0900000012,
+    status: CustomerStatus.Booked,
+    dateOrder: new Date(),
+    typeService: TypeService.Lunch,
+    timeOrder: TimeOrder._10h,
+    isHold: false,
+    note: '',
+    keyRestaurant: '',
+    state: CustomerState.Active,
+    statusTable: TableStatus.Available,
+};
+
 export {
     ActionUser,
     TableStatus,
@@ -70,4 +101,6 @@ export {
     TypeService,
     CustomerState,
     TimeOrder,
+    tableDF,
+    customerDF,
 };

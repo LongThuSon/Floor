@@ -1,58 +1,79 @@
-import { useEffect } from 'react'
-import Select from "react-select"
-import { useApiUsersContext } from '../../../context/ApiContext'
-import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
-import { useInfoContext } from '../../../context/InfoContext'
-import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
+import Select from 'react-select';
+import { useInfoContext } from '../../../context/InfoContext';
+import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down';
+import { useAppSelector } from '../../../../redux/hook';
+import { CustomerStatus } from '../../../../public/data-constant';
 
 const SettingStatus = () => {
-    const profiles = useApiUsersContext()
-    const { date } = useResetApiContext()
-    const { setSearchField } = useInfoContext()
+    const customerList = useAppSelector(
+        (state) => state.customers.customerList,
+    );
+    const { setSearchField } = useInfoContext();
 
-    const profilesFD  = profiles.filter(
-        person => {
-            return (
-                person.date.includes(date)
-            )
-        }
-    )
-
-    const sumQuantity = (value: number) => {
-        let settingProfiles
-        if (value === 3 || value === 4 || value === 5 || value === 6) {
-            settingProfiles = profilesFD.filter(
-                person => (person.status % 100) === value
-            )
+    const sumQuantity = (value: CustomerStatus) => {
+        let settingProfiles;
+        if (
+            value === CustomerStatus.Seated ||
+            value === CustomerStatus.Completed ||
+            value === CustomerStatus.NoShow ||
+            value === CustomerStatus.Cancelled
+        ) {
+            settingProfiles = customerList.filter(
+                (person) => person.status === value,
+            );
         } else {
-            settingProfiles = profilesFD.filter(
-                person => (person.status % 100) !== 3 && (person.status % 100) !== 4 && (person.status % 100) !== 5 && (person.status % 100) !== 6
-            )
+            settingProfiles = customerList.filter(
+                (person) =>
+                    person.status !== CustomerStatus.Seated &&
+                    person.status !== CustomerStatus.Completed &&
+                    person.status !== CustomerStatus.NoShow &&
+                    person.status !== CustomerStatus.Cancelled,
+            );
         }
-        return settingProfiles.length
-    }
+        return settingProfiles.length;
+    };
 
     const handleSettingChange = (status: number) => {
         setSearchField((prev: any) => ({
             request: {
                 ...prev.request,
                 status: status,
-            }
-        }))
-    }
+            },
+        }));
+    };
 
     const options = [
-        { status: -1, value: "All", quantity: `${profilesFD.length}` },
-        { status: -3, value: "Upcoming", quantity: `${sumQuantity(0)}` },
-        { status: 3, value: "Seated", quantity: `${sumQuantity(3)}` },
-        { status: 4, value: "Completed", quantity: `${sumQuantity(4)}` },
-        { status: -2, value: "Absent", quantity: `${sumQuantity(5) + sumQuantity(6)}` },
+        { status: -1, value: 'All', quantity: `${customerList.length}` },
+        {
+            status: -3,
+            value: 'Upcoming',
+            quantity: `${sumQuantity(CustomerStatus.Booked)}`,
+        },
+        {
+            status: 3,
+            value: 'Seated',
+            quantity: `${sumQuantity(CustomerStatus.Seated)}`,
+        },
+        {
+            status: 4,
+            value: 'Completed',
+            quantity: `${sumQuantity(CustomerStatus.Completed)}`,
+        },
+        {
+            status: -2,
+            value: 'Absent',
+            quantity: `${
+                sumQuantity(CustomerStatus.NoShow) +
+                sumQuantity(CustomerStatus.Cancelled)
+            }`,
+        },
     ];
 
     const formatOptionLabel = ({ status, value, quantity }: any) => (
-        <div style={{
-            display: "flex",
-        }}
+        <div
+            style={{
+                display: 'flex',
+            }}
             onClick={() => handleSettingChange(status)}
         >
             <div>{value}</div>
@@ -64,7 +85,7 @@ const SettingStatus = () => {
         option: (provided: any, state: any) => ({
             ...provided,
             width: 450,
-            height: 40
+            height: 40,
         }),
         control: () => ({
             // none of react-select's styles are passed to <Control />
@@ -75,8 +96,8 @@ const SettingStatus = () => {
             const transition = 'opacity 300ms';
 
             return { ...provided, opacity, transition };
-        }
-    }
+        },
+    };
 
     return (
         <div id="setting-status">
@@ -86,18 +107,19 @@ const SettingStatus = () => {
                 // defaultValue={options[0]}
                 formatOptionLabel={formatOptionLabel}
                 options={options}
-                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                components={{
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                }}
             />
-            <span
-                id="setting-drop-down"
-            >
+            <span id="setting-drop-down">
                 <HipchatChevronDownIcon
-                    label='down'
+                    label="down"
                     size="small"
                     primaryColor="#869AB8"
                 />
             </span>
         </div>
-    )
-}
-export default SettingStatus
+    );
+};
+export default SettingStatus;

@@ -1,13 +1,16 @@
 import { memo } from 'react';
 import { TableStatus } from '../../../../public/data-constant';
 import { TChair } from '../../../../type/table.type';
-import { useApiTablesContext } from '../../../context/ApiContext';
 import { usePageContext } from '../../../context/PageContext';
 
-const Chair = ({ top, left, numberChair, table }: TChair) => {
-    const tables = useApiTablesContext();
-    const { currentPeople } = usePageContext();
-
+const Chair = ({
+    top,
+    left,
+    numberChair,
+    table,
+    customer,
+    currentPeople,
+}: TChair) => {
     return (
         <div
             className="chair"
@@ -16,10 +19,10 @@ const Chair = ({ top, left, numberChair, table }: TChair) => {
                 top: `${top}`,
                 left: `${left}`,
                 backgroundColor: `${
-                    numberChair <= table.seatChair
+                    numberChair <= customer.quantityBook
                         ? '#007296'
                         : currentPeople > table.totalChair &&
-                          table.status === TableStatus.Block
+                          customer.statusTable === TableStatus.Available
                         ? 'rgba(223, 71, 89, 0.5)'
                         : 'rgba(0, 40, 100, 0.12)'
                 }`,

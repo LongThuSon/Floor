@@ -1,599 +1,508 @@
-import { useState, useEffect, memo } from 'react'
-import axios from 'axios'
+import { useState, useEffect, memo } from 'react';
 
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useInfoContext } from '../../../context/InfoContext';
 
-import { useApiUsersContext, useApiTablesContext } from '../../../context/ApiContext'
-import { baseURL_users, baseURL_tables } from '../../../context/ApiContext/baseURL'
-import { useResetApiContext } from '../../../context/ApiContext/resetApiContext'
-import { useInfoContext } from '../../../context/InfoContext'
-import { usePageContext } from '../../../context/PageContext'
-
-import PeopleIcon from '@atlaskit/icon/glyph/people'
-import Chair from '@atlaskit/icon/glyph/editor/media-wide'
-import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done'
-import Tag from '@atlaskit/icon/glyph/creditcard'
-import MobileIcon from '@atlaskit/icon/glyph/mobile'
-import Deposit from '@atlaskit/icon/glyph/editor/info'
-import ShoppingCard from '@atlaskit/icon/glyph/marketplace'
-import Clock from '@atlaskit/icon/glyph/recent'
-import NoShow from '@atlaskit/icon/glyph/media-services/preselected'
-import Cancelled from '@atlaskit/icon/glyph/cross-circle'
-import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
-import Hold from '@atlaskit/icon/glyph/notification-all'
+import PeopleIcon from '@atlaskit/icon/glyph/people';
+import Chair from '@atlaskit/icon/glyph/editor/media-wide';
+import EditorDoneIcon from '@atlaskit/icon/glyph/editor/done';
+import Tag from '@atlaskit/icon/glyph/creditcard';
+import MobileIcon from '@atlaskit/icon/glyph/mobile';
+import Clock from '@atlaskit/icon/glyph/recent';
+import NoShow from '@atlaskit/icon/glyph/media-services/preselected';
+import Cancelled from '@atlaskit/icon/glyph/cross-circle';
+import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
+import Hold from '@atlaskit/icon/glyph/notification-all';
+import { useAppDispatch, useAppSelector } from '../../../../redux/hook';
+import {
+    CustomerStatus,
+    tableDF,
+    TableStatus,
+} from '../../../../public/data-constant';
+import {
+    getOneCustomer,
+    updateCustomer,
+} from '../../../../redux/slices/customer.slice';
 
 const CustomerList = () => {
-    const { showDetails, searchField } = useInfoContext()
-    const { setIndexED } = usePageContext()
-    const profiles = useApiUsersContext()
-    const tables = useApiTablesContext()
-    const { reset, setReset, date } = useResetApiContext()
-    const [listShow, setListShow] = useState<number[]>([])
+    const dispatch = useAppDispatch();
+    const tableList = useAppSelector((state) => state.tables.tableList);
+    const customerList = useAppSelector(
+        (state) => state.customers.customerList,
+    );
+
+    const { showDetails, searchField } = useInfoContext();
+    const [listShow, setListShow] = useState<string[]>([]);
 
     useEffect(() => {
-        setListShow([])
-    }, [])
+        setListShow([]);
+    }, []);
 
-    const profilesFD = profiles.filter(
-        person => {
-            return (
-                person.date.includes(date)
-            )
-        }
-    )
+    const findTable = (id: string) => {
+        const table = tableList.find((table) => table.idCustomer === id);
+        return table ?? tableDF;
+    };
 
-    const profileFilter = (profile: any) => {
+    const customerFilter = (customer: any) => {
         if (searchField.request.status === -1) {
-            return true
+            return true;
         } else if (searchField.request.status === -2) {
-            return (profile.status === 5 || profile.status === 6)
-        } else if (searchField.request.status === -3) {
-            return (profile.status !== 3 && profile.status !== 4 && profile.status !== 5 && profile.status !== 6)
-        } else {
-            return profile.status === searchField.request.status
-        }
-    }
-
-    const settingProfiles = profilesFD.filter(profileFilter)
-
-    const searchProfiles = settingProfiles.filter(
-        person => {
             return (
-                person
-                    .firstname
-                    .toLowerCase()
-                    .includes(searchField.request.name.toLowerCase()) ||
-                person
-                    .lastname
-                    .toLowerCase()
-                    .includes(searchField.request.name.toLowerCase())
-            )
-        })
-
-    const customerTime = (timeOrder: number, timeOL: number[]) => {
-        switch (timeOrder) {
-            case 0:
-                return <div style={{
-                    fontWeight: 600,
-                }}
-                >11:00AM</div>
-            case 1:
-                return <div style={{
-                    fontWeight: 600,
-                }}
-                >11:30AM</div>
-            case 2:
-                return <div style={{
-                    fontWeight: 600,
-                }}
-                >12:00PM</div>
-            case 3:
-                return <div style={{
-                    fontWeight: 600,
-                }}
-                >12:30PM</div>
-            case 4:
-                return <div style={{
-                    fontWeight: 600,
-                }}
-                >13:00PM</div>
-            case 5:
-                return <div style={{
-                    fontWeight: 600,
-                }}
-                >13:30PM</div>
-            default:
-                throw new Error('Invalid time.')
+                customer.status === CustomerStatus.NoShow ||
+                customer.status === CustomerStatus.Cancelled
+            );
+        } else if (searchField.request.status === -3) {
+            return (
+                customer.status !== CustomerStatus.Seated &&
+                customer.status !== CustomerStatus.Completed &&
+                customer.status !== CustomerStatus.NoShow &&
+                customer.status !== CustomerStatus.Cancelled
+            );
+        } else {
+            return true;
         }
-    }
+    };
 
-    const customerStatus = (id: number, timeOrder: number, status: number, timeLate: number, noShow: boolean) => {
-        if ((status === 1 && timeOrder === 0 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:15') ||
-            (status === 1 && timeOrder === 1 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '11:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '11:45') ||
-            (status === 1 && timeOrder === 2 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '12:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '12:15') ||
-            (status === 1 && timeOrder === 3 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '12:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '12:45') ||
-            (status === 1 && timeOrder === 4 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '13:00' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '13:15') ||
-            (status === 1 && timeOrder === 5 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) >= '13:30' && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) <= '13:45')) {
-            const newUser = {
-                status: 2,
-                timeLate: new Date().getTime(),
-                noShow: true,
-            }
+    const settingcustomers = customerList.filter(customerFilter);
 
-            axios.put(`${baseURL_users}/${id}`, newUser)
-                .then(res => {
-                    console.log(res.data)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-        }
+    const searchcustomers = settingcustomers.filter((person) => {
+        return person.name
+            .toLowerCase()
+            .includes(searchField.request.name.toLowerCase());
+    });
 
-        if (((status === 1 || status === 2) && timeOrder === 0 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '11:15' && noShow) ||
-            ((status === 1 || status === 2) && timeOrder === 1 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '11:45' && noShow) ||
-            ((status === 1 || status === 2) && timeOrder === 2 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '12:15' && noShow) ||
-            ((status === 1 || status === 2) && timeOrder === 3 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '12:45' && noShow) ||
-            ((status === 1 || status === 2) && timeOrder === 4 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '13:15' && noShow) ||
-            ((status === 1 || status === 2) && timeOrder === 5 && new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) > '13:45' && noShow)) {
-
-                axios.put(`${baseURL_users}/${id}`, { status: 5, noShow: false })
-                .then(res => {
-                    console.log(res.data)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-            }
-
+    const customerStatus = (status: CustomerStatus) => {
         switch (status) {
-            case 1:
+            case CustomerStatus.Confirmed:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '89px',
                             color: '#506690',
-                            backgroundColor: '#F1F4F8'
+                            backgroundColor: '#F1F4F8',
                         }}
                     >
                         <span>
                             <EditorDoneIcon
-                                label='comfirmed'
-                                size='small'
-                                primaryColor='#506690'
+                                label="comfirmed"
+                                size="small"
+                                primaryColor="#506690"
                             />
                             Comfirmed
                         </span>
                     </div>
-                )
-            case 2:
+                );
+            case CustomerStatus.Late:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '61px',
                             color: '#FF5C00',
-                            backgroundColor: '#FFF3EC'
+                            backgroundColor: '#FFF3EC',
                         }}
                     >
                         <span>
                             <Clock
-                                label='late'
-                                size='small'
-                                primaryColor='#FF5C00'
+                                label="late"
+                                size="small"
+                                primaryColor="#FF5C00"
                             />
                             Late
                         </span>
                     </div>
-                )
-            case 3:
+                );
+            case CustomerStatus.Seated:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '74px',
                             color: '#275EFE',
-                            backgroundColor: '#F2F6FF'
+                            backgroundColor: '#F2F6FF',
                         }}
                     >
                         <span>
                             <Chair
-                                label='seated'
-                                size='small'
-                                primaryColor='#275EFE'
+                                label="seated"
+                                size="small"
+                                primaryColor="#275EFE"
                             />
                             Seated
                         </span>
                     </div>
-                )
-            case 4:
+                );
+            case CustomerStatus.Completed:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '95px',
                             color: '#358970',
-                            backgroundColor: '#F1F4F8'
+                            backgroundColor: '#F1F4F8',
                         }}
                     >
                         <span>
                             <EditorDoneIcon
-                                label='completed'
-                                size='small'
-                                primaryColor='#F1FFF6'
+                                label="completed"
+                                size="small"
+                                primaryColor="#F1FFF6"
                             />
                             Completed
                         </span>
                     </div>
-                )
-            case 5:
+                );
+            case CustomerStatus.NoShow:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '83px',
                             color: '#DF4759',
-                            backgroundColor: '#FFF6F5'
+                            backgroundColor: '#FFF6F5',
                         }}
                     >
                         <span>
                             <NoShow
-                                label='no show'
-                                size='small'
-                                primaryColor='#FFF6F5'
+                                label="no show"
+                                size="small"
+                                primaryColor="#FFF6F5"
                             />
                             No Show
                         </span>
                     </div>
-                )
-            case 6:
+                );
+            case CustomerStatus.Cancelled:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '89px',
                             color: '#DF4759',
-                            backgroundColor: '#FFF6F5'
+                            backgroundColor: '#FFF6F5',
                         }}
                     >
                         <span>
                             <Cancelled
-                                label='cancelled'
-                                size='small'
-                                primaryColor='#DF4759'
+                                label="cancelled"
+                                size="small"
+                                primaryColor="#DF4759"
                             />
                             Cancelled
                         </span>
                     </div>
-                )
+                );
             default:
                 return (
                     <div
-                        className='customer-status'
+                        className="customer-status"
                         style={{
                             width: '71px',
                             color: '#506690',
-                            backgroundColor: '#F1F4F8'
+                            backgroundColor: '#F1F4F8',
                         }}
                     >
                         <span>
                             <EditorDoneIcon
-                                label='booked'
-                                size='small'
-                                primaryColor='#506690'
+                                label="booked"
+                                size="small"
+                                primaryColor="#506690"
                             />
                             Booked
                         </span>
                     </div>
-                )
+                );
         }
-    }
+    };
 
-    const handleshow = (index: number) => {
+    const handleshow = (index: string) => {
         if (listShow.indexOf(index) === -1) {
-            setListShow((oldArray: number[]) => [...oldArray, index])
+            setListShow((oldArray: string[]) => [...oldArray, index]);
         } else {
-            setListShow((currentArray: number[]) => currentArray.filter((remainElement: number) => remainElement !== index))
+            setListShow((currentArray: string[]) =>
+                currentArray.filter(
+                    (remainElement: string) => remainElement !== index,
+                ),
+            );
         }
-    }
+    };
 
     const notify = (status: string, name: string, numberTable?: number) => {
         if (status === 'comfirm') {
-            toast.success(`Reservation confirmed for ${name}!`)
+            toast.success(`Reservation confirmed for ${name}!`);
         } else if (status === 'seated') {
-            toast.success(`${name} seated at Table ${numberTable}.`)
+            toast.success(`${name} seated at Table ${numberTable}.`);
         } else {
-            toast.success(`Table ${numberTable} has been put on hold.`)
+            toast.success(`Table ${numberTable} has been put on hold.`);
         }
-    }
+    };
 
-    const updateComfirm = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const timeOL = [...tables[0]?.tables[numberTable % 18]?.timeList]
+    const updateSeat = (id: string) => {
+        const updateCus = {
+            id: id,
+            data: {
+                status: CustomerStatus.Seated,
+                statusTable: TableStatus.InUse,
+            },
+        };
 
-        const newUser = {
-            status: 1,
-        }
+        dispatch(updateCustomer(updateCus));
+    };
 
-        const newTable = [...tables[0]?.tables].fill({
-            id: tables[0]?.tables[numberTable % 18]?.id,
-            numberTable: tables[0]?.tables[numberTable % 18]?.numberTable,
-            seat: quantity % 5 + 1,
-            status: Number(`${((quantity % 5 + 1) <= tables[0].tables[numberTable % 18]?.quantity && (timeOL.includes(timeOrder % 6) === false)) ? 3 : 7}`),
-            timeOrder: timeOrder % 6,
-            idCustomer: Number(id),
-            quantity: tables[0]?.tables[numberTable % 18]?.quantity,
-            timeList: timeOL,
-            timeSeated: tables[0]?.tables[numberTable % 18]?.timeSeated,
-        }, numberTable % 18, numberTable % 18 + 1)
+    const holdCustomer = (id: string) => {
+        const updateCus = {
+            id: id,
+            data: {
+                isHold: true,
+            },
+        };
 
-        if (timeOL.includes(timeOrder % 6) === false) {
-            timeOL.push(Number(timeOrder % 6))
-        }
-
-        axios.put(`${baseURL_users}/${id}`, newUser)
-            .then(res => {
-                console.log(res.data)
-                if (tables[0]?.tables[numberTable % 18]?.status === 1 || tables[0]?.tables[numberTable % 18]?.status === 2 || tables[0]?.tables[numberTable % 18]?.status === 3) {
-                    setReset(!reset)
-                }
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-
-        if (tables[0]?.tables[numberTable % 18]?.status !== 1 && tables[0]?.tables[numberTable % 18]?.status !== 2 && tables[0]?.tables[numberTable % 18]?.status !== 3) {
-            axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
-                .then(res => {
-                    setReset(!reset)
-                    console.log(res.data)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-        }
-    }
-
-    const updateSeat = (id: number, numberTable: number, quantity: number, timeOrder: number) => {
-        const timeOL = [...tables[0]?.tables[numberTable % 18]?.timeList]
-
-        if (((quantity % 5 + 1) <= tables[0]?.tables[numberTable % 18]?.quantity && tables[0]?.tables[numberTable % 18]?.status === 5) || (tables[0]?.tables[numberTable % 18]?.status === 3)) {
-            if (!timeOL.includes(timeOrder % 6)) {
-                timeOL.push(Number(timeOrder % 6))
-            }
-
-            const newUser = {
-                status: 3,
-            }
-
-            const newTable = [...tables[0]?.tables].fill({
-                id: tables[0]?.tables[numberTable % 18]?.id,
-                numberTable: tables[0]?.tables[numberTable % 18]?.numberTable,
-                seat: quantity % 5 + 1,
-                status: Math.floor(Math.random() * 3),
-                timeOrder: timeOrder % 6,
-                idCustomer: Number(id),
-                quantity: tables[0]?.tables[numberTable % 18]?.quantity,
-                timeList: timeOL,
-                timeSeated: new Date().getTime(),
-            }, numberTable % 18, numberTable % 18 + 1)
-
-            axios.put(`${baseURL_users}/${id}`, newUser)
-                .then(res => console.log(res.data))
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-            axios.put(`${baseURL_tables}/${tables[0]?.id}`, { tables: newTable })
-                .then(res => {
-                    setReset(!reset)
-                    console.log(res.data)
-                })
-                .catch(error => {
-                    console.log('ERROR:', error)
-                })
-        } else {
-            alert('Status table: Clash')
-        }
-    }
-
-    const holdCustomer = (id: number) => {
-        const updateUser = {
-            noShow: false,
-        }
-
-        axios.put(`${baseURL_users}/${id}`, updateUser)
-            .then(res => {
-                console.log(res.data)
-            })
-            .catch(error => {
-                console.log('ERROR:', error)
-            })
-    }
+        dispatch(updateCustomer(updateCus));
+    };
 
     return (
         <>
             <ul
                 style={{
-                    listStyleType: "none",
+                    listStyleType: 'none',
                     padding: 0,
                 }}
             >
-                {searchProfiles.map((profile) => (
+                {searchcustomers.map((customer) => (
                     <li
-                        key={profile.id}
+                        key={customer._id}
                         style={{
                             padding: 0,
                             margin: '-18px 0 18px',
-                            backgroundColor: `${tables[0]?.tables[profile.numberTable % 18]?.status === 7 ? '#FFEEEB' : '#fff'}`,
+                            backgroundColor: `${
+                                customer.statusTable === TableStatus.Clash
+                                    ? '#FFEEEB'
+                                    : '#fff'
+                            }`,
                         }}
-                        onClick={() => handleshow(profile.id)}
+                        onClick={() => handleshow(customer._id)}
                     >
                         <div className="info-customer">
                             <div className="customer-title">
-                                <div>{`${profile.firstname} `}
-                                    <span style={{ fontWeight: 600 }}>{profile.lastname}</span>
+                                <div style={{ fontWeight: 600 }}>
+                                    {customer.name}
                                 </div>
 
-                                {customerTime(profile.timeOrder % 6, tables[0]?.tables[profile.numberTable % 18]?.timeList)}
-
+                                <div style={{ fontWeight: 600 }}>
+                                    {customer.timeOrder}
+                                </div>
                             </div>
-                            <div className='customer-setup'>
+                            <div className="customer-setup">
                                 <div>
                                     <span
                                         style={{
-                                            marginRight: "10px",
+                                            marginRight: '10px',
                                         }}
                                     >
                                         <PeopleIcon
-                                            label='people'
-                                            size='small'
-                                            primaryColor={`${((profile.quantity % 5 + 1) > tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status === 7) ? '#DF4759' : '#506690'}`}
+                                            label="people"
+                                            size="small"
+                                            primaryColor={`${
+                                                customer.quantityBook >
+                                                    findTable(customer._id)
+                                                        .totalChair &&
+                                                customer.statusTable ===
+                                                    TableStatus.Clash
+                                                    ? '#DF4759'
+                                                    : '#506690'
+                                            }`}
                                         />
-                                        <span style={{ color: `${((profile.quantity % 5 + 1) > tables[0]?.tables[profile.numberTable % 18]?.quantity && tables[0]?.tables[profile.numberTable % 18]?.status === 7) ? '#DF4759' : '#506690'}` }}>
-                                            {profile.quantity % 5 + 1}
+                                        <span
+                                            style={{
+                                                color: `${
+                                                    customer.quantityBook >
+                                                        findTable(customer._id)
+                                                            .totalChair &&
+                                                    customer.statusTable ===
+                                                        TableStatus.Clash
+                                                        ? '#DF4759'
+                                                        : '#506690'
+                                                }`,
+                                            }}
+                                        >
+                                            {customer.quantityBook}
                                         </span>
                                     </span>
                                     <span>
                                         <Chair
-                                            label='chair'
-                                            size='small'
-                                            primaryColor={`${(tables[0]?.tables[profile.numberTable % 18]?.status === 7 && (profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity) ? '#DF4759' : '#506690'}`}
+                                            label="chair"
+                                            size="small"
+                                            primaryColor={`${
+                                                customer.statusTable ===
+                                                    TableStatus.Clash &&
+                                                customer.quantityBook <=
+                                                    findTable(customer._id)
+                                                        .totalChair
+                                                    ? '#DF4759'
+                                                    : '#506690'
+                                            }`}
                                         />
-                                        <span style={{ color: `${(tables[0]?.tables[profile.numberTable % 18]?.status === 7 && (profile.quantity % 5 + 1) <= tables[0]?.tables[profile.numberTable % 18]?.quantity) ? '#DF4759' : '#506690'}` }}>
-                                            {105 + profile.numberTable % 18}
+                                        <span
+                                            style={{
+                                                color: `${
+                                                    customer.statusTable ===
+                                                        TableStatus.Clash &&
+                                                    customer.quantityBook <=
+                                                        findTable(customer._id)
+                                                            .totalChair
+                                                        ? '#DF4759'
+                                                        : '#506690'
+                                                }`,
+                                            }}
+                                        >
+                                            {findTable(customer._id).number}
                                         </span>
                                     </span>
                                 </div>
 
-                                {customerStatus(profile.id, profile.timeOrder % 6, profile.status % 100, 0, profile.noShow)}
-
+                                {customerStatus(customer.status)}
                             </div>
 
                             <div
-                                className='customer-tag'
-                                style={{ display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}` }}
+                                className="customer-tag"
+                                style={{
+                                    display: `${
+                                        showDetails ||
+                                        listShow.includes(customer._id)
+                                            ? ''
+                                            : 'none'
+                                    }`,
+                                }}
                             >
-                                <div className='tag-title'>
+                                <div className="tag-title">
                                     <MobileIcon
-                                        label='tag'
-                                        size='small'
-                                        primaryColor='#506690'
+                                        label="tag"
+                                        size="small"
+                                        primaryColor="#506690"
                                     />
-                                    {profile.phone}
+                                    {customer.phone}
                                 </div>
                             </div>
 
-                            <div className='customer-tag'>
-                                <div className='tag-title'>
+                            <div className="customer-tag">
+                                <div className="tag-title">
                                     <Tag
-                                        label='tag'
-                                        size='small'
-                                        primaryColor='#506690'
+                                        label="tag"
+                                        size="small"
+                                        primaryColor="#506690"
                                     />
-                                    Birthday, Special Req.
+                                    Note
                                 </div>
                                 <div
                                     style={{
                                         paddingLeft: '16px',
-                                        display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}`
-                                    }}
-                                >{profile.eventTag}</div>
-                            </div>
-
-                            <div
-                                className='customer-tag'
-                                style={{ display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}` }}
-                            >
-                                <div className='tag-title'>
-                                    <Deposit
-                                        label='tag'
-                                        size='small'
-                                        primaryColor='#506690'
-                                    />
-                                    Deposit
-                                </div>
-                                <div style={{ paddingLeft: '16px' }}>{profile.quantity % 5 + 1} x 50$ = {(profile.quantity % 5 + 1) * 50}$</div>
-                            </div>
-
-                            <div
-                                className='customer-tag'
-                                style={{ display: `${(showDetails || listShow.includes(profile.id)) ? '' : 'none'}` }}
-                            >
-                                <div className='tag-title'>
-                                    <ShoppingCard
-                                        label='tag'
-                                        size='small'
-                                        primaryColor='#506690'
-                                    />
-                                    Package Name e.g CNY Package A $99.99
-                                </div>
-                            </div>
-                            <div
-                                className='actions-status'
-                                style={{ display: `${listShow.includes(profile.id) ? '' : 'none'}` }}
-                            >
-                                <div
-                                    className='item-action'
-                                    style={{ display: `${(profile.status % 100 === 0 || profile.status % 100 > 6) ? '' : 'none'}` }}
-                                    onClick={() => {
-                                        updateComfirm(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)
-                                        notify('comfirm', profile.lastname)
+                                        display: `${
+                                            showDetails ||
+                                            listShow.includes(customer._id)
+                                                ? ''
+                                                : 'none'
+                                        }`,
                                     }}
                                 >
-                                    <span>
-                                        <EditorDoneIcon
-                                            label='comfirm'
-                                            size='large'
-                                            primaryColor='#fff'
-                                        />
-                                    </span>
-                                    <span>Comfirm</span>
+                                    {customer.note}
                                 </div>
+                            </div>
+
+                            <div
+                                className="actions-status"
+                                style={{
+                                    display: `${
+                                        listShow.includes(customer._id)
+                                            ? ''
+                                            : 'none'
+                                    }`,
+                                }}
+                            >
                                 <div
-                                    className='item-action'
-                                    style={{ display: `${(profile.status % 100 === 3 || profile.status % 100 === 4 || profile.status % 100 === 6) ? 'none' : ''}` }}
+                                    className="item-action"
+                                    style={{
+                                        display: `${
+                                            customer.status ===
+                                                CustomerStatus.Booked ||
+                                            customer.status ===
+                                                CustomerStatus.Seated ||
+                                            customer.status ===
+                                                CustomerStatus.Completed ||
+                                            customer.status ===
+                                                CustomerStatus.NoShow ||
+                                            customer.status ===
+                                                CustomerStatus.Cancelled
+                                                ? 'none'
+                                                : ''
+                                        }`,
+                                    }}
                                     onClick={() => {
-                                        updateSeat(profile.id, profile.numberTable, profile.quantity, profile.timeOrder)
-                                        if ((profile.quantity % 5 + 1) <= tables[0].tables[profile.numberTable % 18]?.quantity && tables[0].tables[profile.numberTable % 18]?.status === 5) {
-                                            notify('seated', profile.lastname, 105 + profile.numberTable % 18)
+                                        updateSeat(customer._id);
+                                        if (
+                                            customer.quantityBook <=
+                                                findTable(customer._id)
+                                                    .totalChair &&
+                                            customer.statusTable ===
+                                                TableStatus.Available
+                                        ) {
+                                            notify(
+                                                'seated',
+                                                customer.name,
+                                                findTable(customer._id).number,
+                                            );
                                         }
                                     }}
                                 >
                                     <span>
                                         <Chair
-                                            label='comfirm'
-                                            size='large'
-                                            primaryColor='#fff'
+                                            label="comfirm"
+                                            size="large"
+                                            primaryColor="#fff"
                                         />
                                     </span>
                                     <span>Seat</span>
                                 </div>
                                 <div
-                                    className='item-action'
-                                    onClick={() => setIndexED(profile.id - 1)}
+                                    className="item-action"
+                                    onClick={() =>
+                                        dispatch(getOneCustomer(customer._id))
+                                    }
                                 >
                                     <span>
                                         <EditFilledIcon
-                                            label='edit'
-                                            size='large'
-                                            primaryColor='#fff'
+                                            label="edit"
+                                            size="large"
+                                            primaryColor="#fff"
                                         />
                                     </span>
                                     <span>Edit</span>
                                 </div>
                                 <div
-                                    className='item-action'
-                                    style={{ display: `${profile.status % 100 === 2 ? '' : 'none'}` }}
+                                    className="item-action"
+                                    style={{
+                                        display: `${
+                                            customer.status ===
+                                            CustomerStatus.Late
+                                                ? ''
+                                                : 'none'
+                                        }`,
+                                    }}
                                     onClick={() => {
-                                        holdCustomer(profile.id)
-                                        notify('hold', profile.lastname, 105 + profile.numberTable % 18)
+                                        holdCustomer(customer._id);
+                                        notify(
+                                            'hold',
+                                            customer.name,
+                                            findTable(customer._id).number,
+                                        );
                                     }}
                                 >
                                     <span>
                                         <Hold
-                                            label='edit'
-                                            size='large'
-                                            primaryColor='#fff'
+                                            label="edit"
+                                            size="large"
+                                            primaryColor="#fff"
                                         />
                                     </span>
                                     <span>Hold</span>
@@ -604,7 +513,7 @@ const CustomerList = () => {
                 ))}
             </ul>
         </>
-    )
-}
+    );
+};
 
-export default memo(CustomerList)
+export default memo(CustomerList);

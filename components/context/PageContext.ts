@@ -1,33 +1,35 @@
-import { createContext, useContext } from "react"
+import { createContext, useContext } from 'react';
+import { customerDF } from '../../public/data-constant';
+import { TCustomer } from '../../type/customer.type';
 
 export type IPageType = {
-    enableInfo: boolean,
-    setEnableInfo: (param: boolean) => void,
-    indexED: number,
-    setIndexED: (param: number) => void,
-    showZoom: boolean,
-    currentPeople: number,
-    setCurrentPeople: (param: number) => void,
-    changedNTable: number,
-    setChangedNTable: (param: number) => void,
-    setShowZoom: (param: boolean) => void,
-    winSize: {  width: number, height: number },
+    enableInfo: boolean;
+    setEnableInfo: (param: boolean) => void;
+    indexED: number;
+    setIndexED: (param: number) => void;
+    showZoom: boolean;
+    customerChanged: TCustomer;
+    setCustomerChanged: (param: TCustomer) => void;
+    setShowZoom: (param: boolean) => void;
+    winSize: { width: number; height: number };
     // setWinSize: (param: {  width: number, height: number }) => void,
-}
+    date: string;
+    setDate: (param: string) => void;
+};
 
 export const PageContext = createContext<IPageType>({
     enableInfo: true, // set a default value
-    setEnableInfo: () => { },
+    setEnableInfo: () => {},
     indexED: -1,
-    setIndexED: () => { },
+    setIndexED: () => {},
     showZoom: false,
-    setShowZoom: () => { },
-    currentPeople: 1,
-    setCurrentPeople: () => { },
-    changedNTable: 105,
-    setChangedNTable: () => { },
-    winSize: {  width: 1500, height: 677 },
+    setShowZoom: () => {},
+    customerChanged: customerDF,
+    setCustomerChanged: () => {},
+    winSize: { width: 1500, height: 677 },
     // setWinSize: () => { },
-})
+    date: '2022-03-21',
+    setDate: () => {},
+});
 
-export const usePageContext = () => useContext(PageContext)
+export const usePageContext = () => useContext(PageContext);

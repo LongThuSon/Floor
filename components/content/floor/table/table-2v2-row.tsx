@@ -11,20 +11,22 @@ import {
     reservTimeTable,
     styleTable,
 } from '../../../../public/function-common';
-import { CustomerStatus, TableStatus } from '../../../../public/data-constant';
+import { customerDF, TableStatus } from '../../../../public/data-constant';
 
-const Table2v2Row = ({ table }: TTableProps) => {
+const Table2v2Row = ({
+    table,
+    customerChoosen,
+    changedNTable,
+}: TTableProps) => {
     const dispatch = useAppDispatch();
-    const customer = useAppSelector((state) =>
-        state.customers.customerList.find(
-            (cus) => cus._id === table.idCustomer,
-        ),
-    );
-    const customerChossen = useAppSelector(
-        (state) => state.customers.customerChoosen,
-    );
+    const customer =
+        useAppSelector((state) =>
+            state.customers.customerList.find(
+                (cus) => cus._id === table.idCustomer,
+            ),
+        ) ?? customerDF;
 
-    const { winSize, currentPeople, changedNTable } = usePageContext();
+    const { winSize, customerChanged } = usePageContext();
     const { move } = useContentContext();
     const [position, setPosition] = useState({ top: 0, left: 0 });
 
@@ -57,24 +59,57 @@ const Table2v2Row = ({ table }: TTableProps) => {
                     cursor: `${move ? 'default' : 'move'}`,
                 }}
             >
-                <Chair top="-9px" left="10px" numberChair={1} table={table} />
-                <Chair top="29px" left="10px" numberChair={4} table={table} />
-                <Chair top="-9px" left="38px" numberChair={2} table={table} />
-                <Chair top="29px" left="38px" numberChair={3} table={table} />
+                <Chair
+                    top="-9px"
+                    left="10px"
+                    numberChair={1}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="29px"
+                    left="10px"
+                    numberChair={4}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="-9px"
+                    left="38px"
+                    numberChair={2}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="29px"
+                    left="38px"
+                    numberChair={3}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
 
                 <div
                     className="table-2v2-row"
                     style={styleTable(
                         table,
-                        customerChossen,
-                        currentPeople,
+                        customer?.statusTable ?? TableStatus.Available,
+                        customerChoosen,
+                        customerChanged.quantityBook,
                         changedNTable,
                     )}
                 >
                     {table.number}
                 </div>
 
-                {reservTimeTable(table, customer, 'reserv-time-2v2-row')}
+                {reservTimeTable(
+                    customer.statusTable,
+                    customer,
+                    'reserv-time-2v2-row',
+                )}
 
                 {!move && (
                     <div

@@ -11,6 +11,7 @@ import {
     reservTimeTable,
     styleTable,
 } from '../../../../public/function-common';
+import { customerDF, TableStatus } from '../../../../public/data-constant';
 
 const positionTables = [
     {
@@ -50,18 +51,16 @@ const positionTables = [
     },
 ];
 
-const Table7v7 = ({ table }: TTableProps) => {
+const Table7v7 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
     const dispatch = useAppDispatch();
-    const customer = useAppSelector((state) =>
-        state.customers.customerList.find(
-            (cus) => cus._id === table.idCustomer,
-        ),
-    );
-    const customerChossen = useAppSelector(
-        (state) => state.customers.customerChoosen,
-    );
+    const customer =
+        useAppSelector((state) =>
+            state.customers.customerList.find(
+                (cus) => cus._id === table.idCustomer,
+            ),
+        ) ?? customerDF;
 
-    const { winSize, currentPeople, changedNTable } = usePageContext();
+    const { winSize, customerChanged } = usePageContext();
     const { move } = useContentContext();
     const [position, setPosition] = useState({ top: 0, left: 0 });
 
@@ -101,12 +100,16 @@ const Table7v7 = ({ table }: TTableProps) => {
                             left="-9px"
                             numberChair={positionTable.numberLeft}
                             table={table}
+                            customer={customer}
+                            currentPeople={customerChoosen.quantityBook}
                         />
                         <Chair
                             top={`${positionTable.top}px`}
                             left="29px"
                             numberChair={positionTable.numberRight}
                             table={table}
+                            customer={customer}
+                            currentPeople={customerChoosen.quantityBook}
                         />
                     </div>
                 ))}
@@ -115,15 +118,20 @@ const Table7v7 = ({ table }: TTableProps) => {
                     className="table-7v7"
                     style={styleTable(
                         table,
-                        customerChossen,
-                        currentPeople,
+                        customer?.statusTable ?? TableStatus.Available,
+                        customerChoosen,
+                        customerChanged.quantityBook,
                         changedNTable,
                     )}
                 >
                     {table.number}
                 </div>
 
-                {reservTimeTable(table, customer, 'reserv-time-7v7')}
+                {reservTimeTable(
+                    customer.statusTable,
+                    customer,
+                    'reserv-time-7v7',
+                )}
 
                 {!move && (
                     <div

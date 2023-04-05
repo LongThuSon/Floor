@@ -26,6 +26,18 @@ export const getAllCustomers = createAsyncThunk(
     },
 );
 
+export const getOneCustomer = createAsyncThunk(
+    'customers/get',
+    async (id: String, thunkApi) => {
+        try {
+            const res = await CustomerDataService.get(id);
+            return res.data;
+        } catch (error: any) {
+            return thunkApi.rejectWithValue(error.message);
+        }
+    },
+);
+
 export const createCustomer = createAsyncThunk(
     'customers/create',
     async (data: TCustomerCreate, thunkApi) => {
@@ -68,6 +80,19 @@ const customerSlice = createSlice({
         builder.addCase(getAllCustomers.rejected, (state, action) => {
             state.isLoading = false;
             console.log('getAllcustomers.rejected error');
+        });
+
+        // getOneCustomer
+        builder.addCase(getOneCustomer.pending, (state, action) => {
+            state.isLoading = true;
+        });
+        builder.addCase(getOneCustomer.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.customerChoosen = action.payload;
+        });
+        builder.addCase(getOneCustomer.rejected, (state, action) => {
+            state.isLoading = false;
+            console.log('getOneCustomer.rejected error');
         });
 
         // createCustomer

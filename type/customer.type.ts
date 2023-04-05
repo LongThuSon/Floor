@@ -1,6 +1,7 @@
 import {
     CustomerState,
     CustomerStatus,
+    TableStatus,
     TimeOrder,
     TypeService,
 } from '../public/data-constant';
@@ -15,10 +16,11 @@ type TCustomer = {
     dateOrder: Date;
     typeService: TypeService;
     timeOrder: TimeOrder;
-    isHold: number;
+    isHold: boolean;
     note: string;
     keyRestaurant: string;
     state: CustomerState;
+    statusTable: TableStatus;
 };
 
 type TCustomerCreate = {

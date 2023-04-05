@@ -1,13 +1,13 @@
-import { TableStatus, TableType } from '../public/data-constant';
+import { TableType } from '../public/data-constant';
+import { TCustomer } from './customer.type';
 
 type TTable = {
     _id: string;
     number: number;
     type: TableType;
-    status: TableStatus;
     totalChair: number;
-    seatChair: number;
     idCustomer: string;
+    isBlock: Boolean;
     topPositon: number;
     leftPositon: number;
     keyRestaurant: string;
@@ -35,6 +35,8 @@ type TTableData = {
 
 type TTableProps = {
     table: TTable;
+    customerChoosen: TCustomer;
+    changedNTable: number;
 };
 
 type TChair = {
@@ -42,6 +44,8 @@ type TChair = {
     left: string;
     numberChair: number;
     table: TTable;
+    customer: TCustomer;
+    currentPeople: number;
 };
 
 export type {

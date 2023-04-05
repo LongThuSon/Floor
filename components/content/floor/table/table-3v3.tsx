@@ -11,19 +11,18 @@ import {
     reservTimeTable,
     styleTable,
 } from '../../../../public/function-common';
+import { customerDF, TableStatus } from '../../../../public/data-constant';
 
-const Table3v3 = ({ table }: TTableProps) => {
+const Table3v3 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
     const dispatch = useAppDispatch();
-    const customer = useAppSelector((state) =>
-        state.customers.customerList.find(
-            (cus) => cus._id === table.idCustomer,
-        ),
-    );
-    const customerChossen = useAppSelector(
-        (state) => state.customers.customerChoosen,
-    );
+    const customer =
+        useAppSelector((state) =>
+            state.customers.customerList.find(
+                (cus) => cus._id === table.idCustomer,
+            ),
+        ) ?? customerDF;
 
-    const { winSize, currentPeople, changedNTable } = usePageContext();
+    const { winSize, customerChanged } = usePageContext();
     const { move } = useContentContext();
     const [position, setPosition] = useState({ top: 0, left: 0 });
 
@@ -56,26 +55,73 @@ const Table3v3 = ({ table }: TTableProps) => {
                     cursor: `${move ? 'default' : 'move'}`,
                 }}
             >
-                <Chair top="10px" left="-9px" numberChair={6} table={table} />
-                <Chair top="10px" left="29px" numberChair={1} table={table} />
-                <Chair top="38px" left="-9px" numberChair={5} table={table} />
-                <Chair top="38px" left="29px" numberChair={2} table={table} />
-                <Chair top="66px" left="-9px" numberChair={4} table={table} />
-                <Chair top="66px" left="29px" numberChair={3} table={table} />
+                <Chair
+                    top="10px"
+                    left="-9px"
+                    numberChair={6}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="10px"
+                    left="29px"
+                    numberChair={1}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="38px"
+                    left="-9px"
+                    numberChair={5}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="38px"
+                    left="29px"
+                    numberChair={2}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="66px"
+                    left="-9px"
+                    numberChair={4}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
+                <Chair
+                    top="66px"
+                    left="29px"
+                    numberChair={3}
+                    table={table}
+                    customer={customer}
+                    currentPeople={customerChoosen.quantityBook}
+                />
 
                 <div
                     className="table-3v3"
                     style={styleTable(
                         table,
-                        customerChossen,
-                        currentPeople,
+                        customer?.statusTable ?? TableStatus.Available,
+                        customerChoosen,
+                        customerChanged.quantityBook,
                         changedNTable,
                     )}
                 >
                     {table.number}
                 </div>
 
-                {reservTimeTable(table, customer, 'reserv-time-3v3')}
+                {reservTimeTable(
+                    customer.statusTable,
+                    customer,
+                    'reserv-time-3v3',
+                )}
 
                 {!move && (
                     <div

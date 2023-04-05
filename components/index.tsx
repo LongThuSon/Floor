@@ -6,6 +6,7 @@ import Home from './content/home';
 import { useAppDispatch } from '../redux/hook';
 import { getAllTables } from '../redux/slices/table.silce';
 import { getAllCustomers } from '../redux/slices/customer.slice';
+import { customerDF } from '../public/data-constant';
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -21,8 +22,7 @@ const App = () => {
     const [enableInfo, setEnableInfo] = useState(true);
     const [indexED, setIndexED] = useState(-1);
     const [showZoom, setShowZoom] = useState(false);
-    const [currentPeople, setCurrentPeople] = useState(-1);
-    const [changedNTable, setChangedNTable] = useState(-1);
+    const [customerChanged, setCustomerChanged] = useState(customerDF);
     const [winSize, setWinSize] = useState({ width: 1536, height: 677 });
 
     useEffect(() => {
@@ -55,10 +55,8 @@ const App = () => {
                     showZoom,
                     setShowZoom,
                     winSize,
-                    currentPeople,
-                    setCurrentPeople,
-                    changedNTable,
-                    setChangedNTable,
+                    customerChanged,
+                    setCustomerChanged,
                 }}
             >
                 <Header />
