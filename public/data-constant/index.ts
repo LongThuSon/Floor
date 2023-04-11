@@ -1,5 +1,6 @@
 import { TCustomer } from '../../type/customer.type';
 import { TTable } from '../../type/table.type';
+import { TAuth, TUser } from '../../type/user.type';
 
 enum ActionUser {
     Login = 'login',
@@ -64,33 +65,53 @@ enum TimeOrder {
     _other = 'other',
 }
 
+enum TypeActive {
+    Customer = 'customer',
+    Table = 'table',
+}
+
 const tableDF: TTable = {
-    _id: '',
+    _id: '-1',
     number: 0,
     type: TableType._1v1,
     totalChair: 2,
-    idCustomer: '',
+    idCustomer: '-1',
     isBlock: false,
     topPositon: 0,
     leftPositon: 0,
-    keyRestaurant: '',
+    keyRestaurant: '-1',
 };
 
 const customerDF: TCustomer = {
-    _id: '',
+    _id: '-1',
     name: 'DF',
     quantityBook: 0,
-    idTable: '',
-    phone: 0900000012,
+    idTable: '-1',
+    phone: '-1',
     status: CustomerStatus.Booked,
-    dateOrder: new Date(),
+    dateOrder: -1,
     typeService: TypeService.Lunch,
     timeOrder: TimeOrder._10h,
     isHold: false,
-    note: '',
-    keyRestaurant: '',
+    note: '-1',
+    keyRestaurant: '-1',
     state: CustomerState.Active,
     statusTable: TableStatus.Available,
+    percent: -1,
+};
+
+const userDF: TUser = {
+    _id: '-1',
+    name: 'DF',
+    phone: '-1',
+    password: '-1',
+    keyRestaurant: '-1',
+};
+
+const authDF: TAuth = {
+    phone: '-1',
+    password: '-1',
+    keyRestaurant: '-1',
 };
 
 export {
@@ -103,4 +124,7 @@ export {
     TimeOrder,
     tableDF,
     customerDF,
+    userDF,
+    authDF,
+    TypeActive,
 };

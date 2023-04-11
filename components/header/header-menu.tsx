@@ -1,30 +1,24 @@
-import { usePageContext } from '../context/PageContext'
-import MenuIcon from '@atlaskit/icon/glyph/menu'
+import { usePageContext } from '../context/PageContext';
+import MenuIcon from '@atlaskit/icon/glyph/menu';
+import { clearCustomerChoosen } from '../../redux/slices/customer.slice';
+import { useAppDispatch } from '../../redux/hook';
 
 const HeaderMenu = () => {
-    const { enableInfo, setEnableInfo, showZoom, setIndexED, setCurrentPeople, setChangedNTable } = usePageContext()
+    const dispatch = useAppDispatch();
+    const { enableInfo, setEnableInfo, showZoom } = usePageContext();
 
     const handleEnableInfo = () => {
         if (!showZoom) {
-            setEnableInfo(!enableInfo)
-            setIndexED(-1)
-            setCurrentPeople(-1)
-            setChangedNTable(-1)
+            setEnableInfo(!enableInfo);
+            dispatch(clearCustomerChoosen());
         }
-    }
+    };
 
     return (
-        <span
-            id='menu'
-            onClick={handleEnableInfo}
-        >
-            <MenuIcon
-                label='menu'
-                size="medium"
-                primaryColor='#869AB8'
-            />
+        <span id="menu" onClick={handleEnableInfo}>
+            <MenuIcon label="menu" size="medium" primaryColor="#869AB8" />
         </span>
-    )
-}
+    );
+};
 
-export default HeaderMenu
+export default HeaderMenu;

@@ -24,6 +24,7 @@ import {
     getOneCustomer,
     updateCustomer,
 } from '../../../../redux/slices/customer.slice';
+import { TCustomer } from '../../../../type/customer.type';
 
 const CustomerList = () => {
     const dispatch = useAppDispatch();
@@ -44,7 +45,7 @@ const CustomerList = () => {
         return table ?? tableDF;
     };
 
-    const customerFilter = (customer: any) => {
+    const customerFilter = (customer: TCustomer) => {
         if (searchField.request.status === -1) {
             return true;
         } else if (searchField.request.status === -2) {
@@ -68,7 +69,7 @@ const CustomerList = () => {
 
     const searchcustomers = settingcustomers.filter((person) => {
         return person.name
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(searchField.request.name.toLowerCase());
     });
 

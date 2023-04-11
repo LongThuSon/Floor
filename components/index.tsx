@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { PageContext } from '../components/context/PageContext';
 import Header from '../components/header';
 import Content from '../components/content';
@@ -6,7 +6,8 @@ import Home from './content/home';
 import { useAppDispatch } from '../redux/hook';
 import { getAllTables } from '../redux/slices/table.silce';
 import { getAllCustomers } from '../redux/slices/customer.slice';
-import { customerDF } from '../public/data-constant';
+import { customerDF, TypeService } from '../public/data-constant';
+import SocketContext from '../socket/contexts/SocketContext';
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -18,9 +19,10 @@ function getWindowDimensions() {
 
 const App = () => {
     const dispatch = useAppDispatch();
-
+    const { user } = useContext(SocketContext).SocketState;
     const [enableInfo, setEnableInfo] = useState(true);
-    const [indexED, setIndexED] = useState(-1);
+    const [date, setDate] = useState(0);
+    const [typeService, setTypeService] = useState(TypeService.Lunch);
     const [showZoom, setShowZoom] = useState(false);
     const [customerChanged, setCustomerChanged] = useState(customerDF);
     const [winSize, setWinSize] = useState({ width: 1536, height: 677 });
@@ -40,9 +42,18 @@ const App = () => {
     }, [enableInfo, showZoom]);
 
     useEffect(() => {
-        dispatch(getAllTables(''));
-        dispatch(getAllCustomers(''));
-    }, [dispatch]);
+        dispatch(
+            getAllCustomers({
+                key: '',
+                typeService: typeService,
+                dateOrder: 1681138196483,
+            }),
+        )
+            .then((_) => {
+                dispatch(getAllTables(''));
+            })
+            .catch((error) => console.log(error));
+    }, [dispatch, typeService]);
 
     return (
         <div>
@@ -50,17 +61,25 @@ const App = () => {
                 value={{
                     enableInfo,
                     setEnableInfo,
-                    indexED,
-                    setIndexED,
                     showZoom,
                     setShowZoom,
                     winSize,
                     customerChanged,
                     setCustomerChanged,
+                    date,
+                    setDate,
+                    typeService,
+                    setTypeService,
                 }}
             >
-                <Header />
-                <Content />
+                {user != null ? (
+                    <>
+                        <Header />
+                        <Content />
+                    </>
+                ) : (
+                    <Home />
+                )}
             </PageContext.Provider>
         </div>
     );

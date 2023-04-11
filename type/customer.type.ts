@@ -11,9 +11,9 @@ type TCustomer = {
     name: string;
     quantityBook: number;
     idTable: string;
-    phone: number;
+    phone: string;
     status: CustomerStatus;
-    dateOrder: Date;
+    dateOrder: number;
     typeService: TypeService;
     timeOrder: TimeOrder;
     isHold: boolean;
@@ -21,12 +21,13 @@ type TCustomer = {
     keyRestaurant: string;
     state: CustomerState;
     statusTable: TableStatus;
+    percent: number;
 };
 
 type TCustomerCreate = {
     name: string;
     quantityBook: number;
-    phone: number;
+    phone: string;
     dateOrder: Date;
     typeService: TypeService;
     timeOrder: TimeOrder;
@@ -47,4 +48,16 @@ type TCustomerData = {
     customerChoosen: TCustomer | null;
 };
 
-export type { TCustomer, TCustomerCreate, TCustomerUpdate, TCustomerData };
+type TCustomerGet = {
+    key: string;
+    typeService: TypeService;
+    dateOrder: number;
+};
+
+export type {
+    TCustomer,
+    TCustomerCreate,
+    TCustomerUpdate,
+    TCustomerData,
+    TCustomerGet,
+};

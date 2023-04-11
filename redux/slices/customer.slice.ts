@@ -4,6 +4,7 @@ import {
     TCustomer,
     TCustomerCreate,
     TCustomerData,
+    TCustomerGet,
     TCustomerUpdate,
 } from '../../type/customer.type';
 
@@ -16,9 +17,13 @@ const initialState: TCustomerData = {
 // ACTIONS
 export const getAllCustomers = createAsyncThunk(
     'customers/getAll',
-    async (key: String, thunkApi) => {
+    async (data: TCustomerGet, thunkApi) => {
         try {
-            const res = await CustomerDataService.getAllKey(key);
+            const res = await CustomerDataService.getAllService(
+                data.key,
+                data.typeService,
+                data.dateOrder,
+            );
             return res.data;
         } catch (error: any) {
             return thunkApi.rejectWithValue(error.message);
@@ -67,6 +72,9 @@ const customerSlice = createSlice({
     initialState,
     reducers: {
         // standard reducer logic, with auto-generated action types per reducer
+        clearCustomerChoosen: (state) => {
+            state.customerChoosen = null;
+        },
     },
     extraReducers(builder) {
         // getAllCustomers
@@ -74,6 +82,7 @@ const customerSlice = createSlice({
             state.isLoading = true;
         });
         builder.addCase(getAllCustomers.fulfilled, (state, action) => {
+            console.log(`all customers: ${action.payload}`);
             state.isLoading = false;
             state.customerList = action.payload;
         });
@@ -130,3 +139,4 @@ const customerSlice = createSlice({
 });
 
 export default customerSlice.reducer;
+export const { clearCustomerChoosen } = customerSlice.actions;

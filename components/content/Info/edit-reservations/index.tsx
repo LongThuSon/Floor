@@ -31,6 +31,7 @@ import {
 } from '../../../../public/data-constant';
 import { TCustomer } from '../../../../type/customer.type';
 import {
+    clearCustomerChoosen,
     getOneCustomer,
     updateCustomer,
 } from '../../../../redux/slices/customer.slice';
@@ -272,11 +273,11 @@ const EditDetails = () => {
                 data: newObj,
             };
             const oldTable = tableList.find(
-                (table) => table.idCustomer === customerChoosen.idTable,
+                (table) => table._id === customerChoosen.idTable,
             );
             const newTable =
                 tableList.find(
-                    (table) => table.idCustomer === customerChanged.idTable,
+                    (table) => table._id === customerChanged.idTable,
                 ) ?? tableDF;
 
             await dispatch(updateCustomer(newCus));
@@ -301,7 +302,7 @@ const EditDetails = () => {
 
             setTimeout(() => {
                 setCustomerChanged(customerDF);
-                dispatch(getOneCustomer(''));
+                dispatch(clearCustomerChoosen());
             }, 1000);
         } else {
             setShowWModal(true);
@@ -316,7 +317,7 @@ const EditDetails = () => {
             },
         };
         const oldTable = tableList.find(
-            (table) => table.idCustomer === customerChoosen.idTable,
+            (table) => table._id === customerChoosen.idTable,
         );
 
         await dispatch(updateCustomer(newCus));
@@ -333,7 +334,7 @@ const EditDetails = () => {
 
         setTimeout(() => {
             setCustomerChanged(customerDF);
-            dispatch(getOneCustomer(''));
+            dispatch(clearCustomerChoosen());
         }, 1000);
     };
 
@@ -343,7 +344,7 @@ const EditDetails = () => {
                 <span
                     onClick={() => {
                         setCustomerChanged(customerDF);
-                        dispatch(getOneCustomer(''));
+                        dispatch(clearCustomerChoosen());
                     }}
                 >
                     <ArrowLeftIcon

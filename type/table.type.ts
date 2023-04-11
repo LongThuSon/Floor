@@ -7,7 +7,7 @@ type TTable = {
     type: TableType;
     totalChair: number;
     idCustomer: string;
-    isBlock: Boolean;
+    isBlock: boolean;
     topPositon: number;
     leftPositon: number;
     keyRestaurant: string;

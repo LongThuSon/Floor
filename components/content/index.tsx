@@ -1,14 +1,15 @@
-import { useState, useEffect, memo } from 'react'
-import { ContentContext } from "../context/ContentContext"
-import { usePageContext } from '../context/PageContext'
-import {  useResetApiContext  } from '../context/ApiContext/resetApiContext'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import Info from "./Info"
-import Floor from "./floor"
-import Add from "./floor/button-add"
-import ZoomOut from './floor/zoom-style/zoom-out'
-import EditDetails from './Info/edit-reservations/'
+import { useState, useEffect, memo } from 'react';
+import { ContentContext } from '../context/ContentContext';
+import { usePageContext } from '../context/PageContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Info from './Info';
+import Floor from './floor';
+import Add from './floor/button-add';
+import ZoomOut from './floor/zoom-style/zoom-out';
+import EditDetails from './Info/edit-reservations/';
+import { useAppSelector } from '../../redux/hook';
+import AddModal from './modal/addModal';
 
 const getCurrentTime = () => {
     const now = new Date();
@@ -17,42 +18,44 @@ const getCurrentTime = () => {
 };
 
 const Content = () => {
-    const [move, setMove] = useState(true)
-    const [time, setTime] = useState(getCurrentTime())
-    const { enableInfo, showZoom, indexED } = usePageContext()
-    const { reset, setReset } = useResetApiContext()
+    const customerChoosen = useAppSelector(
+        (state) => state.customers.customerChoosen,
+    );
+    const [move, setMove] = useState(true);
+    const [time, setTime] = useState(getCurrentTime());
+    const { enableInfo, showZoom, typeService } = usePageContext();
 
     useEffect(() => {
         const timeOut = setTimeout(() => {
             setTime(getCurrentTime());
         }, 180000);
-        setReset(!reset)
         console.log(time);
         return () => clearTimeout(timeOut);
-    }, [time])
+    }, [time]);
 
     return (
-        <div
-            id="content-main"
-        >
-            <ContentContext.Provider
-                value={{ move, setMove, time }}
-            >
+        <div id="content-main">
+            <ContentContext.Provider value={{ move, setMove, time }}>
                 {enableInfo && <Info />}
-                {enableInfo && indexED !== -1 && <EditDetails />}
+                {enableInfo && customerChoosen !== null && <EditDetails />}
                 <Floor />
                 {!showZoom && <ZoomOut />}
             </ContentContext.Provider>
 
             {/* <Add /> */}
 
+            <AddModal />
+
             <ToastContainer
                 style={{
-                    position: 'absolute'
+                    position: 'absolute',
                 }}
             />
-
         </div>
-    )
+    );
+};
+export default memo(Content);
+
+function dispatch(arg0: any) {
+    throw new Error('Function not implemented.');
 }
-export default memo(Content)
