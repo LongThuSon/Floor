@@ -21,37 +21,38 @@ const primaryColorTable = (status: TableStatus) => {
 
 const styleTable = (
     table: TTable,
-    status: TableStatus,
-    customerChossen: TCustomer,
+    customer: TCustomer,
     currentPeople: number,
     changedNTable: number,
 ) => {
     return {
         backgroundImage: `linear-gradient(to top, ${primaryColorTable(
-            status,
-        )} ${status === TableStatus.InUse ? 20 : 100}%, ${
-            status === TableStatus.Overstay
+            customer.statusTable,
+        )} ${
+            customer.statusTable === TableStatus.InUse ? customer.percent : 100
+        }%, ${
+            customer.statusTable === TableStatus.Overstay
                 ? '#FFA4A4'
-                : status === TableStatus.InUse
+                : customer.statusTable === TableStatus.InUse
                 ? 'rgb(220, 239, 245)'
                 : '#fff'
-        } ${20}%, ${
-            status === TableStatus.Overstay
+        } ${customer.percent}%, ${
+            customer.statusTable === TableStatus.Overstay
                 ? '#FFA4A4'
-                : status === TableStatus.InUse
+                : customer.statusTable === TableStatus.InUse
                 ? 'rgb(220, 239, 245)'
                 : '#fff'
         })`,
         color: `${
-            status === TableStatus.Clash
+            customer.statusTable === TableStatus.Clash
                 ? '#fff'
                 : currentPeople > table.totalChair &&
-                  status === TableStatus.Available
+                  customer.statusTable === TableStatus.Available
                 ? 'rgba(223, 71, 89, 0.5)'
                 : '#869AB8'
         }`,
         border: `${
-            customerChossen.idTable === table._id
+            customer.idTable === table._id
                 ? '2px dashed #506690'
                 : changedNTable === table.number
                 ? '2px solid #506690'

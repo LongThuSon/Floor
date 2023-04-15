@@ -113,8 +113,7 @@ const Table6v6 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
                     className="table-6v6"
                     style={styleTable(
                         table,
-                        customer?.statusTable ?? TableStatus.Available,
-                        customerChoosen,
+                        customer,
                         customerChanged.quantityBook,
                         changedNTable,
                     )}

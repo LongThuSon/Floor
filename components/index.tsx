@@ -5,9 +5,16 @@ import Content from '../components/content';
 import Home from './content/home';
 import { useAppDispatch } from '../redux/hook';
 import { getAllTables } from '../redux/slices/table.silce';
-import { getAllCustomers } from '../redux/slices/customer.slice';
+import {
+    getAllCustomers,
+    updateLate,
+    updateNoShow,
+    updatePercentCustomer,
+} from '../redux/slices/customer.slice';
 import { customerDF, TypeService } from '../public/data-constant';
 import SocketContext from '../socket/contexts/SocketContext';
+import { DateObject } from 'react-multi-date-picker';
+import { TCustomerUpdate } from '../type/customer.type';
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -19,10 +26,10 @@ function getWindowDimensions() {
 
 const App = () => {
     const dispatch = useAppDispatch();
-    const { user } = useContext(SocketContext).SocketState;
+    const { socket, user } = useContext(SocketContext).SocketState;
     const [enableInfo, setEnableInfo] = useState(true);
-    const [date, setDate] = useState(0);
     const [typeService, setTypeService] = useState(TypeService.Lunch);
+    const [startDate, setStartDate] = useState(new DateObject());
     const [showZoom, setShowZoom] = useState(false);
     const [customerChanged, setCustomerChanged] = useState(customerDF);
     const [winSize, setWinSize] = useState({ width: 1536, height: 677 });
@@ -46,14 +53,28 @@ const App = () => {
             getAllCustomers({
                 key: '',
                 typeService: typeService,
-                dateOrder: 1681138196483,
+                dateOrder: startDate.unix * 1000,
             }),
         )
             .then((_) => {
                 dispatch(getAllTables(''));
             })
             .catch((error) => console.log(error));
-    }, [dispatch, typeService]);
+    }, [dispatch, startDate, typeService]);
+
+    useEffect(() => {
+        console.log('socket: ', socket);
+        socket?.on('updatePercent', (payload: TCustomerUpdate) => {
+            console.log('payload: ', payload);
+            dispatch(updatePercentCustomer(payload));
+        });
+        socket?.on('updateLate', () => {
+            dispatch(updateLate());
+        });
+        socket?.on('updateNoShow', () => {
+            dispatch(updateNoShow());
+        });
+    }, [dispatch, socket]);
 
     return (
         <div>
@@ -66,10 +87,10 @@ const App = () => {
                     winSize,
                     customerChanged,
                     setCustomerChanged,
-                    date,
-                    setDate,
                     typeService,
                     setTypeService,
+                    startDate,
+                    setStartDate,
                 }}
             >
                 {user != null ? (

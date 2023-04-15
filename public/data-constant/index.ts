@@ -62,7 +62,13 @@ enum TimeOrder {
     _19r = '07:30PM',
     _20h = '08:00PM',
     _20r = '08:30PM',
-    _other = 'other',
+    _other = 'Other',
+}
+
+enum TypeErrorEdit {
+    None = 'none',
+    OverPeople = 'overPeople',
+    SameTable = 'sameTable',
 }
 
 enum TypeActive {
@@ -72,20 +78,20 @@ enum TypeActive {
 
 const tableDF: TTable = {
     _id: '-1',
-    number: 0,
+    number: -1,
     type: TableType._1v1,
-    totalChair: 2,
+    totalChair: -1,
     idCustomer: '-1',
     isBlock: false,
-    topPositon: 0,
-    leftPositon: 0,
+    topPositon: -1,
+    leftPositon: -1,
     keyRestaurant: '-1',
 };
 
 const customerDF: TCustomer = {
     _id: '-1',
     name: 'DF',
-    quantityBook: 0,
+    quantityBook: -1,
     idTable: '-1',
     phone: '-1',
     status: CustomerStatus.Booked,
@@ -127,4 +133,5 @@ export {
     userDF,
     authDF,
     TypeActive,
+    TypeErrorEdit,
 };

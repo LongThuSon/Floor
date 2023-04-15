@@ -11,7 +11,6 @@ import { TAuth } from '../../../type/user.type';
 
 const LoginForm = () => {
     const { socket } = useContext(SocketContext).SocketState;
-    const SocketDispatch = useContext(SocketContext).SocketDispatch;
 
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');

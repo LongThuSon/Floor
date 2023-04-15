@@ -1,22 +1,25 @@
-import Select from "react-select";
-import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down'
+import React from 'react';
+import Select from 'react-select';
+import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down';
+import { TypeService } from '../../public/data-constant';
+import { usePageContext } from '../context/PageContext';
 
 const options = [
-    { value: "Lunch Service" },
-    // { value: "Dinner Service" }
+    { value: TypeService.Lunch, title: 'Lunch Service' },
+    { value: TypeService.Dinner, title: 'Dinner Service' },
 ];
 
-const formatOptionLabel = ({ value, quantity }: any) => (
+const formatOptionLabel = ({ value, title }: any) => (
     <div
         style={{
-            paddingTop: "10px",
-            paddingLeft: "15px",
-            fontSize: "15px",
-            color: "#1B2A4E",
-            cursor: "pointer"
+            paddingTop: '10px',
+            paddingLeft: '15px',
+            fontSize: '15px',
+            color: '#1B2A4E',
+            cursor: 'pointer',
         }}
     >
-        {value}
+        {title}
     </div>
 );
 
@@ -24,7 +27,7 @@ const customStyles = {
     option: (provided: any, state: any) => ({
         ...provided,
         width: 150,
-        height: 40
+        height: 40,
     }),
     control: () => ({
         // none of react-select's styles are passed to <Control />
@@ -35,10 +38,12 @@ const customStyles = {
         const transition = 'opacity 300ms';
 
         return { ...provided, opacity, transition };
-    }
-}
+    },
+};
 
 const HeaderSer = () => {
+    const { setTypeService } = usePageContext();
+
     return (
         <div id="nav">
             <Select
@@ -48,19 +53,23 @@ const HeaderSer = () => {
                 formatOptionLabel={formatOptionLabel}
                 options={options}
                 isSearchable={false}
-                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                components={{
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                }}
+                onChange={(option) =>
+                    setTypeService(Number(option?.value) as TypeService)
+                }
             />
-            <span
-                id="header-service-drop-down"
-            >
+            <span id="header-service-drop-down">
                 <HipchatChevronDownIcon
-                    label='down'
+                    label="down"
                     size="small"
                     primaryColor="#1B2A4E"
                 />
             </span>
         </div>
-    )
-}
+    );
+};
 
-export default HeaderSer
+export default HeaderSer;

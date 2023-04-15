@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useContext } from 'react';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,6 +25,8 @@ import {
     updateCustomer,
 } from '../../../../redux/slices/customer.slice';
 import { TCustomer } from '../../../../type/customer.type';
+import SocketContext from '../../../../socket/contexts/SocketContext';
+import { updateTable } from '../../../../redux/slices/table.silce';
 
 const CustomerList = () => {
     const dispatch = useAppDispatch();
@@ -32,7 +34,7 @@ const CustomerList = () => {
     const customerList = useAppSelector(
         (state) => state.customers.customerList,
     );
-
+    const { socket } = useContext(SocketContext).SocketState;
     const { showDetails, searchField } = useInfoContext();
     const [listShow, setListShow] = useState<string[]>([]);
 
@@ -41,7 +43,7 @@ const CustomerList = () => {
     }, []);
 
     const findTable = (id: string) => {
-        const table = tableList.find((table) => table.idCustomer === id);
+        const table = tableList.find((table) => table._id === id);
         return table ?? tableDF;
     };
 
@@ -249,7 +251,34 @@ const CustomerList = () => {
             },
         };
 
-        dispatch(updateCustomer(updateCus));
+        dispatch(updateCustomer(updateCus))
+            .then((_) => {
+                socket?.emit('userInUse', id);
+                console.log(`customer ${id} seated`);
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const updateCompleted = (id: string, idTable: string) => {
+        const updateCus = {
+            id: id,
+            data: {
+                status: CustomerStatus.Completed,
+            },
+        };
+        const updateTb = {
+            id: idTable,
+            data: {
+                idCustomer: '',
+            },
+        };
+
+        dispatch(updateCustomer(updateCus))
+            .then((_) => {
+                dispatch(updateTable(updateTb));
+                console.log(`customer ${id} completed`);
+            })
+            .catch((error) => console.log(error));
     };
 
     const holdCustomer = (id: string) => {
@@ -307,7 +336,7 @@ const CustomerList = () => {
                                             size="small"
                                             primaryColor={`${
                                                 customer.quantityBook >
-                                                    findTable(customer._id)
+                                                    findTable(customer.idTable)
                                                         .totalChair &&
                                                 customer.statusTable ===
                                                     TableStatus.Clash
@@ -319,8 +348,9 @@ const CustomerList = () => {
                                             style={{
                                                 color: `${
                                                     customer.quantityBook >
-                                                        findTable(customer._id)
-                                                            .totalChair &&
+                                                        findTable(
+                                                            customer.idTable,
+                                                        ).totalChair &&
                                                     customer.statusTable ===
                                                         TableStatus.Clash
                                                         ? '#DF4759'
@@ -339,7 +369,7 @@ const CustomerList = () => {
                                                 customer.statusTable ===
                                                     TableStatus.Clash &&
                                                 customer.quantityBook <=
-                                                    findTable(customer._id)
+                                                    findTable(customer.idTable)
                                                         .totalChair
                                                     ? '#DF4759'
                                                     : '#506690'
@@ -351,14 +381,19 @@ const CustomerList = () => {
                                                     customer.statusTable ===
                                                         TableStatus.Clash &&
                                                     customer.quantityBook <=
-                                                        findTable(customer._id)
-                                                            .totalChair
+                                                        findTable(
+                                                            customer.idTable,
+                                                        ).totalChair
                                                         ? '#DF4759'
                                                         : '#506690'
                                                 }`,
                                             }}
                                         >
-                                            {findTable(customer._id).number}
+                                            {findTable(customer.idTable)
+                                                .number === -1
+                                                ? 'Unassigned'
+                                                : findTable(customer.idTable)
+                                                      .number}
                                         </span>
                                     </span>
                                 </div>
@@ -387,7 +422,17 @@ const CustomerList = () => {
                                 </div>
                             </div>
 
-                            <div className="customer-tag">
+                            <div
+                                className="customer-tag"
+                                style={{
+                                    display: `${
+                                        showDetails ||
+                                        listShow.includes(customer._id)
+                                            ? ''
+                                            : 'none'
+                                    }`,
+                                }}
+                            >
                                 <div className="tag-title">
                                     <Tag
                                         label="tag"
@@ -399,12 +444,6 @@ const CustomerList = () => {
                                 <div
                                     style={{
                                         paddingLeft: '16px',
-                                        display: `${
-                                            showDetails ||
-                                            listShow.includes(customer._id)
-                                                ? ''
-                                                : 'none'
-                                        }`,
                                     }}
                                 >
                                     {customer.note}
@@ -426,34 +465,28 @@ const CustomerList = () => {
                                     style={{
                                         display: `${
                                             customer.status ===
-                                                CustomerStatus.Booked ||
+                                                CustomerStatus.Confirmed ||
                                             customer.status ===
-                                                CustomerStatus.Seated ||
-                                            customer.status ===
-                                                CustomerStatus.Completed ||
-                                            customer.status ===
-                                                CustomerStatus.NoShow ||
-                                            customer.status ===
-                                                CustomerStatus.Cancelled
-                                                ? 'none'
-                                                : ''
+                                                CustomerStatus.Late
+                                                ? ''
+                                                : 'none'
                                         }`,
                                     }}
                                     onClick={() => {
                                         updateSeat(customer._id);
-                                        if (
-                                            customer.quantityBook <=
-                                                findTable(customer._id)
-                                                    .totalChair &&
-                                            customer.statusTable ===
-                                                TableStatus.Available
-                                        ) {
-                                            notify(
-                                                'seated',
-                                                customer.name,
-                                                findTable(customer._id).number,
-                                            );
-                                        }
+                                        // if (
+                                        //     customer.quantityBook <=
+                                        //         findTable(customer.idTable)
+                                        //             .totalChair &&
+                                        //     customer.statusTable ===
+                                        //         TableStatus.Available
+                                        // ) {
+                                        //     notify(
+                                        //         'seated',
+                                        //         customer.name,
+                                        //         findTable(customer.idTable).number,
+                                        //     );
+                                        // }
                                     }}
                                 >
                                     <span>
@@ -464,6 +497,47 @@ const CustomerList = () => {
                                         />
                                     </span>
                                     <span>Seat</span>
+                                </div>
+                                <div
+                                    className="item-action"
+                                    style={{
+                                        display: `${
+                                            customer.status ===
+                                                CustomerStatus.NoShow ||
+                                            customer.status ===
+                                                CustomerStatus.Cancelled
+                                                ? 'none'
+                                                : ''
+                                        }`,
+                                    }}
+                                    onClick={() => {
+                                        updateCompleted(
+                                            customer._id,
+                                            customer.idTable,
+                                        );
+                                        // if (
+                                        //     customer.quantityBook <=
+                                        //         findTable(customer.idTable)
+                                        //             .totalChair &&
+                                        //     customer.statusTable ===
+                                        //         TableStatus.Available
+                                        // ) {
+                                        //     notify(
+                                        //         'Complete',
+                                        //         customer.name,
+                                        //         findTable(customer.idTable).number,
+                                        //     );
+                                        // }
+                                    }}
+                                >
+                                    <span>
+                                        <EditorDoneIcon
+                                            label="completed"
+                                            size="large"
+                                            primaryColor="#fff"
+                                        />
+                                    </span>
+                                    <span>Completed</span>
                                 </div>
                                 <div
                                     className="item-action"
@@ -495,7 +569,7 @@ const CustomerList = () => {
                                         notify(
                                             'hold',
                                             customer.name,
-                                            findTable(customer._id).number,
+                                            findTable(customer.idTable).number,
                                         );
                                     }}
                                 >

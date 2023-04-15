@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 import { Socket } from 'socket.io-client';
-import { authDF } from '../../public/data-constant';
 import { TUser } from '../../type/user.type';
 
 export interface ISocketContextState {
@@ -13,7 +12,7 @@ export const defaultSocketContextState: ISocketContextState = {
     user: null,
 };
 
-export type TSocketContextActions = 'update_socket' | 'update_user';
+export type TSocketContextActions = 'updateSocket' | 'updateUser';
 export type TSocketContextPayload = TUser | Socket | null | undefined;
 
 export interface ISocketContextActions {
@@ -31,9 +30,9 @@ export const SocketReducer = (
     );
 
     switch (action.type) {
-        case 'update_socket':
+        case 'updateSocket':
             return { ...state, socket: action.payload as Socket };
-        case 'update_user':
+        case 'updateUser':
             return { ...state, user: action.payload as TUser };
         default:
             return state;

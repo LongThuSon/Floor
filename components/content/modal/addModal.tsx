@@ -43,7 +43,7 @@ export default function App() {
     const [phone, setPhone] = useState('');
     const [quantity, setQuantity] = useState(0);
     const [note, setNote] = useState('');
-    const [startDate, setStartDate] = useState<any>(Date.now());
+    const [startDate, setStartDate] = useState<any>(new DateObject());
     const [typeService, setTypeService] = useState(TypeService.Lunch);
     const [timeOrder, setTimeOrder] = useState(TimeOrder._10h);
 
@@ -56,12 +56,19 @@ export default function App() {
     const toggleShow = () => setShowModal(!showModal);
 
     const handleAddCus = () => {
+        var dateCheck = startDate.unix;
+        if (
+            Math.abs(Date.now() - dateCheck) >
+            Math.abs(Date.now() - dateCheck * 1000)
+        ) {
+            dateCheck = dateCheck * 1000;
+        }
+
         const data: TCustomerCreate = {
             name: name,
             quantityBook: quantity,
             phone: phone,
-            dateOrder: startDate.unix,
-            typeService: typeService,
+            dateOrder: dateCheck,
             timeOrder: timeOrder,
             note: note,
             keyRestaurant: '',
@@ -94,6 +101,7 @@ export default function App() {
         setStartDate(Date.now());
         setTypeService(TypeService.Lunch);
         setTimeOrder(TimeOrder._10h);
+        setNote('');
     };
 
     const clearTbState = () => {
@@ -272,218 +280,108 @@ export default function App() {
                                             <div>
                                                 <select
                                                     className="select-element"
-                                                    defaultValue={typeService}
+                                                    defaultValue={timeOrder}
+                                                    onChange={(e) =>
+                                                        setTimeOrder(
+                                                            String(
+                                                                e.target.value,
+                                                            ) as TimeOrder,
+                                                        )
+                                                    }
                                                 >
-                                                    <optgroup label="Type service">
+                                                    <optgroup label="Time order">
                                                         <option
                                                             value={
-                                                                TypeService.Lunch
-                                                            }
-                                                            onClick={() =>
-                                                                setTypeService(
-                                                                    TypeService.Lunch,
-                                                                )
+                                                                TimeOrder._10h
                                                             }
                                                         >
-                                                            Lunch
+                                                            10:00PM
                                                         </option>
                                                         <option
                                                             value={
-                                                                TypeService.Dinner
-                                                            }
-                                                            onClick={() =>
-                                                                setTypeService(
-                                                                    TypeService.Dinner,
-                                                                )
+                                                                TimeOrder._10r
                                                             }
                                                         >
-                                                            Dinner
+                                                            10:30PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._11h
+                                                            }
+                                                        >
+                                                            11:00PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._11r
+                                                            }
+                                                        >
+                                                            11:30PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._12h
+                                                            }
+                                                        >
+                                                            12:00PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._12r
+                                                            }
+                                                        >
+                                                            12:30PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._18h
+                                                            }
+                                                        >
+                                                            18:00PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._18r
+                                                            }
+                                                        >
+                                                            18:30PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._19h
+                                                            }
+                                                        >
+                                                            19:00PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._19r
+                                                            }
+                                                        >
+                                                            19:30PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._20h
+                                                            }
+                                                        >
+                                                            20:00PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._20r
+                                                            }
+                                                        >
+                                                            20:30PM
+                                                        </option>
+                                                        <option
+                                                            value={
+                                                                TimeOrder._other
+                                                            }
+                                                        >
+                                                            Other
                                                         </option>
                                                     </optgroup>
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <select
-                                                    className="select-element"
-                                                    defaultValue={timeOrder}
-                                                >
-                                                    {typeService ===
-                                                    TypeService.Lunch ? (
-                                                        <optgroup label="Time order">
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._10h
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._10h,
-                                                                    )
-                                                                }
-                                                            >
-                                                                10:00PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._10r
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._10r,
-                                                                    )
-                                                                }
-                                                            >
-                                                                10:30PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._11h
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._11h,
-                                                                    )
-                                                                }
-                                                            >
-                                                                11:00PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._11r
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._11r,
-                                                                    )
-                                                                }
-                                                            >
-                                                                11:30PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._12h
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._12h,
-                                                                    )
-                                                                }
-                                                            >
-                                                                12:00PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._12r
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._12r,
-                                                                    )
-                                                                }
-                                                            >
-                                                                12:30PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._other
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._other,
-                                                                    )
-                                                                }
-                                                            >
-                                                                Other
-                                                            </option>
-                                                        </optgroup>
-                                                    ) : (
-                                                        <optgroup label="Time order">
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._18h
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._18h,
-                                                                    )
-                                                                }
-                                                            >
-                                                                18:00PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._18r
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._18r,
-                                                                    )
-                                                                }
-                                                            >
-                                                                18:30PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._19h
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._19h,
-                                                                    )
-                                                                }
-                                                            >
-                                                                19:00PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._19r
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._19r,
-                                                                    )
-                                                                }
-                                                            >
-                                                                19:30PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._20h
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._20h,
-                                                                    )
-                                                                }
-                                                            >
-                                                                20:00PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._20r
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._20r,
-                                                                    )
-                                                                }
-                                                            >
-                                                                20:30PM
-                                                            </option>
-                                                            <option
-                                                                value={
-                                                                    TimeOrder._other
-                                                                }
-                                                                onClick={() =>
-                                                                    setTimeOrder(
-                                                                        TimeOrder._other,
-                                                                    )
-                                                                }
-                                                            >
-                                                                Other
-                                                            </option>
-                                                        </optgroup>
-                                                    )}
                                                 </select>
                                             </div>
 
@@ -523,16 +421,18 @@ export default function App() {
                                                 <select
                                                     className="select-element"
                                                     defaultValue={typeTb}
+                                                    onChange={(e) =>
+                                                        setTypeTb(
+                                                            String(
+                                                                e.target.value,
+                                                            ) as TableType,
+                                                        )
+                                                    }
                                                 >
                                                     <optgroup label="Type table">
                                                         <option
                                                             value={
                                                                 TableType._1v1
-                                                            }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType._1v1,
-                                                                )
                                                             }
                                                         >
                                                             1 vs 1
@@ -541,22 +441,12 @@ export default function App() {
                                                             value={
                                                                 TableType._2v2c
                                                             }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType._2v2c,
-                                                                )
-                                                            }
                                                         >
                                                             2 vs 2 - column
                                                         </option>
                                                         <option
                                                             value={
                                                                 TableType._2v2r
-                                                            }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType._2v2r,
-                                                                )
                                                             }
                                                         >
                                                             2 vs 2 - row
@@ -565,22 +455,12 @@ export default function App() {
                                                             value={
                                                                 TableType._3v3
                                                             }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType._3v3,
-                                                                )
-                                                            }
                                                         >
                                                             3 vs 3
                                                         </option>
                                                         <option
                                                             value={
                                                                 TableType._6v6
-                                                            }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType._6v6,
-                                                                )
                                                             }
                                                         >
                                                             6 vs 6
@@ -589,42 +469,22 @@ export default function App() {
                                                             value={
                                                                 TableType._7v7
                                                             }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType._7v7,
-                                                                )
-                                                            }
                                                         >
                                                             7 vs 7
                                                         </option>
                                                         <option
                                                             value={TableType.C6}
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType.C6,
-                                                                )
-                                                            }
                                                         >
                                                             Circle 6
                                                         </option>
                                                         <option
                                                             value={TableType.C8}
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType.C8,
-                                                                )
-                                                            }
                                                         >
                                                             Circle 8
                                                         </option>
                                                         <option
                                                             value={
                                                                 TableType.C14
-                                                            }
-                                                            onClick={() =>
-                                                                setTypeTb(
-                                                                    TableType.C14,
-                                                                )
                                                             }
                                                         >
                                                             Circle 14

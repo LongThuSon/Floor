@@ -28,8 +28,7 @@ type TCustomerCreate = {
     name: string;
     quantityBook: number;
     phone: string;
-    dateOrder: Date;
-    typeService: TypeService;
+    dateOrder: number;
     timeOrder: TimeOrder;
     note: string;
     keyRestaurant: string;

@@ -144,8 +144,7 @@ const Circle14 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
                     className="circle-14"
                     style={styleTable(
                         table,
-                        customer?.statusTable ?? TableStatus.Available,
-                        customerChoosen,
+                        customer,
                         customerChanged.quantityBook,
                         changedNTable,
                     )}

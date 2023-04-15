@@ -96,8 +96,7 @@ const Table2v2Column = ({
                     className="table-2v2-column"
                     style={styleTable(
                         table,
-                        customer?.statusTable ?? TableStatus.Available,
-                        customerChoosen,
+                        customer,
                         customerChanged.quantityBook,
                         changedNTable,
                     )}

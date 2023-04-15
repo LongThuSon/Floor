@@ -108,8 +108,7 @@ const Table3v3 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
                     className="table-3v3"
                     style={styleTable(
                         table,
-                        customer?.statusTable ?? TableStatus.Available,
-                        customerChoosen,
+                        customer,
                         customerChanged.quantityBook,
                         changedNTable,
                     )}

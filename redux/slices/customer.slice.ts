@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { CustomerStatus } from '../../public/data-constant';
 import CustomerDataService from '../../services/customer.service';
 import {
     TCustomer,
@@ -75,6 +76,37 @@ const customerSlice = createSlice({
         clearCustomerChoosen: (state) => {
             state.customerChoosen = null;
         },
+        updatePercentCustomer: (state, action) => {
+            const index = state.customerList.findIndex(
+                (customer) => customer._id === action.payload.id,
+            );
+            if (index !== -1) {
+                Object.assign(state.customerList[index], action.payload.data);
+            }
+        },
+        updateLate: (state) => {
+            const updateNeedCusList = state.customerList.filter(
+                (cus) =>
+                    cus.status === CustomerStatus.Booked ||
+                    cus.status === CustomerStatus.Confirmed,
+            );
+
+            updateNeedCusList.forEach((cus) => {
+                Object.assign(cus, { status: CustomerStatus.Late });
+            });
+        },
+        updateNoShow: (state) => {
+            const updateNeedCusList = state.customerList.filter(
+                (cus) =>
+                    cus.status === CustomerStatus.Booked ||
+                    cus.status === CustomerStatus.Confirmed ||
+                    cus.status === CustomerStatus.Late,
+            );
+
+            updateNeedCusList.forEach((cus) => {
+                Object.assign(cus, { status: CustomerStatus.NoShow });
+            });
+        },
     },
     extraReducers(builder) {
         // getAllCustomers
@@ -124,12 +156,11 @@ const customerSlice = createSlice({
         builder.addCase(updateCustomer.fulfilled, (state, action) => {
             state.isLoading = false;
             const index = state.customerList.findIndex(
-                (customer) => customer._id === action.payload.id,
+                (customer) => customer._id === action.meta.arg.id,
             );
-            state.customerList[index] = {
-                ...state.customerList[index],
-                ...action.payload,
-            };
+            if (index !== -1) {
+                Object.assign(state.customerList[index], action.meta.arg.data);
+            }
         });
         builder.addCase(updateCustomer.rejected, (state, action) => {
             state.isLoading = false;
@@ -139,4 +170,9 @@ const customerSlice = createSlice({
 });
 
 export default customerSlice.reducer;
-export const { clearCustomerChoosen } = customerSlice.actions;
+export const {
+    clearCustomerChoosen,
+    updatePercentCustomer,
+    updateLate,
+    updateNoShow,
+} = customerSlice.actions;

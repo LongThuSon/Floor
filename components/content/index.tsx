@@ -11,31 +11,31 @@ import EditDetails from './Info/edit-reservations/';
 import { useAppSelector } from '../../redux/hook';
 import AddModal from './modal/addModal';
 
-const getCurrentTime = () => {
-    const now = new Date();
-    const time = now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
-    return time;
-};
+// const getCurrentTime = () => {
+//     const now = new Date();
+//     const time = now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
+//     return time;
+// };
 
 const Content = () => {
     const customerChoosen = useAppSelector(
         (state) => state.customers.customerChoosen,
     );
     const [move, setMove] = useState(true);
-    const [time, setTime] = useState(getCurrentTime());
+    // const [time, setTime] = useState(getCurrentTime());
     const { enableInfo, showZoom, typeService } = usePageContext();
 
-    useEffect(() => {
-        const timeOut = setTimeout(() => {
-            setTime(getCurrentTime());
-        }, 180000);
-        console.log(time);
-        return () => clearTimeout(timeOut);
-    }, [time]);
+    // useEffect(() => {
+    //     const timeOut = setTimeout(() => {
+    //         setTime(getCurrentTime());
+    //     }, 180000);
+    //     console.log(time);
+    //     return () => clearTimeout(timeOut);
+    // }, [time]);
 
     return (
         <div id="content-main">
-            <ContentContext.Provider value={{ move, setMove, time }}>
+            <ContentContext.Provider value={{ move, setMove }}>
                 {enableInfo && <Info />}
                 {enableInfo && customerChoosen !== null && <EditDetails />}
                 <Floor />

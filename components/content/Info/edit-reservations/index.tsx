@@ -28,14 +28,18 @@ import {
     customerDF,
     CustomerStatus,
     tableDF,
+    TableStatus,
+    TimeOrder,
+    TypeErrorEdit,
+    TypeService,
 } from '../../../../public/data-constant';
 import { TCustomer } from '../../../../type/customer.type';
 import {
     clearCustomerChoosen,
-    getOneCustomer,
     updateCustomer,
 } from '../../../../redux/slices/customer.slice';
 import { updateTable } from '../../../../redux/slices/table.silce';
+import { MDBInput, MDBTextArea } from 'mdb-react-ui-kit';
 
 const EditDetails = () => {
     const dispatch = useAppDispatch();
@@ -44,23 +48,20 @@ const EditDetails = () => {
         useAppSelector((state) => state.customers.customerChoosen) ??
         customerDF;
 
-    const { customerChanged, setCustomerChanged } = usePageContext();
-    const [startDate, setStartDate] = useState<any>(customerChoosen.dateOrder);
+    const { customerChanged, setCustomerChanged, typeService } =
+        usePageContext();
+    const [startDate, setStartDate] = useState<any>(
+        new DateObject(customerChoosen.dateOrder),
+    );
     const [showModal, setShowModal] = useState(false);
     const [showWModal, setShowWModal] = useState(false);
-    const [colorText, setColorText] = useState({
-        text: {
-            table: '#1B2A4E',
-            people: '#1B2A4E',
-            time: '#1B2A4E',
-        },
-    });
+    const [typeErrorList, setTypeErorList] = useState<TypeErrorEdit[]>([]);
 
     const findTable = (id: string) => {
-        const table = tableList.find((table) => table.idCustomer === id);
+        const table = tableList.find((table) => table._id === id);
+        console.log(table);
         return table ?? tableDF;
     };
-
     useEffect(() => {
         setCustomerChanged(customerChoosen);
     }, [customerChoosen, setCustomerChanged]);
@@ -203,84 +204,130 @@ const EditDetails = () => {
         }
     };
 
-    const changeTable = (event: any) => {
-        setCustomerChanged({
-            ...customerChanged,
-            idTable: String(event.target.value),
-        } as TCustomer);
-
-        if (
-            customerChanged.quantityBook >
-            findTable(String(event.target.value)).totalChair
-        ) {
-            setColorText((prev) => ({
-                text: {
-                    ...prev.text,
-                    people: 'red',
-                    table: 'red',
-                },
-            }));
-        } else {
-            setColorText((prev) => ({
-                text: {
-                    ...prev.text,
-                    people: '#1B2A4E',
-                    table: '#1B2A4E',
-                },
-            }));
+    const addTypeError = (typeError: TypeErrorEdit) => {
+        if (typeErrorList.indexOf(typeError) === -1) {
+            setTypeErorList((oldArray: TypeErrorEdit[]) => [
+                ...oldArray,
+                typeError,
+            ]);
         }
     };
 
-    const changeQuantity = (event: any) => {
+    const removeTypeError = (typeError: TypeErrorEdit) => {
+        if (typeErrorList.indexOf(typeError) !== -1) {
+            setTypeErorList((currentArray: TypeErrorEdit[]) =>
+                currentArray.filter(
+                    (remainElement: TypeErrorEdit) =>
+                        remainElement !== typeError,
+                ),
+            );
+        }
+    };
+
+    const changeTimeOrder = (e: any) => {
         setCustomerChanged({
             ...customerChanged,
-            quantityBook: Number(event.target.value),
+            timeOrder: String(e.target.value) as TimeOrder,
+        } as TCustomer);
+    };
+
+    const changeTable = (e: any) => {
+        setCustomerChanged({
+            ...customerChanged,
+            idTable: String(e.target.value),
+        } as TCustomer);
+
+        const newTable = tableList.find(
+            (table) => table._id === String(e.target.value),
+        );
+
+        if (newTable !== undefined) {
+            if (
+                newTable !== undefined &&
+                customerChanged.quantityBook > newTable.totalChair
+            ) {
+                addTypeError(TypeErrorEdit.OverPeople);
+            } else {
+                removeTypeError(TypeErrorEdit.OverPeople);
+            }
+
+            if (
+                newTable.idCustomer !== '' &&
+                newTable.idCustomer !== customerChanged._id
+            ) {
+                addTypeError(TypeErrorEdit.SameTable);
+            } else {
+                removeTypeError(TypeErrorEdit.SameTable);
+            }
+        }
+    };
+
+    const changeQuantity = (e: any) => {
+        setCustomerChanged({
+            ...customerChanged,
+            quantityBook: Number(e.target.value),
         } as TCustomer);
 
         if (
-            Number(event.target.value) >
+            Number(e.target.value) >
             findTable(customerChanged.idTable).totalChair
         ) {
-            setColorText((prev) => ({
-                text: {
-                    ...prev.text,
-                    people: 'red',
-                    table: 'red',
-                },
-            }));
+            addTypeError(TypeErrorEdit.OverPeople);
         } else {
-            setColorText((prev) => ({
-                text: {
-                    ...prev.text,
-                    people: '#1B2A4E',
-                    table: '#1B2A4E',
-                },
-            }));
+            removeTypeError(TypeErrorEdit.OverPeople);
         }
     };
 
     const notify = () => toast.success('Reservation successfully updated!');
 
     const handleSave = async () => {
+        var status = customerChanged.status;
+        var statusTable = customerChanged.statusTable;
         if (
-            colorText.text.people === '#1B2A4E' &&
-            colorText.text.table === '#1B2A4E' &&
-            colorText.text.time === '#1B2A4E'
+            customerChanged.statusTable === TableStatus.Available &&
+            customerChanged.idTable !== ''
         ) {
-            const { _id: _, ...newObj } = customerChanged;
-            const newCus = {
-                id: customerChanged._id,
-                data: newObj,
-            };
-            const oldTable = tableList.find(
-                (table) => table._id === customerChoosen.idTable,
-            );
-            const newTable =
-                tableList.find(
-                    (table) => table._id === customerChanged.idTable,
-                ) ?? tableDF;
+            statusTable = TableStatus.Reserved;
+            status = CustomerStatus.Confirmed;
+        }
 
-            await dispatch(updateCustomer(newCus));
+        var typeService = TypeService.Lunch;
+        if (
+            customerChanged.timeOrder === TimeOrder._18h ||
+            customerChanged.timeOrder === TimeOrder._18r ||
+            customerChanged.timeOrder === TimeOrder._19h ||
+            customerChanged.timeOrder === TimeOrder._19r ||
+            customerChanged.timeOrder === TimeOrder._20h ||
+            customerChanged.timeOrder === TimeOrder._20r
+        ) {
+            typeService = TypeService.Dinner;
+        }
+
+        const newCus = {
+            id: customerChanged._id,
+            data: {
+                dateOrder: customerChanged.dateOrder,
+                timeOrder: customerChanged.timeOrder,
+                note: customerChanged.note,
+                idTable: customerChanged.idTable,
+                quantityBook: customerChanged.quantityBook,
+                statusTable: statusTable,
+                status: status,
+                typeService: typeService,
+            },
+        };
+        const oldTable = tableList.find(
+            (table) => table._id === customerChoosen.idTable,
+        );
+        const newTable = tableList.find(
+            (table) => table._id === customerChanged.idTable,
+        );
+
+        await dispatch(updateCustomer(newCus))
+            .then((_) => notify())
+            .catch((error) => console.log(error));
+
+        if (newTable !== undefined && newTable._id !== oldTable?._id) {
             await dispatch(
                 updateTable({
                     id: newTable._id,
@@ -289,7 +336,7 @@ const EditDetails = () => {
                     },
                 }),
             );
-            if (oldTable != null) {
+            if (oldTable != undefined) {
                 await dispatch(
                     updateTable({
                         id: oldTable._id,
@@ -299,14 +346,12 @@ const EditDetails = () => {
                     }),
                 );
             }
-
-            setTimeout(() => {
-                setCustomerChanged(customerDF);
-                dispatch(clearCustomerChoosen());
-            }, 1000);
-        } else {
-            setShowWModal(true);
         }
+
+        setTimeout(() => {
+            setCustomerChanged(customerDF);
+            dispatch(clearCustomerChoosen());
+        }, 1000);
     };
 
     const handleCancelled = async () => {
@@ -321,7 +366,7 @@ const EditDetails = () => {
         );
 
         await dispatch(updateCustomer(newCus));
-        if (oldTable != null) {
+        if (oldTable != undefined) {
             await dispatch(
                 updateTable({
                     id: oldTable._id,
@@ -359,13 +404,10 @@ const EditDetails = () => {
                     </span>
                     <span
                         onClick={() => {
-                            handleSave();
-                            if (
-                                colorText.text.people === '#1B2A4E' &&
-                                colorText.text.table === '#1B2A4E' &&
-                                colorText.text.time === '#1B2A4E'
-                            ) {
-                                notify();
+                            if (typeErrorList.length === 0) {
+                                handleSave();
+                            } else {
+                                setShowWModal(true);
                             }
                         }}
                     >
@@ -543,15 +585,29 @@ const EditDetails = () => {
                             customerChanged.status === CustomerStatus.NoShow ||
                             customerChanged.status === CustomerStatus.Cancelled
                         }
-                        style={{ color: colorText.text.time }}
+                        onChange={changeTimeOrder}
+                        style={{
+                            color: typeErrorList.includes(
+                                TypeErrorEdit.SameTable,
+                            )
+                                ? 'red'
+                                : '#1B2A4E',
+                        }}
                     >
-                        <optgroup label="Weekday Lunch">
-                            <option value="0">11:00PM</option>
-                            <option value="1">11:30PM</option>
-                            <option value="2">12:00PM</option>
-                            <option value="3">12:30PM</option>
-                            <option value="4">13:00PM</option>
-                            <option value="5">13:30PM</option>
+                        <optgroup label="Time order">
+                            <option value={TimeOrder._10h}>10:00PM</option>
+                            <option value={TimeOrder._10r}>10:30PM</option>
+                            <option value={TimeOrder._11h}>11:00PM</option>
+                            <option value={TimeOrder._11r}>11:30PM</option>
+                            <option value={TimeOrder._12h}>12:00PM</option>
+                            <option value={TimeOrder._12r}>12:30PM</option>
+                            <option value={TimeOrder._18h}>06:00PM</option>
+                            <option value={TimeOrder._18r}>06:30PM</option>
+                            <option value={TimeOrder._19h}>07:00PM</option>
+                            <option value={TimeOrder._19r}>07:30PM</option>
+                            <option value={TimeOrder._20h}>08:00PM</option>
+                            <option value={TimeOrder._20r}>08:30PM</option>
+                            <option value={TimeOrder._other}>Other</option>
                         </optgroup>
                     </select>
                 </div>
@@ -577,37 +633,23 @@ const EditDetails = () => {
                         People
                     </span>
                 </div>
-                <div>
-                    <select
-                        className="select-element"
-                        value={customerChanged.quantityBook}
-                        onChange={changeQuantity}
-                        disabled={
-                            customerChanged.status ===
-                                CustomerStatus.Completed ||
-                            customerChanged.status === CustomerStatus.NoShow ||
-                            customerChanged.status === CustomerStatus.Cancelled
-                        }
-                        style={{ color: colorText.text.people }}
-                    >
-                        <optgroup label="Adults">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            {/* <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                            <option value="13">13</option>
-                            <option value="14">14</option> */}
-                        </optgroup>
-                    </select>
-                </div>
+                <MDBInput
+                    id="typeNumber"
+                    type="number"
+                    className="select-element"
+                    value={customerChanged.quantityBook}
+                    disabled={
+                        customerChanged.status === CustomerStatus.Completed ||
+                        customerChanged.status === CustomerStatus.NoShow ||
+                        customerChanged.status === CustomerStatus.Cancelled
+                    }
+                    style={{
+                        color: typeErrorList.includes(TypeErrorEdit.OverPeople)
+                            ? 'red'
+                            : '#1B2A4E',
+                    }}
+                    onChange={changeQuantity}
+                />
             </div>
 
             <div className="edit-select">
@@ -641,35 +683,28 @@ const EditDetails = () => {
                             customerChanged.status === CustomerStatus.NoShow ||
                             customerChanged.status === CustomerStatus.Cancelled
                         }
-                        style={{ color: colorText.text.table }}
+                        style={{
+                            color:
+                                typeErrorList.includes(
+                                    TypeErrorEdit.SameTable,
+                                ) ||
+                                typeErrorList.includes(TypeErrorEdit.OverPeople)
+                                    ? 'red'
+                                    : '#1B2A4E',
+                        }}
                     >
                         <optgroup label="Table">
-                            <option value="105">105</option>
-                            <option value="106">106</option>
-                            <option value="107">107</option>
-                            <option value="108">108</option>
-                            <option value="109">109</option>
-                            <option value="110">110</option>
-                            <option value="111">111</option>
-                            <option value="112">112</option>
-                            <option value="113">113</option>
-                            <option value="114">114</option>
-                            <option value="115">115</option>
-                            <option value="116">116</option>
-                            <option value="117">117</option>
-                            <option value="118">118</option>
-                            <option value="119">119</option>
-                            <option value="120">120</option>
-                            <option value="121">121</option>
-                            <option value="122">122</option>
+                            {tableList.map((table) => (
+                                <option value={table._id} key={table._id}>
+                                    {table.number}
+                                </option>
+                            ))}
                         </optgroup>
                     </select>
                 </div>
             </div>
 
-            {(colorText.text.people === 'red' ||
-                colorText.text.table === 'red' ||
-                colorText.text.time === 'red') && (
+            {typeErrorList.length !== 0 && (
                 <div id="warning-edit">
                     <span>
                         <Warning
@@ -679,10 +714,9 @@ const EditDetails = () => {
                         />
                     </span>
                     <div id="warning-noti">{`${
-                        colorText.text.people === 'red' &&
-                        colorText.text.time === 'red'
+                        typeErrorList.length === 2
                             ? 'Total pax exceeds table’s capacity and Clashes with an ongoing reservation.'
-                            : colorText.text.people === 'red'
+                            : typeErrorList.includes(TypeErrorEdit.OverPeople)
                             ? 'Total pax exceeds table’s capacity.'
                             : 'Clashes with an ongoing reservation.'
                     }`}</div>
@@ -714,9 +748,17 @@ const EditDetails = () => {
                         Notes
                     </span>
                 </div>
-                <div>
-                    <textarea className="edit-input" />
-                </div>
+                <MDBTextArea
+                    className="edit-input"
+                    rows={2}
+                    value={customerChanged.note}
+                    onChange={(e) =>
+                        setCustomerChanged({
+                            ...customerChanged,
+                            note: String(e.target.value),
+                        } as TCustomer)
+                    }
+                />
             </div>
 
             {customerChanged.status !== 6 && (
@@ -741,13 +783,7 @@ const EditDetails = () => {
                 <ModalWarning
                     setShowWModal={() => setShowWModal(false)}
                     handleSave={() => {
-                        setColorText({
-                            text: {
-                                table: '#1B2A4E',
-                                people: '#1B2A4E',
-                                time: '#1B2A4E',
-                            },
-                        });
+                        setTypeErorList([]);
                         setTimeout(() => handleSave(), 1000);
                     }}
                 />

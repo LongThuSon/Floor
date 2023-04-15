@@ -21,18 +21,24 @@ const BookingForm = () => {
     const [phone, setPhone] = useState('');
     const [quantity, setQuantity] = useState(0);
     const [note, setNote] = useState('');
-    const [startDate, setStartDate] = useState<any>(Date.now());
-    const [typeService, setTypeService] = useState(TypeService.Lunch);
+    const [startDate, setStartDate] = useState<any>(new DateObject());
     const [timeOrder, setTimeOrder] = useState(TimeOrder._10h);
     const [key, setKey] = useState('');
 
     const handleBook = () => {
+        var dateCheck = startDate.unix;
+        if (
+            Math.abs(Date.now() - dateCheck) >
+            Math.abs(Date.now() - dateCheck * 1000)
+        ) {
+            dateCheck = dateCheck * 1000;
+        }
+
         const data: TCustomerCreate = {
             name: name,
             quantityBook: quantity,
             phone: phone,
-            dateOrder: startDate.unix,
-            typeService: typeService,
+            dateOrder: dateCheck,
             timeOrder: timeOrder,
             note: note,
             keyRestaurant: '',
@@ -119,117 +125,28 @@ const BookingForm = () => {
             </div>
 
             <div>
-                <select className="select-element" defaultValue={typeService}>
-                    <optgroup label="Type service">
-                        <option
-                            value={TypeService.Lunch}
-                            onClick={() => setTypeService(TypeService.Lunch)}
-                        >
-                            Lunch
-                        </option>
-                        <option
-                            value={TypeService.Dinner}
-                            onClick={() => setTypeService(TypeService.Dinner)}
-                        >
-                            Dinner
-                        </option>
+                <select
+                    className="select-element"
+                    defaultValue={timeOrder}
+                    onChange={(e) =>
+                        setTimeOrder(String(e.target.value) as TimeOrder)
+                    }
+                >
+                    <optgroup label="Time order">
+                        <option value={TimeOrder._10h}>10:00AM</option>
+                        <option value={TimeOrder._10r}>10:30AM</option>
+                        <option value={TimeOrder._11h}>11:00AM</option>
+                        <option value={TimeOrder._11r}>11:30AM</option>
+                        <option value={TimeOrder._12h}>12:00AM</option>
+                        <option value={TimeOrder._12r}>12:30AM</option>
+                        <option value={TimeOrder._18h}>06:00PM</option>
+                        <option value={TimeOrder._18r}>06:30PM</option>
+                        <option value={TimeOrder._19h}>07:00PM</option>
+                        <option value={TimeOrder._19r}>07:30PM</option>
+                        <option value={TimeOrder._20h}>08:00PM</option>
+                        <option value={TimeOrder._20r}>08:30PM</option>
+                        <option value={TimeOrder._other}>Other</option>
                     </optgroup>
-                </select>
-            </div>
-
-            <div>
-                <select className="select-element" defaultValue={timeOrder}>
-                    {typeService === TypeService.Lunch ? (
-                        <optgroup label="Time order">
-                            <option
-                                value={TimeOrder._10h}
-                                onClick={() => setTimeOrder(TimeOrder._10h)}
-                            >
-                                10:00PM
-                            </option>
-                            <option
-                                value={TimeOrder._10r}
-                                onClick={() => setTimeOrder(TimeOrder._10r)}
-                            >
-                                10:30PM
-                            </option>
-                            <option
-                                value={TimeOrder._11h}
-                                onClick={() => setTimeOrder(TimeOrder._11h)}
-                            >
-                                11:00PM
-                            </option>
-                            <option
-                                value={TimeOrder._11r}
-                                onClick={() => setTimeOrder(TimeOrder._11r)}
-                            >
-                                11:30PM
-                            </option>
-                            <option
-                                value={TimeOrder._12h}
-                                onClick={() => setTimeOrder(TimeOrder._12h)}
-                            >
-                                12:00PM
-                            </option>
-                            <option
-                                value={TimeOrder._12r}
-                                onClick={() => setTimeOrder(TimeOrder._12r)}
-                            >
-                                12:30PM
-                            </option>
-                            <option
-                                value={TimeOrder._other}
-                                onClick={() => setTimeOrder(TimeOrder._other)}
-                            >
-                                Other
-                            </option>
-                        </optgroup>
-                    ) : (
-                        <optgroup label="Time order">
-                            <option
-                                value={TimeOrder._18h}
-                                onClick={() => setTimeOrder(TimeOrder._18h)}
-                            >
-                                18:00PM
-                            </option>
-                            <option
-                                value={TimeOrder._18r}
-                                onClick={() => setTimeOrder(TimeOrder._18r)}
-                            >
-                                18:30PM
-                            </option>
-                            <option
-                                value={TimeOrder._19h}
-                                onClick={() => setTimeOrder(TimeOrder._19h)}
-                            >
-                                19:00PM
-                            </option>
-                            <option
-                                value={TimeOrder._19r}
-                                onClick={() => setTimeOrder(TimeOrder._19r)}
-                            >
-                                19:30PM
-                            </option>
-                            <option
-                                value={TimeOrder._20h}
-                                onClick={() => setTimeOrder(TimeOrder._20h)}
-                            >
-                                20:00PM
-                            </option>
-                            <option
-                                value={TimeOrder._20r}
-                                onClick={() => setTimeOrder(TimeOrder._20r)}
-                            >
-                                20:30PM
-                            </option>
-                            <option
-                                value={TimeOrder._other}
-                                onClick={() => setTimeOrder(TimeOrder._other)}
-                            >
-                                Other
-                            </option>
-                        </optgroup>
-                    )}
                 </select>
             </div>
 

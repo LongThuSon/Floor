@@ -26,7 +26,7 @@ const SocketContextComponent: React.FunctionComponent<
     );
 
     useEffect(() => {
-        SocketDispatch({ type: 'update_socket', payload: socket });
+        SocketDispatch({ type: 'updateSocket', payload: socket });
         startListeners();
     }, []);
 
@@ -53,7 +53,7 @@ const SocketContextComponent: React.FunctionComponent<
         socket.on('authorized', () => {
             socket.emit('getUser', async (user: TUser) => {
                 console.info('get user from server by socket!!!');
-                SocketDispatch({ type: 'update_user', payload: user });
+                SocketDispatch({ type: 'updateUser', payload: user });
             });
 
             console.info('Sending handshake to server ...');

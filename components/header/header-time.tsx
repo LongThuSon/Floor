@@ -6,13 +6,8 @@ import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import ChevronRightLargeIcon from '@atlaskit/icon/glyph/chevron-right-large';
 
 const HeaderTime = () => {
-    const [startDate, setStartDate] = useState<any>(new DateObject());
     const datepickerRef = useRef<any>();
-    const { winSize, setDate } = usePageContext();
-
-    useEffect(() => {
-        setDate(startDate.unix);
-    }, [setDate, startDate]);
+    const { winSize, startDate, setStartDate } = usePageContext();
 
     return (
         <div id="container-time">
