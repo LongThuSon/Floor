@@ -3,14 +3,14 @@
     // width: 960px;
     width: 100%;
     height: 54px;
-    background: #F1F4F8;
+    background: #f1f4f8;
     position: relative;
     top: 0;
     left: 0;
     right: 0;
     z-index: 4;
     margin: 0 auto;
-    color: #1B2A4E;
+    color: #1b2a4e;
 
     #menu {
         position: absolute;
@@ -25,11 +25,11 @@
         right: 435px;
 
         @include respond(tab-port) {
-            right: 280px;    
+            right: 280px;
         }
 
         @include respond(phone) {
-            right: 280px;    
+            right: 280px;
         }
 
         @include hidden(_header) {
@@ -45,7 +45,7 @@
             font-size: 15px;
             background-color: #fff;
             border: 1px solid rgba(0, 40, 100, 0.12);
-        
+
             @include respond(phone) {
                 width: 70px;
             }
@@ -62,7 +62,7 @@
         background-color: #fff;
 
         @include respond(tab-port) {
-            right: 120px;        
+            right: 120px;
         }
 
         @include hidden(_header) {
@@ -99,7 +99,7 @@
 
     #container-profile {
         display: flex;
-        width: 192px;
+        width: 208px;
         height: 40px;
         justify-content: space-between;
         position: absolute;
@@ -107,7 +107,7 @@
         right: 10px;
         font-size: 18px;
         line-height: 40px;
-        
+
         // @include respond(tab-port) {
         //     display: none;
         // }

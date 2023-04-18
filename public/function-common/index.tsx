@@ -26,9 +26,9 @@ const styleTable = (
     changedNTable: number,
 ) => {
     return {
-        backgroundImage: `linear-gradient(to top, ${primaryColorTable(
-            customer.statusTable,
-        )} ${
+        backgroundImage: `linear-gradient(to top, ${
+            table.isBlock ? '#CCCCCC' : primaryColorTable(customer.statusTable)
+        } ${
             customer.statusTable === TableStatus.InUse ? customer.percent : 100
         }%, ${
             customer.statusTable === TableStatus.Overstay

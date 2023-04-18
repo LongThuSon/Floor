@@ -1,5 +1,4 @@
 import http from '../http-common';
-import { TypeService } from '../public/data-constant';
 import { TTableCreate } from '../type/table.type';
 
 class TableDataService {

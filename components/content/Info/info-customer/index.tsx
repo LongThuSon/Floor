@@ -17,6 +17,7 @@ import Hold from '@atlaskit/icon/glyph/notification-all';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hook';
 import {
     CustomerStatus,
+    RequestStatus,
     tableDF,
     TableStatus,
 } from '../../../../public/data-constant';
@@ -48,31 +49,34 @@ const CustomerList = () => {
     };
 
     const customerFilter = (customer: TCustomer) => {
-        if (searchField.request.status === -1) {
+        if (searchField.request.status === RequestStatus.All) {
             return true;
-        } else if (searchField.request.status === -2) {
+        } else if (searchField.request.status === RequestStatus.Absent) {
             return (
                 customer.status === CustomerStatus.NoShow ||
                 customer.status === CustomerStatus.Cancelled
             );
-        } else if (searchField.request.status === -3) {
+        } else if (searchField.request.status === RequestStatus.Upcoming) {
             return (
-                customer.status !== CustomerStatus.Seated &&
-                customer.status !== CustomerStatus.Completed &&
-                customer.status !== CustomerStatus.NoShow &&
-                customer.status !== CustomerStatus.Cancelled
+                customer.status === CustomerStatus.Booked ||
+                customer.status === CustomerStatus.Confirmed
             );
-        } else {
-            return true;
+        } else if (searchField.request.status === RequestStatus.Seated) {
+            return customer.status === CustomerStatus.Seated;
+        } else if (searchField.request.status === RequestStatus.Completed) {
+            return customer.status === CustomerStatus.Completed;
         }
     };
 
     const settingcustomers = customerList.filter(customerFilter);
 
     const searchcustomers = settingcustomers.filter((person) => {
-        return person.name
-            ?.toLowerCase()
-            .includes(searchField.request.name.toLowerCase());
+        return (
+            person.name
+                ?.toLowerCase()
+                .includes(searchField.request.name.toLowerCase()) ||
+            person.phone?.includes(searchField.request.name)
+        );
     });
 
     const customerStatus = (status: CustomerStatus) => {
@@ -464,10 +468,12 @@ const CustomerList = () => {
                                     className="item-action"
                                     style={{
                                         display: `${
-                                            customer.status ===
+                                            (customer.status ===
                                                 CustomerStatus.Confirmed ||
-                                            customer.status ===
-                                                CustomerStatus.Late
+                                                customer.status ===
+                                                    CustomerStatus.Late) &&
+                                            customer.statusTable !==
+                                                TableStatus.Clash
                                                 ? ''
                                                 : 'none'
                                         }`,
@@ -503,9 +509,13 @@ const CustomerList = () => {
                                     style={{
                                         display: `${
                                             customer.status ===
+                                                CustomerStatus.Completed ||
+                                            customer.status ===
                                                 CustomerStatus.NoShow ||
                                             customer.status ===
-                                                CustomerStatus.Cancelled
+                                                CustomerStatus.Cancelled ||
+                                            customer.statusTable ===
+                                                TableStatus.Clash
                                                 ? 'none'
                                                 : ''
                                         }`,
@@ -559,7 +569,10 @@ const CustomerList = () => {
                                     style={{
                                         display: `${
                                             customer.status ===
-                                            CustomerStatus.Late
+                                                CustomerStatus.Late &&
+                                            !customer.isHold &&
+                                            customer.statusTable !==
+                                                TableStatus.Clash
                                                 ? ''
                                                 : 'none'
                                         }`,

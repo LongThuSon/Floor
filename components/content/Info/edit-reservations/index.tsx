@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useContext } from 'react';
 
 import DatePicker, { DateObject } from 'react-multi-date-picker';
 
@@ -40,17 +40,21 @@ import {
 } from '../../../../redux/slices/customer.slice';
 import { updateTable } from '../../../../redux/slices/table.silce';
 import { MDBInput, MDBTextArea } from 'mdb-react-ui-kit';
+import SocketContext from '../../../../socket/contexts/SocketContext';
 
 const EditDetails = () => {
     const dispatch = useAppDispatch();
+    const customerList = useAppSelector(
+        (state) => state.customers.customerList,
+    );
     const tableList = useAppSelector((state) => state.tables.tableList);
     const customerChoosen =
         useAppSelector((state) => state.customers.customerChoosen) ??
         customerDF;
-
-    const { customerChanged, setCustomerChanged, typeService } =
+    const { socket, key } = useContext(SocketContext).SocketState;
+    const { customerChanged, setCustomerChanged, typeService, startDate } =
         usePageContext();
-    const [startDate, setStartDate] = useState<any>(
+    const [editStartDate, seteditStartDate] = useState<any>(
         new DateObject(customerChoosen.dateOrder),
     );
     const [showModal, setShowModal] = useState(false);
@@ -59,11 +63,11 @@ const EditDetails = () => {
 
     const findTable = (id: string) => {
         const table = tableList.find((table) => table._id === id);
-        console.log(table);
         return table ?? tableDF;
     };
     useEffect(() => {
         setCustomerChanged(customerChoosen);
+        getDefaultTypeErrorList();
     }, [customerChoosen, setCustomerChanged]);
 
     const customerStatusEdit = (status: CustomerStatus) => {
@@ -224,6 +228,26 @@ const EditDetails = () => {
         }
     };
 
+    const getDefaultTypeErrorList = () => {
+        if (customerChoosen.status !== CustomerStatus.Booked) {
+            // check over people
+            if (
+                customerChoosen.quantityBook >
+                findTable(customerChoosen.idTable).totalChair
+            ) {
+                addTypeError(TypeErrorEdit.OverPeople);
+            }
+
+            // check same table
+            const checkClashCusList = customerList.filter(
+                (cus) => cus.idTable === customerChoosen.idTable,
+            );
+            if (checkClashCusList.length > 1) {
+                addTypeError(TypeErrorEdit.SameTable);
+            }
+        }
+    };
+
     const changeTimeOrder = (e: any) => {
         setCustomerChanged({
             ...customerChanged,
@@ -303,6 +327,40 @@ const EditDetails = () => {
             typeService = TypeService.Dinner;
         }
 
+        const oldTable = tableList.find(
+            (table) => table._id === customerChoosen.idTable,
+        );
+        const newTable = tableList.find(
+            (table) => table._id === customerChanged.idTable,
+        );
+
+        var otherIdCus = '';
+        const oldCusClashNoCurrentList = customerList.filter(
+            (cus) =>
+                cus.idTable === customerChoosen.idTable &&
+                cus._id !== customerChoosen._id,
+        );
+        if (oldCusClashNoCurrentList.length > 0) {
+            otherIdCus = oldCusClashNoCurrentList[0]._id;
+        }
+
+        if (typeErrorList.length > 0) {
+            statusTable = TableStatus.Clash;
+        } else if (statusTable === TableStatus.Clash) {
+            switch (status) {
+                case CustomerStatus.Confirmed:
+                    console.log('check');
+                    statusTable = TableStatus.Reserved;
+                    break;
+                case (CustomerStatus.Seated, CustomerStatus.Late):
+                    statusTable = TableStatus.InUse;
+                    break;
+                default:
+                    statusTable = TableStatus.Available;
+                    break;
+            }
+        }
+
         const newCus = {
             id: customerChanged._id,
             data: {
@@ -314,17 +372,23 @@ const EditDetails = () => {
                 statusTable: statusTable,
                 status: status,
                 typeService: typeService,
+                errorClash: typeErrorList,
             },
         };
-        const oldTable = tableList.find(
-            (table) => table._id === customerChoosen.idTable,
-        );
-        const newTable = tableList.find(
-            (table) => table._id === customerChanged.idTable,
-        );
 
         await dispatch(updateCustomer(newCus))
-            .then((_) => notify())
+            .then((_) => {
+                if (typeErrorList.includes(TypeErrorEdit.SameTable)) {
+                    const payload = {
+                        keyRestaurant: key,
+                        typeService: typeService,
+                        dateOrder: startDate.unix * 1000,
+                        idTable: customerChanged.idTable,
+                    };
+                    socket?.emit('handleClash', payload);
+                }
+                notify();
+            })
             .catch((error) => console.log(error));
 
         if (newTable !== undefined && newTable._id !== oldTable?._id) {
@@ -341,7 +405,29 @@ const EditDetails = () => {
                     updateTable({
                         id: oldTable._id,
                         data: {
-                            idCustomer: '',
+                            idCustomer: otherIdCus,
+                        },
+                    }),
+                );
+            }
+            if (oldCusClashNoCurrentList.length === 1) {
+                var refixStatusTable;
+                switch (oldCusClashNoCurrentList[0].status) {
+                    case CustomerStatus.Confirmed:
+                        refixStatusTable = TableStatus.Reserved;
+                        break;
+                    case (CustomerStatus.Seated, CustomerStatus.Late):
+                        refixStatusTable = TableStatus.InUse;
+                        break;
+                    default:
+                        refixStatusTable = TableStatus.Available;
+                        break;
+                }
+                await dispatch(
+                    updateCustomer({
+                        id: otherIdCus,
+                        data: {
+                            statusTable: refixStatusTable,
                         },
                     }),
                 );
@@ -382,6 +468,8 @@ const EditDetails = () => {
             dispatch(clearCustomerChoosen());
         }, 1000);
     };
+
+    const handleClashSave = () => {};
 
     return (
         <div className="container-edit">
@@ -462,10 +550,10 @@ const EditDetails = () => {
                 </div>
                 <div className="datePickerEdit">
                     <DatePicker
-                        value={startDate}
+                        value={editStartDate}
                         format="DD MMM YYYY"
                         onChange={(array) => {
-                            setStartDate(array);
+                            seteditStartDate(array);
                         }}
                         disabled={
                             customerChanged.status === CustomerStatus.Seated ||
@@ -507,12 +595,12 @@ const EditDetails = () => {
                                                     CustomerStatus.Cancelled
                                             ) {
                                                 let today = new DateObject(
-                                                    startDate,
+                                                    editStartDate,
                                                 );
                                                 let prevDay = today.setDate(
                                                     today.subtract(1, 'day'),
                                                 );
-                                                setStartDate(prevDay);
+                                                seteditStartDate(prevDay);
                                             }
                                         }}
                                     >
@@ -533,12 +621,12 @@ const EditDetails = () => {
                                                 customerChanged.status !== 6
                                             ) {
                                                 let today = new DateObject(
-                                                    startDate,
+                                                    editStartDate,
                                                 );
                                                 let prevDay = today.setDate(
                                                     today.add(1, 'day'),
                                                 );
-                                                setStartDate(prevDay);
+                                                seteditStartDate(prevDay);
                                             }
                                         }}
                                     >

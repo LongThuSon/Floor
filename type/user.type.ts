@@ -6,6 +6,13 @@ type TUser = {
     keyRestaurant: string;
 };
 
+type TUserCreate = {
+    name: string;
+    phone: string;
+    password: string;
+    keyRestaurant: string;
+};
+
 type TAuth = {
     phone: string;
     password: string;
@@ -25,4 +32,8 @@ type THomeProps = {
     setInfo: () => {};
 };
 
-export type { TUser, TAuth, TInfo, THomeProps };
+type TUserData = {
+    isLoading: boolean;
+};
+
+export type { TUser, TAuth, TInfo, THomeProps, TUserData, TUserCreate };

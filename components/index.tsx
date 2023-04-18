@@ -7,11 +7,12 @@ import { useAppDispatch } from '../redux/hook';
 import { getAllTables } from '../redux/slices/table.silce';
 import {
     getAllCustomers,
+    updateClash,
     updateLate,
     updateNoShow,
     updatePercentCustomer,
 } from '../redux/slices/customer.slice';
-import { customerDF, TypeService } from '../public/data-constant';
+import { customerDF, TimeOrder, TypeService } from '../public/data-constant';
 import SocketContext from '../socket/contexts/SocketContext';
 import { DateObject } from 'react-multi-date-picker';
 import { TCustomerUpdate } from '../type/customer.type';
@@ -26,13 +27,14 @@ function getWindowDimensions() {
 
 const App = () => {
     const dispatch = useAppDispatch();
-    const { socket, user } = useContext(SocketContext).SocketState;
+    const { socket, user, key } = useContext(SocketContext).SocketState;
     const [enableInfo, setEnableInfo] = useState(true);
     const [typeService, setTypeService] = useState(TypeService.Lunch);
     const [startDate, setStartDate] = useState(new DateObject());
     const [showZoom, setShowZoom] = useState(false);
     const [customerChanged, setCustomerChanged] = useState(customerDF);
     const [winSize, setWinSize] = useState({ width: 1536, height: 677 });
+    const [newReservation, setNewReservation] = useState(false);
 
     useEffect(() => {
         setWinSize(getWindowDimensions());
@@ -51,28 +53,30 @@ const App = () => {
     useEffect(() => {
         dispatch(
             getAllCustomers({
-                key: '',
+                key: key,
                 typeService: typeService,
                 dateOrder: startDate.unix * 1000,
             }),
         )
             .then((_) => {
-                dispatch(getAllTables(''));
+                dispatch(getAllTables(key));
             })
             .catch((error) => console.log(error));
-    }, [dispatch, startDate, typeService]);
+    }, [dispatch, key, startDate, typeService]);
 
     useEffect(() => {
         console.log('socket: ', socket);
         socket?.on('updatePercent', (payload: TCustomerUpdate) => {
-            console.log('payload: ', payload);
             dispatch(updatePercentCustomer(payload));
         });
-        socket?.on('updateLate', () => {
-            dispatch(updateLate());
+        socket?.on('updateLate', (timeOrder) => {
+            dispatch(updateLate(timeOrder));
         });
-        socket?.on('updateNoShow', () => {
-            dispatch(updateNoShow());
+        socket?.on('updateNoShow', (timeOrder: TimeOrder) => {
+            dispatch(updateNoShow(timeOrder));
+        });
+        socket?.on('updateClash', (idTable: string) => {
+            dispatch(updateClash(idTable));
         });
     }, [dispatch, socket]);
 
@@ -91,6 +95,8 @@ const App = () => {
                     setTypeService,
                     startDate,
                     setStartDate,
+                    newReservation,
+                    setNewReservation,
                 }}
             >
                 {user != null ? (

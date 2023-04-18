@@ -5,15 +5,17 @@ import { TUser } from '../../type/user.type';
 export interface ISocketContextState {
     socket: Socket | undefined;
     user: TUser | null;
+    key: string;
 }
 
 export const defaultSocketContextState: ISocketContextState = {
     socket: undefined,
     user: null,
+    key: '',
 };
 
-export type TSocketContextActions = 'updateSocket' | 'updateUser';
-export type TSocketContextPayload = TUser | Socket | null | undefined;
+export type TSocketContextActions = 'updateSocket' | 'updateUser' | 'updateKey';
+export type TSocketContextPayload = TUser | Socket | null | undefined | string;
 
 export interface ISocketContextActions {
     type: TSocketContextActions;
@@ -33,7 +35,9 @@ export const SocketReducer = (
         case 'updateSocket':
             return { ...state, socket: action.payload as Socket };
         case 'updateUser':
-            return { ...state, user: action.payload as TUser };
+            return { ...state, user: action.payload as TUser | null };
+        case 'updateKey':
+            return { ...state, key: action.payload as string };
         default:
             return state;
     }

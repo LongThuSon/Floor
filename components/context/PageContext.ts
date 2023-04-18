@@ -16,6 +16,8 @@ export type IPageType = {
     setTypeService: (param: TypeService) => void;
     startDate: DateObject;
     setStartDate: (param: DateObject) => void;
+    newReservation: boolean;
+    setNewReservation: (param: boolean) => void;
 };
 
 export const PageContext = createContext<IPageType>({
@@ -31,6 +33,8 @@ export const PageContext = createContext<IPageType>({
     setTypeService: () => {},
     startDate: new DateObject(),
     setStartDate: () => {},
+    newReservation: false,
+    setNewReservation: () => {},
 });
 
 export const usePageContext = () => useContext(PageContext);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     MDBBtn,
     MDBModal,
@@ -30,9 +30,11 @@ import { useAppDispatch } from '../../../redux/hook';
 import { createCustomer } from '../../../redux/slices/customer.slice';
 import { createTable } from '../../../redux/slices/table.silce';
 import { TTableCreate } from '../../../type/table.type';
+import SocketContext from '../../../socket/contexts/SocketContext';
 
 export default function App() {
     const dispatch = useAppDispatch();
+    const { socket, user, key } = useContext(SocketContext).SocketState;
 
     // state modal
     const [showModal, setShowModal] = useState(false);
@@ -44,7 +46,6 @@ export default function App() {
     const [quantity, setQuantity] = useState(0);
     const [note, setNote] = useState('');
     const [startDate, setStartDate] = useState<any>(new DateObject());
-    const [typeService, setTypeService] = useState(TypeService.Lunch);
     const [timeOrder, setTimeOrder] = useState(TimeOrder._10h);
 
     // state table
@@ -71,7 +72,7 @@ export default function App() {
             dateOrder: dateCheck,
             timeOrder: timeOrder,
             note: note,
-            keyRestaurant: '',
+            keyRestaurant: key,
         };
 
         dispatch(createCustomer(data))
@@ -85,7 +86,7 @@ export default function App() {
             type: typeTb,
             topPositon: topPos,
             leftPositon: leftPos,
-            keyRestaurant: '',
+            keyRestaurant: key,
         };
 
         dispatch(createTable(data))
@@ -98,9 +99,6 @@ export default function App() {
         setPhone('');
         setQuantity(0);
         setNote('');
-        setStartDate(Date.now());
-        setTypeService(TypeService.Lunch);
-        setTimeOrder(TimeOrder._10h);
         setNote('');
     };
 
@@ -108,7 +106,6 @@ export default function App() {
         setNumberTb(0);
         setTopPos(0);
         setLeftPos(0);
-        setTypeTb(TableType._1v1);
     };
 
     return (

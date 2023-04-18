@@ -4,9 +4,11 @@ import { useContentContext } from '../../../context/ContentContext';
 import Draggable from 'react-draggable';
 import Chair from './chair';
 import Save from '@atlaskit/icon/glyph/download';
+import LockIcon from '@atlaskit/icon/glyph/lock';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 import { TTableProps } from '../../../../type/table.type';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hook';
-import { updateTable } from '../../../../redux/slices/table.silce';
+import { deleteTable, updateTable } from '../../../../redux/slices/table.silce';
 import {
     reservTimeTable,
     styleTable,
@@ -25,6 +27,7 @@ const Circle8 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
     const { winSize, customerChanged } = usePageContext();
     const { move } = useContentContext();
     const [position, setPosition] = useState({ top: 0, left: 0 });
+    const [showOption, setShowOption] = useState(false);
 
     const trackPos = (data: any) => {
         setPosition({
@@ -43,6 +46,29 @@ const Circle8 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
         };
 
         dispatch(updateTable(newTable));
+    };
+
+    const handleLookTb = () => {
+        if (table.idCustomer === '') {
+            var isBlock = true;
+            if (table.isBlock) {
+                isBlock = false;
+            }
+            const newTable = {
+                id: table._id,
+                data: {
+                    isBlock: isBlock,
+                },
+            };
+
+            dispatch(updateTable(newTable));
+        }
+    };
+
+    const handleRemoveTb = () => {
+        if (table.idCustomer === '') {
+            dispatch(deleteTable(table._id));
+        }
     };
 
     return (
@@ -148,6 +174,26 @@ const Circle8 = ({ table, customerChoosen, changedNTable }: TTableProps) => {
                             size="small"
                             primaryColor="#067E30"
                         />
+                    </div>
+                )}
+
+                {showOption && move && (
+                    <div className="save-position">
+                        <div onClick={handleLookTb}>
+                            <LockIcon
+                                label="look"
+                                size="small"
+                                primaryColor="#067E30"
+                            />
+                        </div>
+
+                        <div onClick={handleRemoveTb}>
+                            <TrashIcon
+                                label="trash"
+                                size="small"
+                                primaryColor="#067E30"
+                            />
+                        </div>
                     </div>
                 )}
             </div>

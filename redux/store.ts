@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tableReducer from './slices/table.silce';
 import customerReducer from './slices/customer.slice';
+import userReducer from './slices/user.slice';
 
 const reducer = {
     tables: tableReducer,
     customers: customerReducer,
+    users: userReducer,
 };
 
 const store = configureStore({

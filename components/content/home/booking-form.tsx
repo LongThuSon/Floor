@@ -41,7 +41,7 @@ const BookingForm = () => {
             dateOrder: dateCheck,
             timeOrder: timeOrder,
             note: note,
-            keyRestaurant: '',
+            keyRestaurant: key,
         };
 
         dispatch(createCustomer(data));

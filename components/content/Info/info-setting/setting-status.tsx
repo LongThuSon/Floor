@@ -1,14 +1,22 @@
+import React, { useEffect } from 'react';
 import Select from 'react-select';
 import { useInfoContext } from '../../../context/InfoContext';
 import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down';
 import { useAppSelector } from '../../../../redux/hook';
-import { CustomerStatus } from '../../../../public/data-constant';
+import {
+    CustomerStatus,
+    RequestStatus,
+} from '../../../../public/data-constant';
 
 const SettingStatus = () => {
     const customerList = useAppSelector(
         (state) => state.customers.customerList,
     );
     const { setSearchField } = useInfoContext();
+
+    useEffect(() => {
+        handleSettingChange(RequestStatus.All);
+    }, []);
 
     const sumQuantity = (value: CustomerStatus) => {
         let settingProfiles;
@@ -33,7 +41,8 @@ const SettingStatus = () => {
         return settingProfiles.length;
     };
 
-    const handleSettingChange = (status: number) => {
+    const handleSettingChange = (status: RequestStatus) => {
+        console.log('status request: ', status);
         setSearchField((prev: any) => ({
             request: {
                 ...prev.request,
@@ -43,24 +52,28 @@ const SettingStatus = () => {
     };
 
     const options = [
-        { status: -1, value: 'All', quantity: `${customerList.length}` },
         {
-            status: -3,
+            status: RequestStatus.All,
+            value: 'All',
+            quantity: `${customerList.length}`,
+        },
+        {
+            status: RequestStatus.Upcoming,
             value: 'Upcoming',
             quantity: `${sumQuantity(CustomerStatus.Booked)}`,
         },
         {
-            status: 3,
+            status: RequestStatus.Seated,
             value: 'Seated',
             quantity: `${sumQuantity(CustomerStatus.Seated)}`,
         },
         {
-            status: 4,
+            status: RequestStatus.Completed,
             value: 'Completed',
             quantity: `${sumQuantity(CustomerStatus.Completed)}`,
         },
         {
-            status: -2,
+            status: RequestStatus.Absent,
             value: 'Absent',
             quantity: `${
                 sumQuantity(CustomerStatus.NoShow) +
@@ -104,7 +117,7 @@ const SettingStatus = () => {
             <Select
                 instanceId="setting-status"
                 styles={customStyles}
-                // defaultValue={options[0]}
+                defaultValue={options[0]}
                 formatOptionLabel={formatOptionLabel}
                 options={options}
                 components={{

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { CustomerStatus } from '../../public/data-constant';
+import { CustomerStatus, TableStatus } from '../../public/data-constant';
 import CustomerDataService from '../../services/customer.service';
 import {
     TCustomer,
@@ -84,27 +84,39 @@ const customerSlice = createSlice({
                 Object.assign(state.customerList[index], action.payload.data);
             }
         },
-        updateLate: (state) => {
+        updateLate: (state, action) => {
             const updateNeedCusList = state.customerList.filter(
                 (cus) =>
-                    cus.status === CustomerStatus.Booked ||
-                    cus.status === CustomerStatus.Confirmed,
+                    (cus.status === CustomerStatus.Booked ||
+                        cus.status === CustomerStatus.Confirmed) &&
+                    cus.timeOrder === action.payload,
             );
 
             updateNeedCusList.forEach((cus) => {
                 Object.assign(cus, { status: CustomerStatus.Late });
             });
         },
-        updateNoShow: (state) => {
+        updateNoShow: (state, action) => {
+            console.log('action.payload: ', action.payload);
             const updateNeedCusList = state.customerList.filter(
                 (cus) =>
-                    cus.status === CustomerStatus.Booked ||
-                    cus.status === CustomerStatus.Confirmed ||
-                    cus.status === CustomerStatus.Late,
+                    (cus.status === CustomerStatus.Booked ||
+                        cus.status === CustomerStatus.Confirmed ||
+                        cus.status === CustomerStatus.Late) &&
+                    cus.timeOrder === action.payload,
             );
 
             updateNeedCusList.forEach((cus) => {
                 Object.assign(cus, { status: CustomerStatus.NoShow });
+            });
+        },
+        updateClash: (state, action) => {
+            const updateNeedCusList = state.customerList.filter(
+                (cus) => cus.idTable === action.payload,
+            );
+
+            updateNeedCusList.forEach((cus) => {
+                Object.assign(cus, { statusTable: TableStatus.Clash });
             });
         },
     },
@@ -142,7 +154,7 @@ const customerSlice = createSlice({
         });
         builder.addCase(createCustomer.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.customerList.push(action.payload as unknown as TCustomer);
+            // state.customerList.push(action.payload as unknown as TCustomer);
         });
         builder.addCase(createCustomer.rejected, (state, action) => {
             state.isLoading = false;
@@ -175,4 +187,5 @@ export const {
     updatePercentCustomer,
     updateLate,
     updateNoShow,
+    updateClash,
 } = customerSlice.actions;

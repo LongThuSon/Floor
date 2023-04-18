@@ -76,6 +76,11 @@ enum TypeActive {
     Table = 'table',
 }
 
+enum RememberUser {
+    Remember = 0,
+    NotRemember = 1,
+}
+
 const tableDF: TTable = {
     _id: '-1',
     number: -1,
@@ -120,6 +125,14 @@ const authDF: TAuth = {
     keyRestaurant: '-1',
 };
 
+enum RequestStatus {
+    All = 0,
+    Upcoming = 1,
+    Seated = 2,
+    Completed = 3,
+    Absent = 4,
+}
+
 export {
     ActionUser,
     TableStatus,
@@ -134,4 +147,6 @@ export {
     authDF,
     TypeActive,
     TypeErrorEdit,
+    RememberUser,
+    RequestStatus,
 };
